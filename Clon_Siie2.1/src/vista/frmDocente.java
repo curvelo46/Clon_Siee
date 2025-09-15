@@ -5,9 +5,11 @@ import clases.Base_De_Datos;
 
 public class frmDocente extends javax.swing.JFrame {
         private final Base_De_Datos baseDatos;
+        private String Nombre;
 
-    public frmDocente(Base_De_Datos basedato) {
+    public frmDocente(Base_De_Datos basedato,String nombre){
         this.baseDatos=basedato;
+        this.Nombre=nombre;
         initComponents();
         setLocationRelativeTo(null); // Centrar ventana
         configurarEventos();
@@ -41,6 +43,11 @@ public class frmDocente extends javax.swing.JFrame {
         jLabel1.setText("docente: ");
 
         btnListaEstudiantes.setText("Listado de estudiantes");
+        btnListaEstudiantes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListaEstudiantesActionPerformed(evt);
+            }
+        });
 
         btnNotas.setText("asignacion de notas");
         btnNotas.addActionListener(new java.awt.event.ActionListener() {
@@ -107,12 +114,17 @@ public class frmDocente extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnCerrarActionPerformed
 
+    private void btnListaEstudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListaEstudiantesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnListaEstudiantesActionPerformed
+
     private void abrirListaEstudiantes() {
-        new frmListaEstudiantes(baseDatos).setVisible(true);
+        new frmListaEstudiantes(baseDatos,Nombre).setVisible(true);
     }
 
     private void abrirNotas() {
-        new frmNotasProfe(baseDatos).setVisible(true);
+        this.dispose();
+        new frmNotasProfe(baseDatos,Nombre).setVisible(true);
     }
 
     private void cerrarSesion() {

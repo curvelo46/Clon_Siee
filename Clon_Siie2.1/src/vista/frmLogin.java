@@ -185,7 +185,7 @@ public class frmLogin extends javax.swing.JFrame {
             case "Profesor":
                 acceso = baseDatos.Login2(usuario, contraseña);
                 if (acceso) {
-                    frmDocente frm = new frmDocente(baseDatos);
+                    frmDocente frm = new frmDocente(baseDatos,usuario);
                     frm.setVisible(true);
                     this.dispose();
                 }

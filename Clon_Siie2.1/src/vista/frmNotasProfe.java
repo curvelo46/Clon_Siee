@@ -5,62 +5,113 @@
 package vista;
 
 import clases.Base_De_Datos;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author PC
  */
 public class frmNotasProfe extends javax.swing.JFrame {
        private final Base_De_Datos baseDatos;
+       private final String profesor;
 
     /**
      * Creates new form NotasProfe
      */
- public frmNotasProfe(Base_De_Datos baseDatos) {
-        initComponents();
-        this.baseDatos = baseDatos;
-        setLocationRelativeTo(null);
-        configurarEventos();
-        cargarLista();
-    }
+        public frmNotasProfe(Base_De_Datos baseDatos, String profesor) {
+           initComponents();
+           txtMateria.setText(baseDatos.obtenerMateriaProfesor(profesor));
+           txtMateria.setHorizontalAlignment(SwingConstants.CENTER);
+
+    // Opcional: darle estilo de título
+    txtMateria.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 16));
+
+    // Hacemos que el label se expanda en la fila superior sin mover botones
+    ((GroupLayout) getContentPane().getLayout())
+        .setHorizontalGroup(
+            ((GroupLayout) getContentPane().getLayout()).createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(
+                    ((GroupLayout) getContentPane().getLayout()).createSequentialGroup()
+                        .addComponent(btnGuardar)
+                        .addGap(20, 20, 20)
+                        .addComponent(txtMateria, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                        .addGap(20, 20, 20)
+                        .addComponent(btnVolver)
+                )
+                .addComponent(jScrollPane1)
+        );
+           this.baseDatos = baseDatos;
+           this.profesor = profesor;
+           setLocationRelativeTo(null);
+           configurarEventos();
+           cargarTabla();
+       }
 
     
-   private void configurarEventos() {
-        btnGuardar.addActionListener(e -> guardarNota());
-        btnVerNotas.addActionListener(e -> verNotas());
-    }
-
-    
-      private void guardarNota() {
-         String estudianteSeleccionado = listaEstudiantes.getSelectedValue();
-          String nota = txtNota.getText().trim();
-          if (estudianteSeleccionado == null || nota.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Seleccione estudiante y escriba una nota.");
-                return;
-           }
-         boolean guardado = baseDatos.cargarNota(estudianteSeleccionado, nota);
-         if (guardado) {
-               JOptionPane.showMessageDialog(this, "Nota guardada para " + estudianteSeleccionado);
-              txtNota.setText("");
-         } else {
-                JOptionPane.showMessageDialog(this, "Error al guardar nota.");
-             }
-        }   
-    
-      private void verNotas() {
-        var estudiantes = baseDatos.listaAlumnos();
-        var notas = baseDatos.listaNotas();
-        StringBuilder sb = new StringBuilder("Notas de los estudiantes:\n\n");
-        for (int i = 0; i < estudiantes.size(); i++) {
-            String nota = (i < notas.size() && notas.get(i) != null && !notas.get(i).isEmpty()) ? notas.get(i) : "Sin nota";
-            sb.append(estudiantes.get(i)).append(": ").append(nota).append("\n");
+        
+        
+        
+        private void configurarEventos() {
+            btnGuardar.addActionListener(e -> guardarNotas());
+            btnVolver.addActionListener(e -> {
+                this.dispose();
+                new frmDocente(baseDatos,profesor).setVisible(true);
+            });
         }
-        JOptionPane.showMessageDialog(this, sb.toString());
+
+  private void cargarTabla() {
+    DefaultTableModel modelo = new DefaultTableModel(
+        new Object[]{"Estudiante", "Nota"}, 0
+    ) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return column == 1; // Solo la columna de nota es editable
+        }
+    };
+
+    var estudiantes = baseDatos.listaAlumnos();
+    var notas = baseDatos.listaNotas(profesor);
+
+    for (int i = 0; i < estudiantes.size(); i++) {
+        // aquí ya no necesitamos revisar null, listaNotas devuelve "" si no hay
+        String nota = (i < notas.size()) ? notas.get(i) : "";
+        modelo.addRow(new Object[]{estudiantes.get(i), nota});
     }
-     
-         private void cargarLista() {
-        listaEstudiantes.setListData(baseDatos.listaAlumnos().toArray(new String[0]));
+
+    tablaNotas.setModel(modelo);
+}
+
+    
+    private void guardarNotas() {
+    DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
+    boolean guardadoOk = true;
+
+    for (int i = 0; i < modelo.getRowCount(); i++) {
+        String estudiante = (String) modelo.getValueAt(i, 0);
+        String nota = (String) modelo.getValueAt(i, 1);
+
+        if (nota == null || nota.trim().isEmpty()) {
+            continue; // no guardar vacíos
+        }
+
+        boolean resultado = baseDatos.cargarNota(estudiante, profesor, nota);
+        if (!resultado) {
+            guardadoOk = false;
+        }
     }
+
+    if (guardadoOk) {
+        JOptionPane.showMessageDialog(this, "Notas guardadas correctamente.");
+    } else {
+        JOptionPane.showMessageDialog(this, "Algunas notas no pudieron guardarse.");
+    }
+
+    // refrescar tabla para ver inmediatamente los cambios
+    cargarTabla();
+}
+
+    
+      
 
     
     /**
@@ -73,11 +124,10 @@ public class frmNotasProfe extends javax.swing.JFrame {
     private void initComponents() {
 
         btnGuardar = new javax.swing.JButton();
-        btnVerNotas = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        listaEstudiantes = new javax.swing.JList<>();
-        txtNota = new javax.swing.JTextField();
         btnVolver = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaNotas = new javax.swing.JTable();
+        txtMateria = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,15 +138,6 @@ public class frmNotasProfe extends javax.swing.JFrame {
             }
         });
 
-        btnVerNotas.setText("vernotas");
-
-        listaEstudiantes.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane2.setViewportView(listaEstudiantes);
-
         btnVolver.setText("volver");
         btnVolver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -104,41 +145,43 @@ public class frmNotasProfe extends javax.swing.JFrame {
             }
         });
 
+        tablaNotas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tablaNotas);
+
+        txtMateria.setText("matematica");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(txtNota, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnGuardar)
-                        .addContainerGap(12, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnVerNotas, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnVolver, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addContainerGap())))
+                .addComponent(btnGuardar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                .addComponent(txtMateria)
+                .addGap(61, 61, 61)
+                .addComponent(btnVolver))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnGuardar)
-                            .addComponent(txtNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnVerNotas)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnVolver))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnGuardar)
+                    .addComponent(btnVolver)
+                    .addComponent(txtMateria))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
@@ -146,8 +189,7 @@ public class frmNotasProfe extends javax.swing.JFrame {
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
         // TODO add your handling code here:
-               this.dispose();
-        new frmDocente(baseDatos).setVisible(true);
+         
         
     }//GEN-LAST:event_btnVolverActionPerformed
 
@@ -174,10 +216,9 @@ public class frmNotasProfe extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardar;
-    private javax.swing.JButton btnVerNotas;
     private javax.swing.JButton btnVolver;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JList<String> listaEstudiantes;
-    private javax.swing.JTextField txtNota;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tablaNotas;
+    private javax.swing.JLabel txtMateria;
     // End of variables declaration//GEN-END:variables
 }

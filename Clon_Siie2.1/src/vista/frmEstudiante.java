@@ -4,6 +4,7 @@
  */
 package vista;
 import clases.Base_De_Datos;
+import java.util.Map;
 import javax.swing.JOptionPane;
 
 /**
@@ -13,6 +14,7 @@ import javax.swing.JOptionPane;
 public class frmEstudiante extends javax.swing.JFrame {
         private final Base_De_Datos baseDatos;
         private String usuario;
+        private final String docente = "matematica";
 
     /**
      * Creates new form frmEstudiante
@@ -122,11 +124,29 @@ public class frmEstudiante extends javax.swing.JFrame {
         login.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnVolverActionPerformed
+    
+    private void mostrarNotas() {
+    Map<String, String> notas = baseDatos.obtenerNotasEstudiante(usuario);
 
+    StringBuilder sb = new StringBuilder();
+    sb.append("Estudiante: ").append(usuario).append("\n\n");
+
+    for (Map.Entry<String, String> entry : notas.entrySet()) {
+        sb.append("Materia: ").append(entry.getKey())
+          .append(" -> Nota: ").append(entry.getValue()).append("\n");
+    }
+
+    JOptionPane.showMessageDialog(this,
+            sb.toString(),
+            "Boletín de Notas",
+            JOptionPane.INFORMATION_MESSAGE);
+}
+
+
+    
     private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Mostrando notas de " + usuario, "Notas", JOptionPane.INFORMATION_MESSAGE);
-        new frmnotasEstudiante(usuario, baseDatos).setVisible(true);
+        mostrarNotas();
     }//GEN-LAST:event_btnNotasActionPerformed
 
     /**

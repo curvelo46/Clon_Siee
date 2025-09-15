@@ -7,12 +7,14 @@ import clases.Base_De_Datos;
 
 public class frmListaEstudiantes extends javax.swing.JFrame {
     private Base_De_Datos baseDatos;
+    String Nombre;
      
     /**
      * Creates new form frmListaEstudiantes
      */
-  public frmListaEstudiantes(Base_De_Datos baseDatos) {
+  public frmListaEstudiantes(Base_De_Datos baseDatos,String nombre) {
         initComponents();
+        this.Nombre=nombre;
         this.baseDatos = baseDatos;
         setLocationRelativeTo(null);
         cargarLista();
@@ -72,10 +74,10 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
         // TODO add your handling code here:
-              frmDocente profe = new frmDocente(baseDatos);
-        profe.setVisible(true);
-        profe.setLocationRelativeTo(null);
-        this.setVisible(false);
+             
+        
+        
+        this.dispose();
     }//GEN-LAST:event_btnVolverActionPerformed
 
     /**

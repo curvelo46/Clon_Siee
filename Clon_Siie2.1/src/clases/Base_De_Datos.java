@@ -4,17 +4,19 @@ import java.util.*;
 
 public class Base_De_Datos {
 
-    // Listas organizadas por tipo de usuario
+       // Listas organizadas por tipo de usuario
     private final List<Estudiante> estudiantes = new ArrayList<>();
     private final List<Profesor> profesores = new ArrayList<>();
     private final List<Administrador> administradores = new ArrayList<>();
     private final List<String> asignaturas = new ArrayList<>();
 
-    // Mapa para relacionar estudiante con su nota
-    private final Map<String, String> calificaciones = new HashMap<>();
+    // Relación profesor → materia
+    private final Map<String, String> materiasPorProfesor = new HashMap<>();
+
+    // Relación estudiante + materia → nota
+    private final Map<String, Map<String, String>> calificaciones = new HashMap<>();
 
     public Base_De_Datos() {
-        // ---------- Estudiantes ----------
         estudiantes.add(new Estudiante("andres", "123"));
         estudiantes.add(new Estudiante("jose", "1234"));
         estudiantes.add(new Estudiante("maria", "12345"));
@@ -27,9 +29,13 @@ public class Base_De_Datos {
         estudiantes.add(new Estudiante("laura", "laura!234"));
 
         // ---------- Profesores ----------
-        profesores.add(new Profesor("luis", "qwe"));
-        profesores.add(new Profesor("tatiana", "asd"));
-        profesores.add(new Profesor("carlos", "zxc"));
+        Profesor p1 = new Profesor("luis", "qwe");
+        Profesor p2 = new Profesor("tatiana", "asd");
+        Profesor p3 = new Profesor("carlos", "zxc");
+
+        profesores.add(p1);
+        profesores.add(p2);
+        profesores.add(p3);
 
         // ---------- Administradores ----------
         administradores.add(new Administrador("seraira", "fgh"));
@@ -40,10 +46,15 @@ public class Base_De_Datos {
         asignaturas.add("Diseño Web");
         asignaturas.add("POO");
         asignaturas.add("Desarrollo humano");
+
+        // Relacionamos profesores con materias
+        materiasPorProfesor.put("luis", "POO");
+        materiasPorProfesor.put("tatiana", "Diseño Web");
+        materiasPorProfesor.put("carlos", "Desarrollo humano");
     }
 
     // ----- Login -----
-    public boolean Login1(String usuario, String contraseña) {
+     public boolean Login1(String usuario, String contraseña) {
         return estudiantes.stream()
                 .anyMatch(e -> e.getNombre().equals(usuario) && e.getContraseña().equals(contraseña));
     }
@@ -59,21 +70,30 @@ public class Base_De_Datos {
     }
 
     // ----- Notas -----
-    public boolean cargarNota(String estudiante, String nota) {
-         if (estudiante == null || nota == null || estudiante.isEmpty() || nota.isEmpty()) {
-        return false; // No guardar si datos inválidos
-    }
-    calificaciones.put(estudiante, nota);
-    return true;
-         
+    public boolean cargarNota(String estudiante, String profesor, String nota) {
+        if (estudiante == null || profesor == null || nota == null ||
+            estudiante.isEmpty() || profesor.isEmpty() || nota.isEmpty()) {
+            return false;
+        }
+
+        String materia = materiasPorProfesor.get(profesor);
+        if (materia == null) return false;
+
+        calificaciones.putIfAbsent(estudiante, new HashMap<>());
+        calificaciones.get(estudiante).put(materia, nota);
+
+        return true;
     }
 
-    public String obtenerNota(String estudiante) {
-        return calificaciones.get(estudiante);
+    public String obtenerNota(String estudiante, String profesor) {
+        String materia = materiasPorProfesor.get(profesor);
+        if (materia == null) return null;
+
+        return calificaciones.getOrDefault(estudiante, new HashMap<>()).get(materia);
     }
 
     // ----- Listados -----
-    public List<String> listaAlumnos() {
+     public List<String> listaAlumnos() {
         List<String> nombres = new ArrayList<>();
         for (Estudiante e : estudiantes) {
             nombres.add(e.getNombre());
@@ -81,19 +101,36 @@ public class Base_De_Datos {
         return nombres;
     }
 
-    public List<String> listaNotas() {
+    public List<String> listaNotas(String profesor) {
+        String materia = materiasPorProfesor.get(profesor);
         List<String> notas = new ArrayList<>();
         for (Estudiante e : estudiantes) {
-            notas.add(obtenerNota(e.getNombre()));
+            Map<String, String> notasEst = calificaciones.get(e.getNombre());
+            String nota = (notasEst != null) ? notasEst.getOrDefault(materia, "") : "";
+            notas.add(nota);
         }
         return notas;
     }
 
+    public String obtenerMateriaProfesor(String profesor) {
+        return materiasPorProfesor.get(profesor);
+    }
+
+    public Map<String, String> obtenerNotasEstudiante(String estudiante) {
+    Map<String, String> notas = new LinkedHashMap<>();
+    for (Map.Entry<String, String> entry : materiasPorProfesor.entrySet()) {
+        String materia = entry.getValue();
+        String nota = calificaciones
+                .getOrDefault(estudiante, new HashMap<>())
+                .getOrDefault(materia, "0.0"); // por defecto 0.0
+        notas.put(materia, nota);
+    }
+    return notas;
+}
+
     public List<String> listaAsignaturas() {
         return asignaturas;
     }
-
-   
 }
 
 // ----- Clases de apoyo -----

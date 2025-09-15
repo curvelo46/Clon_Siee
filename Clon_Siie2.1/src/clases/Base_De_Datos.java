@@ -1,99 +1,123 @@
 package clases;
+
 import java.util.*;
 
-public class Base_De_Datos{
-    
-    private final ArrayList<String> Estudiantes = new ArrayList<>();
-    private ArrayList<String> Profesores = new ArrayList<>();
-    private ArrayList<String> Administradores = new ArrayList<>();
-    private ArrayList<String> Asignaturas = new ArrayList<>();
-    private ArrayList<String> Estudiantes_contraseña = new ArrayList<>();
-    private ArrayList<String> Profesores_contraseña = new ArrayList<>();
-    private ArrayList<String> Administradores_contraseña = new ArrayList<>();
-    private ArrayList<Notas> Calificaciones = new ArrayList<>();
+public class Base_De_Datos {
+
+    // Listas organizadas por tipo de usuario
+    private final List<Estudiante> estudiantes = new ArrayList<>();
+    private final List<Profesor> profesores = new ArrayList<>();
+    private final List<Administrador> administradores = new ArrayList<>();
+    private final List<String> asignaturas = new ArrayList<>();
+
+    // Mapa para relacionar estudiante con su nota
+    private final Map<String, String> calificaciones = new HashMap<>();
 
     public Base_De_Datos() {
-        this.Estudiantes.add("andres");
-        this.Estudiantes_contraseña.add("123");
+        // ---------- Estudiantes ----------
+        estudiantes.add(new Estudiante("andres", "123"));
+        estudiantes.add(new Estudiante("jose", "1234"));
+        estudiantes.add(new Estudiante("maria", "12345"));
+        estudiantes.add(new Estudiante("lucia", "pass2024"));
+        estudiantes.add(new Estudiante("carlos", "clave567"));
+        estudiantes.add(new Estudiante("sofia", "abc12345"));
+        estudiantes.add(new Estudiante("diego", "seguro789"));
+        estudiantes.add(new Estudiante("valeria", "valpass1"));
+        estudiantes.add(new Estudiante("juan", "juan2024"));
+        estudiantes.add(new Estudiante("laura", "laura!234"));
 
-        this.Estudiantes.add("jose");
-        this.Estudiantes_contraseña.add("1234");
+        // ---------- Profesores ----------
+        profesores.add(new Profesor("luis", "qwe"));
+        profesores.add(new Profesor("tatiana", "asd"));
+        profesores.add(new Profesor("carlos", "zxc"));
 
-        this.Estudiantes.add("maria");
-        this.Estudiantes_contraseña.add("12345");
+        // ---------- Administradores ----------
+        administradores.add(new Administrador("seraira", "fgh"));
+        administradores.add(new Administrador("carlos quintero", "jkl"));
+        administradores.add(new Administrador("paula andrea", "bnm"));
 
-        this.Estudiantes.add("lucia");
-        this.Estudiantes_contraseña.add("pass2024");
-
-        this.Estudiantes.add("carlos");
-        this.Estudiantes_contraseña.add("clave567");
-
-        this.Estudiantes.add("sofia");
-        this.Estudiantes_contraseña.add("abc12345");
-
-        this.Estudiantes.add("diego");
-        this.Estudiantes_contraseña.add("seguro789");
-
-        this.Estudiantes.add("valeria");
-        this.Estudiantes_contraseña.add("valpass1");
-
-        this.Estudiantes.add("juan");
-        this.Estudiantes_contraseña.add("juan2024");
-
-        this.Estudiantes.add("laura");
-        this.Estudiantes_contraseña.add("laura!234");       
-        //-----------------------------------//
-        this.Profesores.add("luis");
-        this.Profesores_contraseña.add("qwe");
-        this.Profesores.add("tatiana");
-        this.Profesores_contraseña.add("asd");
-        this.Profesores.add("carlos");
-        this.Profesores_contraseña.add("zxc");
-        //-----------------------------------//
-        this.Administradores.add("seraira");
-        this.Administradores_contraseña.add("fgh");
-        this.Administradores.add("carlos quintero");
-        this.Administradores_contraseña.add("jkl");
-        this.Administradores.add("paula andrea");
-        this.Administradores_contraseña.add("bnm");
-        //-----------------------------------//
-        this.Asignaturas.add("Diseño Web");
-        this.Asignaturas.add("POO");
-        this.Asignaturas.add("Desarrollo humano");
-        
+        // ---------- Asignaturas ----------
+        asignaturas.add("Diseño Web");
+        asignaturas.add("POO");
+        asignaturas.add("Desarrollo humano");
     }
-    
-    public boolean Login1(String v_usuario,String v_contraseña){        
-        
-    int indice = Estudiantes.indexOf(v_usuario);
-    if (indice != -1) {
-        return Estudiantes_contraseña.get(indice).equals(v_contraseña);
+
+    // ----- Login -----
+    public boolean Login1(String usuario, String contraseña) {
+        return estudiantes.stream()
+                .anyMatch(e -> e.getNombre().equals(usuario) && e.getContraseña().equals(contraseña));
     }
-    return false;
-        
+
+    public boolean Login2(String usuario, String contraseña) {
+        return profesores.stream()
+                .anyMatch(p -> p.getNombre().equals(usuario) && p.getContraseña().equals(contraseña));
     }
-    public boolean Login2(String v_usuario,String v_contraseña){        
-        
-    int indice = Profesores.indexOf(v_usuario);
-    if (indice != -1) {
-        return Profesores_contraseña.get(indice).equals(v_contraseña);
+
+    public boolean Login3(String usuario, String contraseña) {
+        return administradores.stream()
+                .anyMatch(a -> a.getNombre().equals(usuario) && a.getContraseña().equals(contraseña));
     }
-    return false;
-        
+
+    // ----- Notas -----
+    public boolean cargarNota(String estudiante, String nota) {
+         if (estudiante == null || nota == null || estudiante.isEmpty() || nota.isEmpty()) {
+        return false; // No guardar si datos inválidos
     }
-    
-    public boolean Login3(String v_usuario,String v_contraseña){        
-        
-    int indice = Administradores.indexOf(v_usuario);
-    if (indice != -1) {
-        return Administradores_contraseña.get(indice).equals(v_contraseña);
+    calificaciones.put(estudiante, nota);
+    return true;
+         
     }
-    return false;
-        
+
+    public String obtenerNota(String estudiante) {
+        return calificaciones.get(estudiante);
     }
-    
-    public ArrayList<String> ListaAlumnos(){
-    return Estudiantes;
+
+    // ----- Listados -----
+    public List<String> listaAlumnos() {
+        List<String> nombres = new ArrayList<>();
+        for (Estudiante e : estudiantes) {
+            nombres.add(e.getNombre());
+        }
+        return nombres;
     }
-    
+
+    public List<String> listaNotas() {
+        List<String> notas = new ArrayList<>();
+        for (Estudiante e : estudiantes) {
+            notas.add(obtenerNota(e.getNombre()));
+        }
+        return notas;
+    }
+
+    public List<String> listaAsignaturas() {
+        return asignaturas;
+    }
+
+   
+}
+
+// ----- Clases de apoyo -----
+class Usuario {
+    private String nombre;
+    private String contraseña;
+
+    public Usuario(String nombre, String contraseña) {
+        this.nombre = nombre;
+        this.contraseña = contraseña;
+    }
+
+    public String getNombre() { return nombre; }
+    public String getContraseña() { return contraseña; }
+}
+
+class Estudiante extends Usuario {
+    public Estudiante(String nombre, String contraseña) { super(nombre, contraseña); }
+}
+
+class Profesor extends Usuario {
+    public Profesor(String nombre, String contraseña) { super(nombre, contraseña); }
+}
+
+class Administrador extends Usuario {
+    public Administrador(String nombre, String contraseña) { super(nombre, contraseña); }
 }

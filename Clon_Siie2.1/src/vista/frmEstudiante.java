@@ -4,22 +4,30 @@
  */
 package vista;
 import clases.Base_De_Datos;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author PC
  */
 public class frmEstudiante extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmEstudiante.class.getName());
+        private final Base_De_Datos baseDatos;
+        private String usuario;
 
     /**
      * Creates new form frmEstudiante
      */
-    public frmEstudiante(String nombreEstudiante) {
-    initComponents();
-    txtnombre.setText(nombreEstudiante);
-}
+     public frmEstudiante(Base_De_Datos baseDatos) {
+        initComponents();
+        this.baseDatos = baseDatos;
+        setLocationRelativeTo(null);
+    }
 
+        public void setUsuario(String usuario) {
+        this.usuario = usuario;
+        txtnombre.setText("Bienvenido, " + usuario);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -31,7 +39,7 @@ public class frmEstudiante extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnNotas = new javax.swing.JButton();
         txtnombre = new javax.swing.JLabel();
         btnVolver = new javax.swing.JButton();
 
@@ -47,7 +55,12 @@ public class frmEstudiante extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Notas");
+        btnNotas.setText("Notas");
+        btnNotas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNotasActionPerformed(evt);
+            }
+        });
 
         txtnombre.setText("jLabel2");
 
@@ -63,21 +76,21 @@ public class frmEstudiante extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(jButton1)
-                        .addGap(39, 39, 39)
-                        .addComponent(jButton2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(81, 81, 81)
-                        .addComponent(btnVolver)))
+                        .addContainerGap()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(22, 22, 22)
+                            .addComponent(jButton1)
+                            .addGap(39, 39, 39)
+                            .addComponent(btnNotas))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(81, 81, 81)
+                            .addComponent(btnVolver))))
                 .addContainerGap(34, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -90,7 +103,7 @@ public class frmEstudiante extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(btnNotas))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnVolver)
                 .addContainerGap())
@@ -105,10 +118,16 @@ public class frmEstudiante extends javax.swing.JFrame {
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
         // TODO add your handling code here:
-        frmLogin login=new frmLogin();
+        frmLogin login = new frmLogin(baseDatos);
         login.setVisible(true);
-        login.setLocationRelativeTo(null);
+        this.dispose();
     }//GEN-LAST:event_btnVolverActionPerformed
+
+    private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "Mostrando notas de " + usuario, "Notas", JOptionPane.INFORMATION_MESSAGE);
+        new frmnotasEstudiante(usuario, baseDatos).setVisible(true);
+    }//GEN-LAST:event_btnNotasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -116,9 +135,9 @@ public class frmEstudiante extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnNotas;
     private javax.swing.JButton btnVolver;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel txtnombre;
     // End of variables declaration//GEN-END:variables

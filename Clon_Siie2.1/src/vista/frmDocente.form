@@ -32,14 +32,14 @@
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="txtnombre" min="-2" pref="37" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="btnListadoEstudiantes" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnListaEstudiantes" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jButton3" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="btnAsignarNotas" max="32767" attributes="0"/>
-                  <Component id="btnVolver" max="32767" attributes="0"/>
+                  <Component id="btnNotas" max="32767" attributes="0"/>
+                  <Component id="btnCerrar" max="32767" attributes="0"/>
               </Group>
               <EmptySpace pref="36" max="32767" attributes="0"/>
           </Group>
@@ -55,13 +55,13 @@
               </Group>
               <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnListadoEstudiantes" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnAsignarNotas" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnListaEstudiantes" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnNotas" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jButton3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnVolver" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnCerrar" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="31" max="32767" attributes="0"/>
           </Group>
@@ -77,20 +77,17 @@
         <Property name="text" type="java.lang.String" value="docente: "/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="btnListadoEstudiantes">
+    <Component class="javax.swing.JButton" name="btnListaEstudiantes">
       <Properties>
         <Property name="text" type="java.lang.String" value="Listado de estudiantes"/>
       </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnListadoEstudiantesActionPerformed"/>
-      </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="btnAsignarNotas">
+    <Component class="javax.swing.JButton" name="btnNotas">
       <Properties>
         <Property name="text" type="java.lang.String" value="asignacion de notas"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAsignarNotasActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnNotasActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jButton3">
@@ -100,12 +97,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="txtnombre">
     </Component>
-    <Component class="javax.swing.JButton" name="btnVolver">
+    <Component class="javax.swing.JButton" name="btnCerrar">
       <Properties>
         <Property name="text" type="java.lang.String" value="volver"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnVolverActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCerrarActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

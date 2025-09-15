@@ -1,24 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package vista;
 
-/**
- *
- * @author PC
- */
+import clases.Base_De_Datos;
+
+
 public class frmDocente extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmDocente.class.getName());
-    String user;
-    /**
-     * Creates new form frmDocente
-     */
-    public frmDocente(String nombreEstudiante) {
+        private final Base_De_Datos baseDatos;
+
+    public frmDocente(Base_De_Datos basedato) {
+        this.baseDatos=basedato;
         initComponents();
-        txtnombre.setText(nombreEstudiante);
-        user= nombreEstudiante;
+        setLocationRelativeTo(null); // Centrar ventana
+        configurarEventos();
+    }
+    
+      private void configurarEventos() {
+        btnListaEstudiantes.addActionListener(e -> abrirListaEstudiantes());
+        btnNotas.addActionListener(e -> abrirNotas());
+        btnCerrar.addActionListener(e -> cerrarSesion());
     }
 
     /**
@@ -31,37 +29,32 @@ public class frmDocente extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        btnListadoEstudiantes = new javax.swing.JButton();
-        btnAsignarNotas = new javax.swing.JButton();
+        btnListaEstudiantes = new javax.swing.JButton();
+        btnNotas = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         txtnombre = new javax.swing.JLabel();
-        btnVolver = new javax.swing.JButton();
+        btnCerrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("docente: ");
 
-        btnListadoEstudiantes.setText("Listado de estudiantes");
-        btnListadoEstudiantes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnListadoEstudiantesActionPerformed(evt);
-            }
-        });
+        btnListaEstudiantes.setText("Listado de estudiantes");
 
-        btnAsignarNotas.setText("asignacion de notas");
-        btnAsignarNotas.addActionListener(new java.awt.event.ActionListener() {
+        btnNotas.setText("asignacion de notas");
+        btnNotas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAsignarNotasActionPerformed(evt);
+                btnNotasActionPerformed(evt);
             }
         });
 
         jButton3.setText("reportes de estudiantes");
 
-        btnVolver.setText("volver");
-        btnVolver.addActionListener(new java.awt.event.ActionListener() {
+        btnCerrar.setText("volver");
+        btnCerrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVolverActionPerformed(evt);
+                btnCerrarActionPerformed(evt);
             }
         });
 
@@ -77,12 +70,12 @@ public class frmDocente extends javax.swing.JFrame {
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
                             .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(btnListadoEstudiantes))
+                        .addComponent(btnListaEstudiantes))
                     .addComponent(jButton3))
                 .addGap(46, 46, 46)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnAsignarNotas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnVolver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnNotas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnCerrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(36, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -94,51 +87,47 @@ public class frmDocente extends javax.swing.JFrame {
                     .addComponent(txtnombre))
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnListadoEstudiantes)
-                    .addComponent(btnAsignarNotas))
+                    .addComponent(btnListaEstudiantes)
+                    .addComponent(btnNotas))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
-                    .addComponent(btnVolver))
+                    .addComponent(btnCerrar))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnListadoEstudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListadoEstudiantesActionPerformed
+    private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
         // TODO add your handling code here:
-        frmListaEstudiantes lista=new frmListaEstudiantes(user);
-        lista.setVisible(true);
-        this.setVisible(false);
-        lista.setLocationRelativeTo(null);
-    }//GEN-LAST:event_btnListadoEstudiantesActionPerformed
+    }//GEN-LAST:event_btnNotasActionPerformed
 
-    private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
+    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
         // TODO add your handling code here:
-        frmLogin login=new frmLogin();
-        login.setVisible(true);
-        login.setLocationRelativeTo(null);
-        this.setVisible(false);
-    }//GEN-LAST:event_btnVolverActionPerformed
+    }//GEN-LAST:event_btnCerrarActionPerformed
 
-    private void btnAsignarNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarNotasActionPerformed
-        // TODO add your handling code here:
-        frmNotasProfe Notas=new frmNotasProfe(user);
-        Notas.setVisible(true);
-        this.setVisible(false);
-        Notas.setLocationRelativeTo(null);
-        
-    }//GEN-LAST:event_btnAsignarNotasActionPerformed
+    private void abrirListaEstudiantes() {
+        new frmListaEstudiantes(baseDatos).setVisible(true);
+    }
 
+    private void abrirNotas() {
+        new frmNotasProfe(baseDatos).setVisible(true);
+    }
+
+    private void cerrarSesion() {
+        this.dispose();
+        new frmLogin(baseDatos).setVisible(true);
+    }
+    
     /**
      * @param args the command line arguments
      */
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAsignarNotas;
-    private javax.swing.JButton btnListadoEstudiantes;
-    private javax.swing.JButton btnVolver;
+    private javax.swing.JButton btnCerrar;
+    private javax.swing.JButton btnListaEstudiantes;
+    private javax.swing.JButton btnNotas;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel txtnombre;

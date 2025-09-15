@@ -1,30 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package vista;
+
 import clases.Base_De_Datos;
+import javax.swing.JOptionPane;
 
-/**
- *
- * @author PC
- */
+
 public class frmLogin extends javax.swing.JFrame {
+     private Base_De_Datos baseDatos;
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmLogin.class.getName());
-    private String user;
-    private String contraseña;
-
     /**
      * Creates new form frmLogin
      */
-    public frmLogin() {
+    public frmLogin(Base_De_Datos dato) {
         initComponents();
-     
-    }
-    
-    public String Nombre(){
-        return user = txtUsuario.getText();
+        this.baseDatos =dato;
+        setLocationRelativeTo(null);
+        llenarComboRoles();
     }
 
     /**
@@ -45,6 +35,7 @@ public class frmLogin extends javax.swing.JFrame {
         btnSecion = new javax.swing.JButton();
         btnLimpiar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
+        cmbRol = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -93,6 +84,8 @@ public class frmLogin extends javax.swing.JFrame {
             }
         });
 
+        cmbRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -122,7 +115,8 @@ public class frmLogin extends javax.swing.JFrame {
                         .addGap(40, 40, 40)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtRespuestas, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbRol, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -131,7 +125,8 @@ public class frmLogin extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtRespuestas))
+                    .addComponent(txtRespuestas)
+                    .addComponent(cmbRol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -146,7 +141,7 @@ public class frmLogin extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnSecion)
                     .addComponent(btnLimpiar))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
@@ -169,33 +164,53 @@ public class frmLogin extends javax.swing.JFrame {
 
     private void btnSecionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSecionActionPerformed
         // TODO add your handling code here:
-         user = txtUsuario.getText();
-         contraseña = new String(txtContraseña.getPassword()); 
-            Base_De_Datos B_D = new Base_De_Datos();
-            boolean validacion1 = B_D.Login1(user, contraseña);
-            boolean validacion2 = B_D.Login2(user, contraseña);
-            boolean validacion3 = B_D.Login3(user, contraseña);
-            
-        if (validacion1) {
-            frmEstudiante E = new frmEstudiante(user);  
-            E.setVisible(true);
-            E.setLocationRelativeTo(null);
-            this.dispose(); 
-            
-        } else if(validacion2) {
-            frmDocente D = new frmDocente(user);  
-            D.setVisible(true);
-            D.setLocationRelativeTo(null);
-            this.dispose(); 
-        }else if (validacion3){
-            frmAdministrador A = new frmAdministrador(user);  
-            A.setVisible(true);
-            A.setLocationRelativeTo(null);
-            this.dispose(); 
+       String usuario = txtUsuario.getText().trim();
+        String contraseña = new String(txtContraseña.getPassword());
+        String rol = (String) cmbRol.getSelectedItem();
+        if (usuario.isEmpty() || contraseña.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-        txtRespuestas.setText("usuario no encontrado");
+        boolean acceso = false;
+        switch (rol) {
+            case "Estudiante":
+                acceso = baseDatos.Login1(usuario, contraseña);
+                if (acceso) {
+                    frmEstudiante frm = new frmEstudiante(baseDatos);
+                    frm.setUsuario(usuario);
+                    frm.setVisible(true);
+                    this.dispose();
+                }
+                break;
+            case "Profesor":
+                acceso = baseDatos.Login2(usuario, contraseña);
+                if (acceso) {
+                    frmDocente frm = new frmDocente(baseDatos);
+                    frm.setVisible(true);
+                    this.dispose();
+                }
+                break;
+            case "Administrador":
+                acceso = baseDatos.Login3(usuario, contraseña);
+                if (acceso) {
+                    frmAdministrador frm = new frmAdministrador(usuario);
+                    frm.setVisible(true);
+                    this.dispose();
+                }
+                break;
+        }
+        if (!acceso) {
+            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Acceso denegado", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnSecionActionPerformed
-
+    
+    private void llenarComboRoles() {
+        cmbRol.removeAllItems();
+        cmbRol.addItem("Estudiante");
+        cmbRol.addItem("Profesor");
+        cmbRol.addItem("Administrador");
+    }
+    
     private void txtContraseñaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContraseñaKeyPressed
         // TODO add your handling code here:
         
@@ -213,6 +228,7 @@ public class frmLogin extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnSecion;
+    private javax.swing.JComboBox<String> cmbRol;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

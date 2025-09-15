@@ -4,37 +4,21 @@
  */
 package vista;
 import clases.Base_De_Datos;
-import javax.swing.table.DefaultTableModel;
-/**
- *
- * @author PC
- */
-public class frmListaEstudiantes extends javax.swing.JFrame {
-     private Base_De_Datos baseDatos;
-     String user;
-   
 
+public class frmListaEstudiantes extends javax.swing.JFrame {
+    private Base_De_Datos baseDatos;
+     
     /**
      * Creates new form frmListaEstudiantes
      */
-    public frmListaEstudiantes(String nombreEstudiante) {
+  public frmListaEstudiantes(Base_De_Datos baseDatos) {
         initComponents();
-        user=nombreEstudiante;
-        baseDatos = new Base_De_Datos();
-        cargarEstudiantes();
+        this.baseDatos = baseDatos;
+        setLocationRelativeTo(null);
+        cargarLista();
     }
-    
-    private void cargarEstudiantes() {
-        
-        DefaultTableModel modelo = new DefaultTableModel();
-        modelo.addColumn("Nombre");
-        
-        
-        for (String estudiante : baseDatos.ListaAlumnos()) {
-            modelo.addRow(new Object[]{estudiante});
-        }
-        
-        tbEstudiantes.setModel(modelo);
+    private void cargarLista() {
+        tbEstudiantes.setListData(baseDatos.listaAlumnos().toArray(new String[0]));
     }
 
     /**
@@ -46,24 +30,11 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tbEstudiantes = new javax.swing.JTable();
         btnVolver = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbEstudiantes = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        tbEstudiantes.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane2.setViewportView(tbEstudiantes);
 
         btnVolver.setText("volver");
         btnVolver.addActionListener(new java.awt.event.ActionListener() {
@@ -72,22 +43,26 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
             }
         });
 
+        tbEstudiantes.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(tbEstudiantes);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(143, 143, 143)
-                .addComponent(btnVolver)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(25, 25, 25)
+                .addComponent(btnVolver))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnVolver))
         );
@@ -97,10 +72,10 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
         // TODO add your handling code here:
-            frmDocente profe=new frmDocente(user);            
-            profe.setVisible(true);
-            profe.setLocationRelativeTo(null);
-            this.setVisible(false);
+              frmDocente profe = new frmDocente(baseDatos);
+        profe.setVisible(true);
+        profe.setLocationRelativeTo(null);
+        this.setVisible(false);
     }//GEN-LAST:event_btnVolverActionPerformed
 
     /**
@@ -110,7 +85,7 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnVolver;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable tbEstudiantes;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList<String> tbEstudiantes;
     // End of variables declaration//GEN-END:variables
 }

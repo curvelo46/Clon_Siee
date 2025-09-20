@@ -1,6 +1,7 @@
 package vista;
 
 import clases.Base_De_Datos;
+import java.awt.Color;
 import javax.swing.JOptionPane;
 
 
@@ -13,6 +14,7 @@ public class frmLogin extends javax.swing.JFrame {
     public frmLogin(Base_De_Datos dato) {
         initComponents();
         this.baseDatos =dato;
+        this.getContentPane().setBackground(new Color(255, 254, 214));
         setLocationRelativeTo(null);
         llenarComboRoles();
     }
@@ -164,9 +166,10 @@ public class frmLogin extends javax.swing.JFrame {
 
     private void btnSecionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSecionActionPerformed
         // TODO add your handling code here:
-       String usuario = txtUsuario.getText().trim();
+        String usuario = txtUsuario.getText().trim();
         String contraseña = new String(txtContraseña.getPassword());
         String rol = (String) cmbRol.getSelectedItem();
+        
         if (usuario.isEmpty() || contraseña.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -186,6 +189,7 @@ public class frmLogin extends javax.swing.JFrame {
                 acceso = baseDatos.Login2(usuario, contraseña);
                 if (acceso) {
                     frmDocente frm = new frmDocente(baseDatos,usuario);
+                    frm.setUsuario(usuario);
                     frm.setVisible(true);
                     this.dispose();
                 }

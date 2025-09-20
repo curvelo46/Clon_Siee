@@ -4,6 +4,7 @@
  */
 package vista;
 import clases.Base_De_Datos;
+import java.awt.Color;
 
 public class frmListaEstudiantes extends javax.swing.JFrame {
     private Base_De_Datos baseDatos;
@@ -14,6 +15,7 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
      */
   public frmListaEstudiantes(Base_De_Datos baseDatos,String nombre) {
         initComponents();
+        this.getContentPane().setBackground(new Color(255, 254, 214));
         this.Nombre=nombre;
         this.baseDatos = baseDatos;
         setLocationRelativeTo(null);
@@ -57,9 +59,10 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(btnVolver))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnVolver)
+                .addGap(33, 33, 33))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

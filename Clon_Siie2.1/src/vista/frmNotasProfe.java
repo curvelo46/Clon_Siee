@@ -5,6 +5,7 @@
 package vista;
 
 import clases.Base_De_Datos;
+import java.awt.Color;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 /**
@@ -20,6 +21,7 @@ public class frmNotasProfe extends javax.swing.JFrame {
      */
         public frmNotasProfe(Base_De_Datos baseDatos, String profesor) {
            initComponents();
+           this.getContentPane().setBackground(new Color(255, 254, 214));
            txtMateria.setText(baseDatos.obtenerMateriaProfesor(profesor));
            txtMateria.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -47,10 +49,6 @@ public class frmNotasProfe extends javax.swing.JFrame {
            cargarTabla();
        }
 
-    
-        
-        
-        
         private void configurarEventos() {
             btnGuardar.addActionListener(e -> guardarNotas());
             btnVolver.addActionListener(e -> {
@@ -110,10 +108,6 @@ public class frmNotasProfe extends javax.swing.JFrame {
     cargarTabla();
 }
 
-    
-      
-
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -158,7 +152,7 @@ public class frmNotasProfe extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tablaNotas);
 
-        txtMateria.setText("matematica");
+        txtMateria.setText("materia");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -166,9 +160,9 @@ public class frmNotasProfe extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(btnGuardar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                 .addComponent(txtMateria)
-                .addGap(61, 61, 61)
+                .addGap(76, 76, 76)
                 .addComponent(btnVolver))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
@@ -188,14 +182,11 @@ public class frmNotasProfe extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        // TODO add your handling code here:
-         
-        
+        // TODO add your handling code here:        
     }//GEN-LAST:event_btnVolverActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
-         
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     /**

@@ -1,6 +1,8 @@
 package vista;
 
 import clases.Base_De_Datos;
+import java.awt.Color;
+import java.util.Locale;
 
 
 public class frmDocente extends javax.swing.JFrame {
@@ -13,9 +15,15 @@ public class frmDocente extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null); // Centrar ventana
         configurarEventos();
+        this.getContentPane().setBackground(new Color(255, 254, 214));
     }
     
-      private void configurarEventos() {
+    public void setUsuario(String usuario){
+            this.Nombre = usuario;
+            txtnombre.setText("Bienvenido profesor " + usuario);
+    }
+    
+    private void configurarEventos() {
         btnListaEstudiantes.addActionListener(e -> abrirListaEstudiantes());
         btnNotas.addActionListener(e -> abrirNotas());
         btnCerrar.addActionListener(e -> cerrarSesion());
@@ -30,7 +38,6 @@ public class frmDocente extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
         btnListaEstudiantes = new javax.swing.JButton();
         btnNotas = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -38,9 +45,6 @@ public class frmDocente extends javax.swing.JFrame {
         btnCerrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("docente: ");
 
         btnListaEstudiantes.setText("Listado de estudiantes");
         btnListaEstudiantes.addActionListener(new java.awt.event.ActionListener() {
@@ -58,6 +62,9 @@ public class frmDocente extends javax.swing.JFrame {
 
         jButton3.setText("reportes de estudiantes");
 
+        txtnombre.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtnombre.setText("nombre del docente");
+
         btnCerrar.setText("volver");
         btnCerrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -70,37 +77,34 @@ public class frmDocente extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(btnListaEstudiantes))
+                    .addComponent(btnListaEstudiantes)
                     .addComponent(jButton3))
-                .addGap(46, 46, 46)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnNotas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnCerrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnNotas)
+                    .addComponent(btnCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(18, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(txtnombre))
-                .addGap(26, 26, 26)
+                .addGap(14, 14, 14)
+                .addComponent(txtnombre)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnListaEstudiantes)
                     .addComponent(btnNotas))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
                     .addComponent(btnCerrar))
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -119,7 +123,14 @@ public class frmDocente extends javax.swing.JFrame {
     }//GEN-LAST:event_btnListaEstudiantesActionPerformed
 
     private void abrirListaEstudiantes() {
-        new frmListaEstudiantes(baseDatos,Nombre).setVisible(true);
+         frmListaEstudiantes lista = new frmListaEstudiantes(baseDatos, Nombre);
+         
+          int x = this.getX();
+          int y = this.getY();
+          int ancho = this.getWidth();
+          lista.setLocation(x + ancho + 10, y);
+          lista.setVisible(true);
+          
     }
 
     private void abrirNotas() {
@@ -141,7 +152,6 @@ public class frmDocente extends javax.swing.JFrame {
     private javax.swing.JButton btnListaEstudiantes;
     private javax.swing.JButton btnNotas;
     private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel txtnombre;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,160 +1,135 @@
 package clases;
 
+import java.sql.*;
 import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Base_De_Datos {
-
-       // Listas organizadas por tipo de usuario
-    private final List<Estudiante> estudiantes = new ArrayList<>();
-    private final List<Profesor> profesores = new ArrayList<>();
-    private final List<Administrador> administradores = new ArrayList<>();
-    private final List<String> asignaturas = new ArrayList<>();
-
-    // Relación profesor → materia
-    private final Map<String, String> materiasPorProfesor = new HashMap<>();
-
-    // Relación estudiante + materia → nota
-    private final Map<String, Map<String, String>> calificaciones = new HashMap<>();
-
-    public Base_De_Datos() {
-        estudiantes.add(new Estudiante("andres", "123"));
-        estudiantes.add(new Estudiante("jose", "1234"));
-        estudiantes.add(new Estudiante("maria", "12345"));
-        estudiantes.add(new Estudiante("lucia", "pass2024"));
-        estudiantes.add(new Estudiante("carlos", "clave567"));
-        estudiantes.add(new Estudiante("sofia", "abc12345"));
-        estudiantes.add(new Estudiante("diego", "seguro789"));
-        estudiantes.add(new Estudiante("valeria", "valpass1"));
-        estudiantes.add(new Estudiante("juan", "juan2024"));
-        estudiantes.add(new Estudiante("laura", "laura!234"));
-
-        // ---------- Profesores ----------
-        Profesor p1 = new Profesor("luis", "qwe");
-        Profesor p2 = new Profesor("tatiana", "asd");
-        Profesor p3 = new Profesor("carlos", "zxc");
-
-        profesores.add(p1);
-        profesores.add(p2);
-        profesores.add(p3);
-
-        // ---------- Administradores ----------
-        administradores.add(new Administrador("seraira", "fgh"));
-        administradores.add(new Administrador("carlos quintero", "jkl"));
-        administradores.add(new Administrador("paula andrea", "bnm"));
-
-        // ---------- Asignaturas ----------
-        asignaturas.add("Diseño Web");
-        asignaturas.add("POO");
-        asignaturas.add("Desarrollo humano");
-
-        // Relacionamos profesores con materias
-        materiasPorProfesor.put("luis", "POO");
-        materiasPorProfesor.put("tatiana", "Diseño Web");
-        materiasPorProfesor.put("carlos", "Desarrollo humano");
-    }
-
-    // ----- Login -----
-     public boolean Login1(String usuario, String contraseña) {
-        return estudiantes.stream()
-                .anyMatch(e -> e.getNombre().equals(usuario) && e.getContraseña().equals(contraseña));
-    }
-
-    public boolean Login2(String usuario, String contraseña) {
-        return profesores.stream()
-                .anyMatch(p -> p.getNombre().equals(usuario) && p.getContraseña().equals(contraseña));
-    }
-
-    public boolean Login3(String usuario, String contraseña) {
-        return administradores.stream()
-                .anyMatch(a -> a.getNombre().equals(usuario) && a.getContraseña().equals(contraseña));
-    }
-
-    // ----- Notas -----
-    public boolean cargarNota(String estudiante, String profesor, String nota) {
-        if (estudiante == null || profesor == null || nota == null ||
-            estudiante.isEmpty() || profesor.isEmpty() || nota.isEmpty()) {
-            return false;
+    
+    private static final String URL = "jdbc:mysql://localhost:3306/CBN";
+    private static final String USER = "root";   
+    private static final String PASS = "316484";    
+    
+    
+    // ----- LOGIN -----
+   public String login(String usuario, String contraseña) {
+    String sql = "SELECT cargo FROM usuarios WHERE user_ = ? AND contraseña = ?";
+    try (Connection con = ConexionBD.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, usuario);
+        ps.setString(2, contraseña);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getString("cargo"); // devuelve "alumno", "docente" o "administrador"
+            }
         }
-
-        String materia = materiasPorProfesor.get(profesor);
-        if (materia == null) return false;
-
-        calificaciones.putIfAbsent(estudiante, new HashMap<>());
-        calificaciones.get(estudiante).put(materia, nota);
-
-        return true;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return null; // si no encontró nada
+}
 
-    public String obtenerNota(String estudiante, String profesor) {
-        String materia = materiasPorProfesor.get(profesor);
-        if (materia == null) return null;
 
-        return calificaciones.getOrDefault(estudiante, new HashMap<>()).get(materia);
-    }
+    // ----- LISTAR ALUMNOS -----
+    public List<String> listaAlumnos() {
+        List<String> alumnos = new ArrayList<>();
+        String sql = "SELECT nombre, apellido FROM Alumnos";
+        try (Connection con = ConexionBD.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
 
-    // ----- Listados -----
-     public List<String> listaAlumnos() {
-        List<String> nombres = new ArrayList<>();
-        for (Estudiante e : estudiantes) {
-            nombres.add(e.getNombre());
+            while (rs.next()) {
+                alumnos.add(rs.getString("nombre") + " " + rs.getString("apellido"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return nombres;
+        return alumnos;
     }
 
-    public List<String> listaNotas(String profesor) {
-        String materia = materiasPorProfesor.get(profesor);
-        List<String> notas = new ArrayList<>();
-        for (Estudiante e : estudiantes) {
-            Map<String, String> notasEst = calificaciones.get(e.getNombre());
-            String nota = (notasEst != null) ? notasEst.getOrDefault(materia, "") : "";
-            notas.add(nota);
+    public void Agregar_Notas() throws SQLException{
+        String sql="insert into java values('jose','1','4') ";
+        Connection conn = ConexionBD.getConnection();
+         Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+        } catch (SQLException ex) {
+            System.getLogger(Base_De_Datos.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
-        return notas;
+         stmt.executeUpdate(sql);
+        
+    }
+    
+    
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASS);
+    }
+    
+   public List<Object[]> obtenerNotasJava() {
+    List<Object[]> lista = new ArrayList<>();
+    String sql = "SELECT nombre, corte, nota FROM java";
+
+    try (Connection con = ConexionBD.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            String nombre = rs.getString("nombre");
+            
+            Double nota = rs.getDouble("nota"); 
+
+            lista.add(new Object[]{nombre, nota});
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
 
-    public String obtenerMateriaProfesor(String profesor) {
-        return materiasPorProfesor.get(profesor);
+    return lista;
+}
+
+   public boolean actualizarNotaJava(String nombre, int corte, double nota) {
+    String sql = "UPDATE java SET nota = ? WHERE nombre = ? AND corte = ?";
+
+    try (Connection con = getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setDouble(1, nota);
+        ps.setString(2, nombre);
+        ps.setInt(3, corte);
+
+        return ps.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.err.println("Error al actualizar nota: " + e.getMessage());
+        return false;
     }
+}
 
-    public Map<String, String> obtenerNotasEstudiante(String estudiante) {
-    Map<String, String> notas = new LinkedHashMap<>();
-    for (Map.Entry<String, String> entry : materiasPorProfesor.entrySet()) {
-        String materia = entry.getValue();
-        String nota = calificaciones
-                .getOrDefault(estudiante, new HashMap<>())
-                .getOrDefault(materia, "0.0"); // por defecto 0.0
-        notas.put(materia, nota);
+  public String obtenerMateriaDocente(String user) {
+    String materia = null;
+    String sql = "SELECT m.materia " +
+                 "FROM usuarios u " +
+                 "JOIN materias m ON u.user_ = m.nombre " +
+                 "WHERE u.user_ = ? AND u.cargo = 'docente'";
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, user);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            materia = rs.getString("materia");
+        } else {
+            System.out.println("❌ No se encontró materia para el docente: " + user);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
     }
-    return notas;
+    return materia;
 }
 
-    public List<String> listaAsignaturas() {
-        return asignaturas;
-    }
+
+
+  
+
 }
 
-// ----- Clases de apoyo -----
-class Usuario {
-    private String nombre;
-    private String contraseña;
-
-    public Usuario(String nombre, String contraseña) {
-        this.nombre = nombre;
-        this.contraseña = contraseña;
-    }
-
-    public String getNombre() { return nombre; }
-    public String getContraseña() { return contraseña; }
-}
-
-class Estudiante extends Usuario {
-    public Estudiante(String nombre, String contraseña) { super(nombre, contraseña); }
-}
-
-class Profesor extends Usuario {
-    public Profesor(String nombre, String contraseña) { super(nombre, contraseña); }
-}
-
-class Administrador extends Usuario {
-    public Administrador(String nombre, String contraseña) { super(nombre, contraseña); }
-}

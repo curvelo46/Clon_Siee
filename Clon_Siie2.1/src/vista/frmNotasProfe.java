@@ -4,10 +4,15 @@
  */
 package vista;
 
+
 import clases.Base_De_Datos;
+import clases.ConexionBD;
 import java.awt.Color;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 /**
  *
  * @author PC
@@ -19,10 +24,12 @@ public class frmNotasProfe extends javax.swing.JFrame {
     /**
      * Creates new form NotasProfe
      */
-        public frmNotasProfe(Base_De_Datos baseDatos, String profesor) {
+        public frmNotasProfe(Base_De_Datos basedatos, String profesor) {
            initComponents();
+          
+           this.baseDatos=basedatos;
            this.getContentPane().setBackground(new Color(255, 254, 214));
-           txtMateria.setText(baseDatos.obtenerMateriaProfesor(profesor));
+
            txtMateria.setHorizontalAlignment(SwingConstants.CENTER);
 
     // Opcional: darle estilo de título
@@ -42,7 +49,7 @@ public class frmNotasProfe extends javax.swing.JFrame {
                 )
                 .addComponent(jScrollPane1)
         );
-           this.baseDatos = baseDatos;
+           
            this.profesor = profesor;
            setLocationRelativeTo(null);
            configurarEventos();
@@ -57,56 +64,71 @@ public class frmNotasProfe extends javax.swing.JFrame {
             });
         }
 
-  private void cargarTabla() {
+private void cargarTabla() {
+    String materia = baseDatos.obtenerMateriaDocente(profesor);
+
     DefaultTableModel modelo = new DefaultTableModel(
-        new Object[]{"Estudiante", "Nota"}, 0
+        new Object[]{"Nombre", "Corte", "Nota"}, 0
     ) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            return column == 1; // Solo la columna de nota es editable
+            return column == 2; // Solo editable la columna de Nota
         }
     };
 
-    var estudiantes = baseDatos.listaAlumnos();
-    var notas = baseDatos.listaNotas(profesor);
-
-    for (int i = 0; i < estudiantes.size(); i++) {
-        // aquí ya no necesitamos revisar null, listaNotas devuelve "" si no hay
-        String nota = (i < notas.size()) ? notas.get(i) : "";
-        modelo.addRow(new Object[]{estudiantes.get(i), nota});
+    String sql = "SELECT nombre, corte, nota FROM `" + materia + "`";
+    System.out.println("📌 Materia del profesor: " + materia);
+System.out.println("📌 Query ejecutada: SELECT nombre, corte, nota FROM `" + materia + "`");
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+            modelo.addRow(new Object[]{
+                rs.getString("nombre"),
+                rs.getInt("corte"),
+                rs.getDouble("nota")
+            });
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
     }
 
     tablaNotas.setModel(modelo);
+    txtMateria.setText("Materia: " + materia.toUpperCase());
 }
+
 
     
-    private void guardarNotas() {
+  private void guardarNotas() {
+    String materia = baseDatos.obtenerMateriaDocente(profesor);
+
     DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
-    boolean guardadoOk = true;
+    
+    try (Connection conn = ConexionBD.getConnection()) {
+     String sql = "UPDATE `" + materia + "` SET nota = ? WHERE nombre = ? AND corte = ?";
 
-    for (int i = 0; i < modelo.getRowCount(); i++) {
-        String estudiante = (String) modelo.getValueAt(i, 0);
-        String nota = (String) modelo.getValueAt(i, 1);
+        PreparedStatement stmt = conn.prepareStatement(sql);
 
-        if (nota == null || nota.trim().isEmpty()) {
-            continue; // no guardar vacíos
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            String nombre = modelo.getValueAt(i, 0).toString();
+            int corte = (int) modelo.getValueAt(i, 1);
+            double nota = Double.parseDouble(modelo.getValueAt(i, 2).toString());
+
+            stmt.setDouble(1, nota);
+            stmt.setString(2, nombre);
+            stmt.setInt(3, corte);
+            stmt.addBatch(); // Optimiza la inserción
         }
-
-        boolean resultado = baseDatos.cargarNota(estudiante, profesor, nota);
-        if (!resultado) {
-            guardadoOk = false;
-        }
+        stmt.executeBatch();
+        JOptionPane.showMessageDialog(this, "✅ Notas guardadas correctamente");
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "❌ Error al guardar notas: " + e.getMessage());
+        e.printStackTrace();
     }
-
-    if (guardadoOk) {
-        JOptionPane.showMessageDialog(this, "Notas guardadas correctamente.");
-    } else {
-        JOptionPane.showMessageDialog(this, "Algunas notas no pudieron guardarse.");
-    }
-
-    // refrescar tabla para ver inmediatamente los cambios
-    cargarTabla();
 }
+
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -174,8 +196,7 @@ public class frmNotasProfe extends javax.swing.JFrame {
                     .addComponent(btnVolver)
                     .addComponent(txtMateria))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();

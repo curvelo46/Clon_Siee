@@ -124,28 +124,14 @@ public class frmEstudiante extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnVolverActionPerformed
     
-    private void mostrarNotas() {
-    Map<String, String> notas = baseDatos.obtenerNotasEstudiante(usuario);
-
-    StringBuilder sb = new StringBuilder();
-    sb.append("Estudiante: ").append(usuario).append("\n\n");
-
-    for (Map.Entry<String, String> entry : notas.entrySet()) {
-        sb.append("Materia: ").append(entry.getKey())
-          .append(" -> Nota: ").append(entry.getValue()).append("\n");
-    }
-
-    JOptionPane.showMessageDialog(this,
-            sb.toString(),
-            "Boletín de Notas",
-            JOptionPane.INFORMATION_MESSAGE);
-}
+    
 
 
     
     private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
         // TODO add your handling code here:
-        mostrarNotas();
+
+       
     }//GEN-LAST:event_btnNotasActionPerformed
 
     /**

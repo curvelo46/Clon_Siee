@@ -5,24 +5,65 @@
 package vista;
 import clases.Base_De_Datos;
 import java.awt.Color;
+import java.sql.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class frmListaEstudiantes extends javax.swing.JFrame {
-    private Base_De_Datos baseDatos;
-    String Nombre;
+    private final Base_De_Datos baseDatos;
+    private final String docente;
      
     /**
      * Creates new form frmListaEstudiantes
      */
   public frmListaEstudiantes(Base_De_Datos baseDatos,String nombre) {
-        initComponents();
-        this.getContentPane().setBackground(new Color(255, 254, 214));
-        this.Nombre=nombre;
         this.baseDatos = baseDatos;
+        this.docente = nombre;
+        initComponents();
         setLocationRelativeTo(null);
-        cargarLista();
+        cargarEstudiantes();
     }
-    private void cargarLista() {
-        tbEstudiantes.setListData(baseDatos.listaAlumnos().toArray(new String[0]));
+
+    private void cargarEstudiantes() {
+        
+        DefaultTableModel modelo = (DefaultTableModel) tablaEstudiantes.getModel();
+        modelo.setRowCount(0); 
+        modelo.setColumnCount(0);
+        
+        modelo.addColumn("ID");
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Apellido");
+        modelo.addColumn("Edad");
+        modelo.addColumn("Teléfono");
+        modelo.addColumn("Correo");
+        modelo.addColumn("Dirección");
+        modelo.addColumn("CC");
+        String sql = "SELECT * FROM Alumnos";
+        
+        try (Connection conn = baseDatos.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Object[] fila = {
+                    rs.getInt("id"),
+                    rs.getString("nombre"),
+
+                    rs.getString("apellido"),
+
+                    rs.getString("edad"),
+                    rs.getString("telefono"),
+                    rs.getString("correo"),
+                    rs.getString("direccion"),
+                    rs.getString("cc")
+                };
+                modelo.addRow(fila);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error cargando estudiantes: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -35,8 +76,8 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
     private void initComponents() {
 
         btnVolver = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tbEstudiantes = new javax.swing.JList<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaEstudiantes = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -47,27 +88,33 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
             }
         });
 
-        tbEstudiantes.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(tbEstudiantes);
+        tablaEstudiantes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(tablaEstudiantes);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 766, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnVolver)
-                .addGap(33, 33, 33))
+                .addGap(327, 327, 327))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnVolver))
         );
@@ -77,9 +124,7 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
         // TODO add your handling code here:
-             
-        
-        
+
         this.dispose();
     }//GEN-LAST:event_btnVolverActionPerformed
 
@@ -90,7 +135,7 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnVolver;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList<String> tbEstudiantes;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable tablaEstudiantes;
     // End of variables declaration//GEN-END:variables
 }

@@ -2,6 +2,7 @@ package vista;
 
 import clases.Base_De_Datos;
 import java.awt.Color;
+import java.sql.SQLException;
 import java.util.Locale;
 
 
@@ -111,7 +112,7 @@ public class frmDocente extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
-        // TODO add your handling code here:
+         
     }//GEN-LAST:event_btnNotasActionPerformed
 
     private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed

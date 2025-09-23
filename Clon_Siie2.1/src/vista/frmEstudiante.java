@@ -3,10 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package vista;
+import java.util.Random;
 import clases.Base_De_Datos;
 import java.awt.Color;
+import java.awt.Image;
 import java.util.Map;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -16,23 +19,62 @@ import javax.swing.JOptionPane;
 public class frmEstudiante extends javax.swing.JFrame {
         private final Base_De_Datos baseDatos;
         private String usuario;
+        private Random random;
         
 
     /**
      * Creates new form frmEstudiante
      */
      public frmEstudiante(Base_De_Datos baseDatos) {
+        random = new Random();
+     
         initComponents();
         this.baseDatos = baseDatos;
         setLocationRelativeTo(null);
         this.getContentPane().setBackground(new Color(255, 254, 214));
+
+   
+         
+      
+        
+        
+        
+        
     }
 
         public void setUsuario(String usuario) {
-            this.usuario = usuario;
-            jMenu1.setText("Bienvenido, " + usuario);
-             jMenuBar1.add(Box.createHorizontalGlue()); 
-             jMenuBar1.add(btnVolver);
+            this.usuario = usuario;  
+            jMenuBar1.add(Box.createHorizontalGlue()); 
+            jMenuBar1.add(btnVolver);
+            String sexo = baseDatos.obtenerSexoAlumno(this.usuario);
+             int foto=random.nextInt(2);
+            if (sexo != null) {
+                System.out.println("El alumno es: " + sexo);
+            } 
+
+            switch (sexo) {
+                case "hombre":
+                   
+                    System.out.println(foto);
+                    if (foto==0){
+                        jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/hombres/d1e3d2a12bc3d0221898c4391dffcfff.jpg"))); // NOI18N
+                    }else{
+                        jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/hombres/hombre.jpg"))); // NOI18N
+                    }
+                    break;
+                    
+                case "mujer":
+                     
+                      if (foto==0){
+                            jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mujeres/mujer (2).jpg"))); // NOI18N
+                      }else{
+                           jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mujeres/mujerqwe.jpg"))); // NOI18N
+                      }
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+
         }
     
     /**
@@ -84,10 +126,9 @@ public class frmEstudiante extends javax.swing.JFrame {
             jdEscritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jdEscritorioLayout.createSequentialGroup()
                 .addComponent(btnVolver)
-                .addGap(0, 180, Short.MAX_VALUE))
+                .addGap(0, 393, Short.MAX_VALUE))
         );
 
-        jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
 
         btnNota.setText("notas y reportes");
@@ -120,7 +161,9 @@ public class frmEstudiante extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jdEscritorio)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jdEscritorio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();

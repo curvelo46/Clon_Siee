@@ -127,6 +127,26 @@ public class Base_De_Datos {
     return materia;
 }
 
+  public String obtenerSexoAlumno(String nombreAlumno) {
+    String sexo = null;
+    String sql = "SELECT sexo FROM Alumnos WHERE nombre = ?";
+
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, nombreAlumno);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            sexo = rs.getString("sexo");  // Devuelve "hombre" o "mujer"
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return sexo;
+}
 
 
   

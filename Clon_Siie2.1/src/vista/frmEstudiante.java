@@ -6,6 +6,7 @@ package vista;
 import clases.Base_De_Datos;
 import java.awt.Color;
 import java.util.Map;
+import javax.swing.Box;
 import javax.swing.JOptionPane;
 
 /**
@@ -15,7 +16,7 @@ import javax.swing.JOptionPane;
 public class frmEstudiante extends javax.swing.JFrame {
         private final Base_De_Datos baseDatos;
         private String usuario;
-        private final String docente = "matematica";
+        
 
     /**
      * Creates new form frmEstudiante
@@ -29,7 +30,9 @@ public class frmEstudiante extends javax.swing.JFrame {
 
         public void setUsuario(String usuario) {
             this.usuario = usuario;
-            txtnombre.setText("Bienvenido, " + usuario);
+            jMenu1.setText("Bienvenido, " + usuario);
+             jMenuBar1.add(Box.createHorizontalGlue()); 
+             jMenuBar1.add(btnVolver);
         }
     
     /**
@@ -41,33 +44,24 @@ public class frmEstudiante extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        btnNotas = new javax.swing.JButton();
-        txtnombre = new javax.swing.JLabel();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jdEscritorio = new javax.swing.JDesktopPane();
         btnVolver = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        btnNota = new javax.swing.JMenu();
+        btnNotaas = new javax.swing.JMenuItem();
+        btnReportes = new javax.swing.JMenuItem();
+
+        jMenuItem1.setText("jMenuItem1");
+
+        jMenuItem2.setText("jMenuItem2");
+
+        jMenu2.setText("jMenu2");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
-        jLabel1.setText("estudiante : ");
-
-        jButton1.setText("Boletin ");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        btnNotas.setText("Notas");
-        btnNotas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNotasActionPerformed(evt);
-            }
-        });
-
-        txtnombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtnombre.setText("jLabel2");
 
         btnVolver.setText("volver");
         btnVolver.addActionListener(new java.awt.event.ActionListener() {
@@ -76,46 +70,61 @@ public class frmEstudiante extends javax.swing.JFrame {
             }
         });
 
+        jdEscritorio.setLayer(btnVolver, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout jdEscritorioLayout = new javax.swing.GroupLayout(jdEscritorio);
+        jdEscritorio.setLayout(jdEscritorioLayout);
+        jdEscritorioLayout.setHorizontalGroup(
+            jdEscritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jdEscritorioLayout.createSequentialGroup()
+                .addGap(0, 586, Short.MAX_VALUE)
+                .addComponent(btnVolver))
+        );
+        jdEscritorioLayout.setVerticalGroup(
+            jdEscritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jdEscritorioLayout.createSequentialGroup()
+                .addComponent(btnVolver)
+                .addGap(0, 180, Short.MAX_VALUE))
+        );
+
+        jMenu1.setText("File");
+        jMenuBar1.add(jMenu1);
+
+        btnNota.setText("notas y reportes");
+        btnNota.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNotaActionPerformed(evt);
+            }
+        });
+
+        btnNotaas.setText("notas");
+        btnNotaas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNotaasActionPerformed(evt);
+            }
+        });
+        btnNota.add(btnNotaas);
+
+        btnReportes.setText("reportes");
+        btnNota.add(btnReportes);
+
+        jMenuBar1.add(btnNota);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtnombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(34, 34, 34)
-                        .addComponent(btnNotas)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addComponent(btnVolver)))
-                .addContainerGap())
+            .addComponent(jdEscritorio)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtnombre))
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(btnNotas)
-                    .addComponent(btnVolver))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jdEscritorio)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
         // TODO add your handling code here:
@@ -128,11 +137,17 @@ public class frmEstudiante extends javax.swing.JFrame {
 
 
     
-    private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
+    private void btnNotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotaActionPerformed
         // TODO add your handling code here:
+  
+    }//GEN-LAST:event_btnNotaActionPerformed
 
-       
-    }//GEN-LAST:event_btnNotasActionPerformed
+    private void btnNotaasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotaasActionPerformed
+        // TODO add your handling code here:
+        JiFrmNotas NOTAS=new JiFrmNotas(usuario);
+        jdEscritorio.add(NOTAS);
+        NOTAS.show();
+    }//GEN-LAST:event_btnNotaasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -140,10 +155,15 @@ public class frmEstudiante extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnNotas;
+    private javax.swing.JMenu btnNota;
+    private javax.swing.JMenuItem btnNotaas;
+    private javax.swing.JMenuItem btnReportes;
     private javax.swing.JButton btnVolver;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel txtnombre;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JDesktopPane jdEscritorio;
     // End of variables declaration//GEN-END:variables
 }

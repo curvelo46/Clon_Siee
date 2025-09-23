@@ -4,20 +4,26 @@
  */
 package vista;
 
+import clases.Base_De_Datos;
+import javax.swing.Box;
+
 /**
  *
  * @author PC
  */
 public class frmAdministrador extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmAdministrador.class.getName());
+    private final Base_De_Datos baseDatos;
+   
 
     /**
      * Creates new form frmAdministrador
      */
-    public frmAdministrador(String nombreEstudiante) {
+    public frmAdministrador(Base_De_Datos baseDatos,String nombreEstudiante) {
         initComponents();
-         txtnombre.setText(nombreEstudiante);
+        btnnombre.setText("Bienvenido, " + nombreEstudiante);
+        this.baseDatos = baseDatos;
+           jMenuBar1.add(Box.createHorizontalGlue()); 
+             jMenuBar1.add(btnVolver);
     }
 
     /**
@@ -29,26 +35,16 @@ public class frmAdministrador extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        txtnombre = new javax.swing.JLabel();
+        jDesktopPane1 = new javax.swing.JDesktopPane();
         btnVolver = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        btnnombre = new javax.swing.JMenu();
+        btngestionp = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jButton1.setText("gestionar personal");
-
-        jButton2.setText("gestionar estudiantes");
-
-        jButton3.setText("gestionar asignaturas");
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("hola");
-
-        txtnombre.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtnombre.setText("jLabel2");
 
         btnVolver.setText("cerrar seccion");
         btnVolver.addActionListener(new java.awt.event.ActionListener() {
@@ -56,49 +52,51 @@ public class frmAdministrador extends javax.swing.JFrame {
                 btnVolverActionPerformed(evt);
             }
         });
-        btnVolver.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                btnVolverKeyPressed(evt);
-            }
-        });
+
+        jDesktopPane1.setLayer(btnVolver, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
+        jDesktopPane1.setLayout(jDesktopPane1Layout);
+        jDesktopPane1Layout.setHorizontalGroup(
+            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDesktopPane1Layout.createSequentialGroup()
+                .addGap(0, 284, Short.MAX_VALUE)
+                .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jDesktopPane1Layout.setVerticalGroup(
+            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                .addComponent(btnVolver)
+                .addGap(0, 137, Short.MAX_VALUE))
+        );
+
+        btnnombre.setText("File");
+        jMenuBar1.add(btnnombre);
+
+        btngestionp.setText("gestionar ");
+
+        jMenuItem1.setText("estudianes");
+        btngestionp.add(jMenuItem1);
+
+        jMenuItem2.setText("asignaturas");
+        btngestionp.add(jMenuItem2);
+
+        jMenuItem3.setText("personal");
+        btngestionp.add(jMenuItem3);
+
+        jMenuBar1.add(btngestionp);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(31, 31, 31)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(34, 34, 34)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnVolver, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(41, Short.MAX_VALUE))
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtnombre))
-                .addGap(39, 39, 39)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
-                    .addComponent(btnVolver))
-                .addContainerGap(34, Short.MAX_VALUE))
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         pack();
@@ -106,12 +104,9 @@ public class frmAdministrador extends javax.swing.JFrame {
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
         // TODO add your handling code here:
+        new frmLogin(baseDatos).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnVolverActionPerformed
-
-    private void btnVolverKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnVolverKeyPressed
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_btnVolverKeyPressed
 
     /**
      * @param args the command line arguments
@@ -120,10 +115,12 @@ public class frmAdministrador extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnVolver;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel txtnombre;
+    private javax.swing.JMenu btngestionp;
+    private javax.swing.JMenu btnnombre;
+    private javax.swing.JDesktopPane jDesktopPane1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     // End of variables declaration//GEN-END:variables
 }

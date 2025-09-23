@@ -194,7 +194,7 @@ public class frmLogin extends javax.swing.JFrame {
             break;
 
         case "administrador":
-            frmAdministrador frmAdm = new frmAdministrador(usuario);
+            frmAdministrador frmAdm = new frmAdministrador(baseDatos,usuario);
             frmAdm.setVisible(true);
             this.dispose();
             break;

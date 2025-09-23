@@ -4,6 +4,7 @@ import clases.Base_De_Datos;
 import java.awt.Color;
 import java.sql.SQLException;
 import java.util.Locale;
+import javax.swing.Box;
 
 
 public class frmDocente extends javax.swing.JFrame {
@@ -15,19 +16,15 @@ public class frmDocente extends javax.swing.JFrame {
         this.Nombre=nombre;
         initComponents();
         setLocationRelativeTo(null); // Centrar ventana
-        configurarEventos();
+       
         this.getContentPane().setBackground(new Color(255, 254, 214));
     }
     
     public void setUsuario(String usuario){
             this.Nombre = usuario;
-            txtnombre.setText("Bienvenido profesor " + usuario);
-    }
-    
-    private void configurarEventos() {
-        btnListaEstudiantes.addActionListener(e -> abrirListaEstudiantes());
-        btnNotas.addActionListener(e -> abrirNotas());
-        btnCerrar.addActionListener(e -> cerrarSesion());
+            jMenu1.setText("Bienvenido profesor " + usuario);
+             jMenuBar1.add(Box.createHorizontalGlue()); 
+             jMenuBar1.add(btnsalir);
     }
 
     /**
@@ -39,104 +36,110 @@ public class frmDocente extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnListaEstudiantes = new javax.swing.JButton();
-        btnNotas = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        txtnombre = new javax.swing.JLabel();
-        btnCerrar = new javax.swing.JButton();
+        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
+        jdescritorio = new javax.swing.JDesktopPane();
+        btnsalir = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        btnAsignarnotas = new javax.swing.JMenu();
+        btnNotas = new javax.swing.JMenuItem();
+        btnListaEstudiantes = new javax.swing.JMenuItem();
+
+        jCheckBoxMenuItem1.setSelected(true);
+        jCheckBoxMenuItem1.setText("jCheckBoxMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        btnListaEstudiantes.setText("Listado de estudiantes");
-        btnListaEstudiantes.addActionListener(new java.awt.event.ActionListener() {
+        jdescritorio.setPreferredSize(new java.awt.Dimension(0, 231));
+
+        btnsalir.setText("cerrar sesion");
+        btnsalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnListaEstudiantesActionPerformed(evt);
+                btnsalirActionPerformed(evt);
             }
         });
 
-        btnNotas.setText("asignacion de notas");
+        jdescritorio.setLayer(btnsalir, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout jdescritorioLayout = new javax.swing.GroupLayout(jdescritorio);
+        jdescritorio.setLayout(jdescritorioLayout);
+        jdescritorioLayout.setHorizontalGroup(
+            jdescritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jdescritorioLayout.createSequentialGroup()
+                .addGap(0, 745, Short.MAX_VALUE)
+                .addComponent(btnsalir))
+        );
+        jdescritorioLayout.setVerticalGroup(
+            jdescritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jdescritorioLayout.createSequentialGroup()
+                .addComponent(btnsalir)
+                .addGap(0, 222, Short.MAX_VALUE))
+        );
+
+        jMenu1.setText("File");
+        jMenuBar1.add(jMenu1);
+
+        btnAsignarnotas.setText("estudiantes");
+
+        btnNotas.setText("Notas");
         btnNotas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNotasActionPerformed(evt);
             }
         });
+        btnAsignarnotas.add(btnNotas);
 
-        jButton3.setText("reportes de estudiantes");
-
-        txtnombre.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtnombre.setText("nombre del docente");
-
-        btnCerrar.setText("volver");
-        btnCerrar.addActionListener(new java.awt.event.ActionListener() {
+        btnListaEstudiantes.setText("Listado");
+        btnListaEstudiantes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCerrarActionPerformed(evt);
+                btnListaEstudiantesActionPerformed(evt);
             }
         });
+        btnAsignarnotas.add(btnListaEstudiantes);
+
+        jMenuBar1.add(btnAsignarnotas);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnListaEstudiantes)
-                    .addComponent(jButton3))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnNotas)
-                    .addComponent(btnCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(18, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37))
+            .addComponent(jdescritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 845, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(txtnombre)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnListaEstudiantes)
-                    .addComponent(btnNotas))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
-                    .addComponent(btnCerrar))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jdescritorio, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
-         
-    }//GEN-LAST:event_btnNotasActionPerformed
-
-    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnCerrarActionPerformed
+        abrirNotas();
+    }//GEN-LAST:event_btnNotasActionPerformed
 
     private void btnListaEstudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListaEstudiantesActionPerformed
         // TODO add your handling code here:
+        JiFrmListaestudiantes lista=new JiFrmListaestudiantes(baseDatos, Nombre);
+        jdescritorio.add(lista);
+        lista.show();
+        
     }//GEN-LAST:event_btnListaEstudiantesActionPerformed
 
-    private void abrirListaEstudiantes() {
-         frmListaEstudiantes lista = new frmListaEstudiantes(baseDatos, Nombre);
-         
-          int x = this.getX();
-          int y = this.getY();
-          int ancho = this.getWidth();
-          lista.setLocation(x + ancho + 10, y);
-          lista.setVisible(true);
-          
-    }
+    private void btnsalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsalirActionPerformed
+        // TODO add your handling code here:
+        cerrarSesion(); 
+    }//GEN-LAST:event_btnsalirActionPerformed
+
+  
 
     private void abrirNotas() {
-        this.dispose();
-        new frmNotasProfe(baseDatos,Nombre).setVisible(true);
+        JiFrmPrueba prueba = new JiFrmPrueba(baseDatos,Nombre);
+        jdescritorio.add(prueba);
+        prueba.show();
+        
     }
 
     private void cerrarSesion() {
@@ -149,10 +152,13 @@ public class frmDocente extends javax.swing.JFrame {
      */
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCerrar;
-    private javax.swing.JButton btnListaEstudiantes;
-    private javax.swing.JButton btnNotas;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JLabel txtnombre;
+    private javax.swing.JMenu btnAsignarnotas;
+    private javax.swing.JMenuItem btnListaEstudiantes;
+    private javax.swing.JMenuItem btnNotas;
+    private javax.swing.JButton btnsalir;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JDesktopPane jdescritorio;
     // End of variables declaration//GEN-END:variables
 }

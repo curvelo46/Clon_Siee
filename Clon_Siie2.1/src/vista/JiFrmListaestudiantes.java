@@ -1,30 +1,44 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package vista;
+
 import clases.Base_De_Datos;
+import clases.ConexionBD;
 import java.awt.Color;
-import java.sql.*;
-import javax.swing.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.Box;
+import javax.swing.GroupLayout;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
-public class frmListaEstudiantes extends javax.swing.JFrame {
-    private final Base_De_Datos baseDatos;
-    private final String docente;
-     
+/**
+ *
+ * @author cymaniatico
+ */
+public class JiFrmListaestudiantes extends javax.swing.JInternalFrame {
+       private final Base_De_Datos baseDatos;
+       private final String profesor;
     /**
-     * Creates new form frmListaEstudiantes
+     * Creates new form JiFrmPrueba
      */
-  public frmListaEstudiantes(Base_De_Datos baseDatos,String nombre) {
-        this.baseDatos = baseDatos;
-        this.docente = nombre;
-        initComponents();
-        setLocationRelativeTo(null);
-        cargarEstudiantes();
-    }
 
-    private void cargarEstudiantes() {
+    public JiFrmListaestudiantes(Base_De_Datos basedatos, String profesor) {
+        initComponents();
+          this.baseDatos=basedatos;
+          this.getContentPane().setBackground(new Color(255, 254, 214));
+          this.profesor = profesor;
+          cargarEstudiantes();
+        
+    }
+    
+  private void cargarEstudiantes() {
         
         DefaultTableModel modelo = (DefaultTableModel) tablaEstudiantes.getModel();
         modelo.setRowCount(0); 
@@ -65,6 +79,7 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+ 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -75,18 +90,12 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnVolver = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaEstudiantes = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        btnVolver.setText("volver");
-        btnVolver.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVolverActionPerformed(evt);
-            }
-        });
+        setClosable(true);
+        setMaximizable(true);
+        setResizable(true);
 
         tablaEstudiantes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -105,36 +114,18 @@ public class frmListaEstudiantes extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 766, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnVolver)
-                .addGap(327, 327, 327))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 705, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnVolver))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        // TODO add your handling code here:
-
-        this.dispose();
-    }//GEN-LAST:event_btnVolverActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
- 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnVolver;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tablaEstudiantes;
     // End of variables declaration//GEN-END:variables

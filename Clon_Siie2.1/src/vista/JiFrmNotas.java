@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 public class JiFrmNotas extends javax.swing.JInternalFrame {
  
        private final String alumno;
+        private int corteSeleccionado = 2; // 👈 Corte activo (se puede cambiar dinámicamente)
     /**
      * Creates new form JiFrmPrueba
      */
@@ -27,59 +28,67 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
         initComponents();
         this.alumno = alumno;
         this.getContentPane().setBackground(new Color(214, 245, 255));
-        
+
         cargarNotas();
         
     }
     
- private void cargarNotas() {
-        DefaultTableModel modelo = new DefaultTableModel(
-            new Object[]{"Materia", "Corte", "Nota"}, 0
-        ) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // 🚫 Ninguna celda editable
-            }
-        };
+    private void cargarNotas() {
+    DefaultTableModel modelo = new DefaultTableModel(
+        new Object[]{"Materia", "Corte 1", "Corte 2", "Corte 3"}, 0
+    ) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; 
+        }
+    };
 
-        String[] materias = {"java", "poo", "materias_net"};
+    String[] materias = {"java", "poo", "materias_net"};
 
-        double sumaNotas = 0;
-        int cantidadNotas = 0;
+    double sumaNotas = 0;
+    int cantidadNotas = 0;
 
-        try (Connection conn = ConexionBD.getConnection()) {
-            for (String mat : materias) {
-                String sql = "SELECT corte, nota FROM `" + mat + "` WHERE nombre = ?";
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setString(1, alumno);
-                    ResultSet rs = stmt.executeQuery();
-                    while (rs.next()) {
-                        double nota = rs.getDouble("nota");
+    try (Connection conn = ConexionBD.getConnection()) {
+        for (String mat : materias) {
+            double[] notas = new double[3]; // Guardar notas por corte
+
+            String sql = "SELECT corte, nota FROM `" + mat + "` WHERE nombre = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, alumno);
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    int corte = rs.getInt("corte");
+                    double nota = rs.getDouble("nota");
+                    if (corte >= 1 && corte <= 3) {
+                        notas[corte - 1] = nota;
                         sumaNotas += nota;
                         cantidadNotas++;
-
-                        modelo.addRow(new Object[]{
-                            mat.toUpperCase(),
-                            rs.getInt("corte"),
-                            nota
-                        });
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        tablaNotas.setModel(modelo);
-
-        // Calcular promedio
-        if (cantidadNotas > 0) {
-            double promedio = sumaNotas / cantidadNotas;
-            lblPromedio.setText("Promedio general: " + String.format("%.2f", promedio));
-        } else {
-            lblPromedio.setText("Promedio general: N/A");
+            modelo.addRow(new Object[]{
+                mat.toUpperCase(),
+                notas[0],
+                notas[1],
+                notas[2]
+            });
         }
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+
+    tablaNotas.setModel(modelo);
+
+    if (cantidadNotas > 0) {
+        double promedio = sumaNotas / cantidadNotas;
+        lblPromedio.setText("Promedio general: " + String.format("%.2f", promedio));
+    } else {
+        lblPromedio.setText("Promedio: N/A");
+    }
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.

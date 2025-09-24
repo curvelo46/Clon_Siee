@@ -5,13 +5,16 @@ import java.util.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Base_De_Datos {
     
     private static final String URL = "jdbc:mysql://localhost:3306/CBN";
     private static final String USER = "root";   
     private static final String PASS = "316484";    
-    
+    private Integer corte=1;
     
     // ----- LOGIN -----
    public String login(String usuario, String contraseña) {
@@ -147,9 +150,89 @@ public class Base_De_Datos {
 
     return sexo;
 }
-
+  
+  
+  public String ViajarAlFuturo(int Corte){      
+        LocalDateTime fechaActual = LocalDateTime.now();
+        LocalDateTime fechaAjustada = fechaActual;
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        
+        switch (Corte) {
+          case 1:
+            LocalDateTime fechaEstablecida = LocalDateTime.of(2025, 10,10 , 7, 1);
+            if (fechaActual.isBefore(fechaEstablecida)) {
+                long minutosDiferencia = Duration.between(fechaActual, fechaEstablecida).toMinutes();
+                fechaAjustada = fechaActual.plusMinutes(minutosDiferencia);
+            }
+       
+            return fechaAjustada.format(fmt);
+             
+          case 2:
+            fechaEstablecida = LocalDateTime.of(2025, 10,14 , 7, 1);
+            
+            if (fechaActual.isBefore(fechaEstablecida)) {
+                long minutosDiferencia = Duration.between(fechaActual, fechaEstablecida).toMinutes();
+                fechaAjustada = fechaActual.plusMinutes(minutosDiferencia);
+            }
+       
+            return fechaAjustada.format(fmt);
+             
+          case 3:
+            fechaEstablecida = LocalDateTime.of(2025, 10,18 , 7, 1);
+            
+            if (fechaActual.isBefore(fechaEstablecida)) {
+                long minutosDiferencia = Duration.between(fechaActual, fechaEstablecida).toMinutes();
+                fechaAjustada = fechaActual.plusMinutes(minutosDiferencia);
+            }
+       
+            return fechaAjustada.format(fmt);
+             
+          default:
+              throw new AssertionError();
+      }
+  
+       
+        
+  }
+  
+  public void reiniciarNotas() {
+    String[] tablas = {"java", "poo", "materias_net"};
+    try (Connection con = getConnection()) {
+        for (String tabla : tablas) {
+            String sql = "UPDATE " + tabla + " SET nota = 0";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.executeUpdate();
+                System.out.println("✅ Notas reiniciadas en tabla: " + tabla);
+            }
+        }
+    } catch (SQLException e) {
+        System.err.println("❌ Error al reiniciar notas: " + e.getMessage());
+    }
+}
 
   
+  public Integer cortenuevo(){
+      
+       if (this.corte==3){
+          this.corte=0;
+         
+        }
+      
+      this.corte+=1;
+      return corte;
+      
+     
+  }
 
+  public Integer corte(){
+      
+      return corte;
+
+  }
+  
+  
+  
 }
+
+
 

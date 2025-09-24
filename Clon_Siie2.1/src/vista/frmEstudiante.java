@@ -105,7 +105,11 @@ public class frmEstudiante extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        btnVolver.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnVolver.setText("volver");
+        btnVolver.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnVolver.setMaximumSize(new java.awt.Dimension(100, 40));
+        btnVolver.setMinimumSize(new java.awt.Dimension(100, 40));
         btnVolver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnVolverActionPerformed(evt);
@@ -120,18 +124,20 @@ public class frmEstudiante extends javax.swing.JFrame {
             jdEscritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jdEscritorioLayout.createSequentialGroup()
                 .addGap(0, 586, Short.MAX_VALUE)
-                .addComponent(btnVolver))
+                .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jdEscritorioLayout.setVerticalGroup(
             jdEscritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jdEscritorioLayout.createSequentialGroup()
-                .addComponent(btnVolver)
-                .addGap(0, 393, Short.MAX_VALUE))
+                .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 354, Short.MAX_VALUE))
         );
 
         jMenuBar1.add(jMenu1);
 
         btnNota.setText("notas y reportes");
+        btnNota.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnNota.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnNota.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNotaActionPerformed(evt);
@@ -139,6 +145,7 @@ public class frmEstudiante extends javax.swing.JFrame {
         });
 
         btnNotaas.setText("notas");
+        btnNotaas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnNotaas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNotaasActionPerformed(evt);
@@ -147,6 +154,7 @@ public class frmEstudiante extends javax.swing.JFrame {
         btnNota.add(btnNotaas);
 
         btnReportes.setText("reportes");
+        btnReportes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnNota.add(btnReportes);
 
         jMenuBar1.add(btnNota);

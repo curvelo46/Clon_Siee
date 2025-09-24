@@ -72,6 +72,7 @@ public class frmLogin extends javax.swing.JFrame {
         });
 
         btnSecion.setText("iniciar secion");
+        btnSecion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnSecion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSecionActionPerformed(evt);
@@ -79,6 +80,7 @@ public class frmLogin extends javax.swing.JFrame {
         });
 
         btnLimpiar.setText("limpiar");
+        btnLimpiar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLimpiarActionPerformed(evt);

@@ -23,6 +23,8 @@ import javax.swing.table.DefaultTableModel;
 public class JiFrmPrueba extends javax.swing.JInternalFrame {
        private final Base_De_Datos baseDatos;
        private final String profesor;
+       private int corteSeleccionado ; 
+
     /**
      * Creates new form JiFrmPrueba
      */
@@ -32,58 +34,56 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
           this.baseDatos=basedatos;
           this.getContentPane().setBackground(new Color(255, 254, 214));
           this.profesor = profesor;
+          this.corteSeleccionado=basedatos.corte();
+          System.out.println(corteSeleccionado);
           cargarTabla();
         
     }
     
- private void cargarTabla() {
+
+
+    private void cargarTabla() {
     String materia = baseDatos.obtenerMateriaDocente(profesor);
     jMenuBar1.add(Box.createHorizontalGlue()); 
     jMenuBar1.add(btnGuardar);
 
-    // 🔹 Solo mostramos 2 columnas
+   
     DefaultTableModel modelo = new DefaultTableModel(
         new Object[]{"Nombre", "Nota"}, 0
     ) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            return column == 1; // Solo editable la columna de Nota
+            return column == 1; 
         }
     };
 
-    String sql = "SELECT nombre, nota FROM `" + materia + "`";
+    String sql = "SELECT nombre, nota FROM `" + materia + "` WHERE corte = ?";
     try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql);
-         ResultSet rs = stmt.executeQuery()) {
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setInt(1, corteSeleccionado); 
+        ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
-            // Guardamos corte de forma "oculta" en un array paralelo
             modelo.addRow(new Object[]{
                 rs.getString("nombre"),
                 rs.getDouble("nota")
             });
-            // Usamos setValueAt si queremos agregar corte como metadata
-            // pero sin mostrarlo en la tabla
-           
         }
     } catch (Exception e) {
         e.printStackTrace();
     }
 
     tablaNotas.setModel(modelo);
-    lbMateria.setText("Materia: " + materia.toUpperCase());
+    lbMateria.setText("Materia: " + materia.toUpperCase() + " | Corte: " + corteSeleccionado);
 }
-
- 
     
     private void guardarNotas() {
     String materia = baseDatos.obtenerMateriaDocente(profesor);
     DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
-
+    
     try (Connection conn = ConexionBD.getConnection()) {
-        String sqlUpdate = "UPDATE `" + materia + "` SET nota = ? WHERE nombre = ? AND corte = 1"; 
-        // 👆 Si solo manejas 1 corte por ahora
-
+        String sqlUpdate = "UPDATE `" + materia + "` SET nota = ? WHERE nombre = ? AND corte = ?";
         PreparedStatement stmt = conn.prepareStatement(sqlUpdate);
 
         for (int i = 0; i < modelo.getRowCount(); i++) {
@@ -92,13 +92,14 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
 
             stmt.setDouble(1, nota);
             stmt.setString(2, nombre);
+            stmt.setInt(3, corteSeleccionado); 
             stmt.addBatch();
         }
 
         stmt.executeBatch();
-        JOptionPane.showMessageDialog(this, "✅ Notas guardadas correctamente");
+        JOptionPane.showMessageDialog(this, "✅ Notas del corte " + corteSeleccionado + " guardadas correctamente");
 
-        cargarTabla(); // 🔹 Refresca los datos
+        cargarTabla(); 
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "❌ Error al guardar notas: " + e.getMessage());
         e.printStackTrace();
@@ -106,9 +107,6 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
 }
 
 
-
-
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -177,6 +175,8 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
         guardarNotas();
+        this.corteSeleccionado=baseDatos.cortenuevo();
+        
     }//GEN-LAST:event_btnGuardarActionPerformed
 
 

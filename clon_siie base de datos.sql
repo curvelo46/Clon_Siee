@@ -18,6 +18,55 @@ create table materias_net(nombre varchar(25),corte int, nota double);
 
 create table materias(nombre varchar(125), materia varchar(125) primary key);
 
+#-----------------------------------------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE TRIGGER after_insert_alumno
+AFTER INSERT ON Alumnos
+FOR EACH ROW
+BEGIN
+	INSERT INTO java (nombre, corte, nota) VALUES (NEW.nombre, 1, 0.0);
+	INSERT INTO java (nombre, corte, nota) VALUES (NEW.nombre, 2, 0.0);
+	INSERT INTO java (nombre, corte, nota) VALUES (NEW.nombre, 3, 0.0);
+      
+	INSERT INTO  materias_net(nombre, corte, nota) VALUES (NEW.nombre, 1, 0.0);
+	INSERT INTO  materias_net(nombre, corte, nota) VALUES (NEW.nombre, 2, 0.0);
+	INSERT INTO  materias_net(nombre, corte, nota) VALUES (NEW.nombre, 3, 0.0);
+    
+    INSERT INTO poo (nombre, corte, nota) VALUES (NEW.nombre, 1, 0.0);
+    INSERT INTO poo (nombre, corte, nota) VALUES (NEW.nombre, 2, 0.0);
+    INSERT INTO poo (nombre, corte, nota) VALUES (NEW.nombre, 3, 0.0);
+    
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER usuarios
+AFTER INSERT ON Alumnos
+FOR EACH ROW
+BEGIN
+    INSERT INTO usuarios (id, user_, contraseña, cargo)
+    VALUES (NEW.id, NEW.nombre, NEW.cc, 'alumno');
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER sincronisacion
+AFTER DELETE ON Alumnos
+FOR EACH ROW
+BEGIN
+    DELETE FROM java WHERE nombre = OLD.nombre;
+END$$
+
+DELIMITER ;
+
+#--------------------------------------------------------------------------------------------------------
+
+
 insert into materias values ('carlos','java');
 insert into materias values ('tatiana','materias_net');
 insert into materias values ('maria','poo');
@@ -38,47 +87,10 @@ insert  into Administradores values(1,'jose','','curvelo','','18','12321323','an
 insert  into Administradores values(2,'fernanda','','fernanda','','18','123223','camila@gmail.com','11000','4545');
 
 
+
+
 insert into usuarios values(6,'carlos','123','docente');
 insert into usuarios values(7,'tatiana','123','docente');
 insert into usuarios values(8,'maria','123','docente');
 insert into usuarios values(9,'yo','007','administrador');
-
-DELIMITER $$
-
-CREATE TRIGGER after_insert_alumno
-AFTER INSERT ON Alumnos
-FOR EACH ROW
-BEGIN
-      INSERT INTO java (nombre, corte, nota) VALUES (NEW.nombre, 1, 0.0);
-    INSERT INTO  materias_net(nombre, corte, nota) VALUES (NEW.nombre, 1, 0.0);
-    INSERT INTO poo (nombre, corte, nota) VALUES (NEW.nombre, 1, 0.0);
-END$$
-
-DELIMITER ;
-
-DELIMITER $$
-
-CREATE TRIGGER usuarios
-AFTER INSERT ON Alumnos
-FOR EACH ROW
-BEGIN
-    INSERT INTO usuarios (id, user_, contraseña, cargo)
-    VALUES (NEW.id, NEW.nombre, NEW.cc, 'alumno');
-END$$
-
-DELIMITER ;
-
-
-DELIMITER $$
-
-CREATE TRIGGER sincronisacion
-AFTER DELETE ON Alumnos
-FOR EACH ROW
-BEGIN
-    DELETE FROM java WHERE nombre = OLD.nombre;
-END$$
-
-DELIMITER ;
-
-
 

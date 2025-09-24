@@ -6,6 +6,7 @@ package vista;
 
 import clases.Base_De_Datos;
 import javax.swing.Box;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -43,10 +44,12 @@ public class frmAdministrador extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        btnReinicio = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         btnVolver.setText("cerrar seccion");
+        btnVolver.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnVolver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnVolverActionPerformed(evt);
@@ -74,15 +77,27 @@ public class frmAdministrador extends javax.swing.JFrame {
         jMenuBar1.add(btnnombre);
 
         btngestionp.setText("gestionar ");
+        btngestionp.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         jMenuItem1.setText("estudianes");
+        jMenuItem1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btngestionp.add(jMenuItem1);
 
         jMenuItem2.setText("asignaturas");
+        jMenuItem2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btngestionp.add(jMenuItem2);
 
         jMenuItem3.setText("personal");
+        jMenuItem3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btngestionp.add(jMenuItem3);
+
+        btnReinicio.setText("reiniciar periodo academico");
+        btnReinicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReinicioActionPerformed(evt);
+            }
+        });
+        btngestionp.add(btnReinicio);
 
         jMenuBar1.add(btngestionp);
 
@@ -108,12 +123,19 @@ public class frmAdministrador extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnVolverActionPerformed
 
+    private void btnReinicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReinicioActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "✅ semestre reiniciado");
+        baseDatos.reiniciarNotas();
+    }//GEN-LAST:event_btnReinicioActionPerformed
+
     /**
      * @param args the command line arguments
      */
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem btnReinicio;
     private javax.swing.JButton btnVolver;
     private javax.swing.JMenu btngestionp;
     private javax.swing.JMenu btnnombre;

@@ -11,14 +11,37 @@ public class frmDocente extends javax.swing.JFrame {
         private final Base_De_Datos baseDatos;
         private String Nombre;
 
-    public frmDocente(Base_De_Datos basedato,String nombre){
-        this.baseDatos=basedato;
-        this.Nombre=nombre;
-        initComponents();
-        setLocationRelativeTo(null); // Centrar ventana
-       
-        this.getContentPane().setBackground(new Color(255, 254, 214));
-    }
+   public frmDocente(Base_De_Datos basedato,String nombre){
+    this.baseDatos = basedato;
+    this.Nombre = nombre;
+
+    initComponents();  // <--- PRIMERO se crean los componentes
+
+    // Ajustar imagen apenas el botón existe
+    ajustarImagenBoton();
+
+    // Escuchar cuando cambie el tamaño del botón o ventana
+    this.addComponentListener(new java.awt.event.ComponentAdapter() {
+        @Override
+        public void componentResized(java.awt.event.ComponentEvent e) {
+            ajustarImagenBoton();
+            jButton1.setSize(jdescritorio.getSize());
+        }
+    });
+
+    setLocationRelativeTo(null); // Centrar ventana
+    this.getContentPane().setBackground(new Color(255, 254, 214));
+}
+
+    
+    
+    private void ajustarImagenBoton() {
+    java.awt.Image img = new javax.swing.ImageIcon(getClass().getResource("/vista/hq720.jpg")).getImage();
+    java.awt.Image imgEscalada = img.getScaledInstance(jButton1.getWidth(), jButton1.getHeight(), java.awt.Image.SCALE_SMOOTH);
+    jButton1.setIcon(new javax.swing.ImageIcon(imgEscalada));
+}
+
+    
     
     public void setUsuario(String usuario){
             this.Nombre = usuario;
@@ -37,20 +60,18 @@ public class frmDocente extends javax.swing.JFrame {
     private void initComponents() {
 
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
-        jdescritorio = new javax.swing.JDesktopPane();
         btnsalir = new javax.swing.JButton();
+        jdescritorio = new javax.swing.JDesktopPane();
+        jButton1 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
         btnAsignarnotas = new javax.swing.JMenu();
         btnNotas = new javax.swing.JMenuItem();
         btnListaEstudiantes = new javax.swing.JMenuItem();
+        btnPromedio = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
 
         jCheckBoxMenuItem1.setSelected(true);
         jCheckBoxMenuItem1.setText("jCheckBoxMenuItem1");
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jdescritorio.setPreferredSize(new java.awt.Dimension(0, 231));
 
         btnsalir.setText("cerrar sesion");
         btnsalir.addActionListener(new java.awt.event.ActionListener() {
@@ -59,29 +80,39 @@ public class frmDocente extends javax.swing.JFrame {
             }
         });
 
-        jdescritorio.setLayer(btnsalir, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jdescritorio.setPreferredSize(new java.awt.Dimension(0, 231));
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/vista/hq720.jpg"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jdescritorio.setLayer(jButton1, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jdescritorioLayout = new javax.swing.GroupLayout(jdescritorio);
         jdescritorio.setLayout(jdescritorioLayout);
         jdescritorioLayout.setHorizontalGroup(
             jdescritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jdescritorioLayout.createSequentialGroup()
-                .addGap(0, 745, Short.MAX_VALUE)
-                .addComponent(btnsalir))
+            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 688, Short.MAX_VALUE)
         );
         jdescritorioLayout.setVerticalGroup(
             jdescritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jdescritorioLayout.createSequentialGroup()
-                .addComponent(btnsalir)
-                .addGap(0, 222, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jdescritorioLayout.createSequentialGroup()
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        jMenu1.setText("File");
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.setPreferredSize(new java.awt.Dimension(110, 30));
 
         btnAsignarnotas.setText("estudiantes");
+        btnAsignarnotas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         btnNotas.setText("Notas");
+        btnNotas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnNotas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNotasActionPerformed(evt);
@@ -90,6 +121,7 @@ public class frmDocente extends javax.swing.JFrame {
         btnAsignarnotas.add(btnNotas);
 
         btnListaEstudiantes.setText("Listado");
+        btnListaEstudiantes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnListaEstudiantes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnListaEstudiantesActionPerformed(evt);
@@ -97,7 +129,19 @@ public class frmDocente extends javax.swing.JFrame {
         });
         btnAsignarnotas.add(btnListaEstudiantes);
 
+        btnPromedio.setText("promedio academico");
+        btnPromedio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPromedio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPromedioActionPerformed(evt);
+            }
+        });
+        btnAsignarnotas.add(btnPromedio);
+
         jMenuBar1.add(btnAsignarnotas);
+
+        jMenu1.setText("File");
+        jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
 
@@ -105,11 +149,11 @@ public class frmDocente extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jdescritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 845, Short.MAX_VALUE)
+            .addComponent(jdescritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jdescritorio, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jdescritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
         );
 
         pack();
@@ -133,6 +177,17 @@ public class frmDocente extends javax.swing.JFrame {
         cerrarSesion(); 
     }//GEN-LAST:event_btnsalirActionPerformed
 
+    private void btnPromedioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPromedioActionPerformed
+        // TODO add your handling code here:
+        JiFrmPromedioGrupo nota=new JiFrmPromedioGrupo(Nombre);
+        jdescritorio.add(nota);
+        nota.show();
+    }//GEN-LAST:event_btnPromedioActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
   
 
     private void abrirNotas() {
@@ -155,7 +210,9 @@ public class frmDocente extends javax.swing.JFrame {
     private javax.swing.JMenu btnAsignarnotas;
     private javax.swing.JMenuItem btnListaEstudiantes;
     private javax.swing.JMenuItem btnNotas;
+    private javax.swing.JMenuItem btnPromedio;
     private javax.swing.JButton btnsalir;
+    private javax.swing.JButton jButton1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;

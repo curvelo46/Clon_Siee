@@ -3,8 +3,6 @@ package clon_siie;
 import clases.Base_De_Datos;
 import clases.ConexionBD;
 import vista.frmLogin;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Clon_Siie {
     

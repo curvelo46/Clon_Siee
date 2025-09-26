@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
  */
 public class frmAdministrador extends javax.swing.JFrame {
     private final Base_De_Datos baseDatos;
+    private String nombre;
    
 
     /**
@@ -21,10 +22,12 @@ public class frmAdministrador extends javax.swing.JFrame {
      */
     public frmAdministrador(Base_De_Datos baseDatos,String nombreEstudiante) {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.nombre=nombreEstudiante;
         btnnombre.setText("Bienvenido, " + nombreEstudiante);
         this.baseDatos = baseDatos;
-           jMenuBar1.add(Box.createHorizontalGlue()); 
-             jMenuBar1.add(btnVolver);
+        jMenuBar1.add(Box.createHorizontalGlue()); 
+        jMenuBar1.add(btnVolver);
     }
 
     /**
@@ -42,8 +45,10 @@ public class frmAdministrador extends javax.swing.JFrame {
         btnnombre = new javax.swing.JMenu();
         btngestionp = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        btncrearMateria = new javax.swing.JMenuItem();
+        btnAsignarMateria = new javax.swing.JMenuItem();
         btnReinicio = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -63,14 +68,14 @@ public class frmAdministrador extends javax.swing.JFrame {
         jDesktopPane1Layout.setHorizontalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDesktopPane1Layout.createSequentialGroup()
-                .addGap(0, 284, Short.MAX_VALUE)
+                .addGap(0, 410, Short.MAX_VALUE)
                 .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jDesktopPane1Layout.setVerticalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jDesktopPane1Layout.createSequentialGroup()
                 .addComponent(btnVolver)
-                .addGap(0, 137, Short.MAX_VALUE))
+                .addGap(0, 264, Short.MAX_VALUE))
         );
 
         btnnombre.setText("File");
@@ -83,13 +88,29 @@ public class frmAdministrador extends javax.swing.JFrame {
         jMenuItem1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btngestionp.add(jMenuItem1);
 
-        jMenuItem2.setText("asignaturas");
-        jMenuItem2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btngestionp.add(jMenuItem2);
-
         jMenuItem3.setText("personal");
         jMenuItem3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btngestionp.add(jMenuItem3);
+
+        jMenu1.setText("Asignaturas");
+
+        btncrearMateria.setText("crear materia");
+        btncrearMateria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncrearMateriaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(btncrearMateria);
+
+        btnAsignarMateria.setText("asignar materia");
+        btnAsignarMateria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAsignarMateriaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(btnAsignarMateria);
+
+        btngestionp.add(jMenu1);
 
         btnReinicio.setText("reiniciar periodo academico");
         btnReinicio.addActionListener(new java.awt.event.ActionListener() {
@@ -107,11 +128,11 @@ public class frmAdministrador extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jDesktopPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jDesktopPane1)
         );
 
         pack();
@@ -129,20 +150,38 @@ public class frmAdministrador extends javax.swing.JFrame {
         baseDatos.reiniciarNotas();
     }//GEN-LAST:event_btnReinicioActionPerformed
 
+    private void btncrearMateriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncrearMateriaActionPerformed
+        // TODO add your handling code here:
+        JiFrmAsignarMateria Materia2=new JiFrmAsignarMateria(nombre);
+        jDesktopPane1.add(Materia2);
+        Materia2.show();
+    }//GEN-LAST:event_btncrearMateriaActionPerformed
+
+    private void btnAsignarMateriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarMateriaActionPerformed
+        // TODO add your handling code here:
+        JiFrmNuevaMateria materia=new JiFrmNuevaMateria(nombre);
+        jDesktopPane1.add(materia);
+        materia.show();
+    }//GEN-LAST:event_btnAsignarMateriaActionPerformed
+
     /**
      * @param args the command line arguments
      */
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem btnAsignarMateria;
     private javax.swing.JMenuItem btnReinicio;
     private javax.swing.JButton btnVolver;
+    private javax.swing.JMenuItem btncrearMateria;
     private javax.swing.JMenu btngestionp;
     private javax.swing.JMenu btnnombre;
     private javax.swing.JDesktopPane jDesktopPane1;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     // End of variables declaration//GEN-END:variables
+
+   
 }

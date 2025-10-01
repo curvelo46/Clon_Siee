@@ -1,3 +1,4 @@
+
 	CREATE DATABASE CBN;
 	USE CBN;
 
@@ -72,6 +73,29 @@
 	
     create table materias_existentes(nombre varchar(125) primary key,estado varchar(25));
     
+	DELIMITER $$
+
+CREATE PROCEDURE sp_insertar_materia(IN nombre_materia VARCHAR(125), IN estado_materia VARCHAR(25))
+BEGIN
+    -- 1. Insertar en materias_existentes
+    INSERT INTO materias_existentes(nombre, estado)
+    VALUES (nombre_materia, estado_materia);
+
+    -- 2. Crear tabla con el nombre de la materia
+    SET @sql = CONCAT('CREATE TABLE IF NOT EXISTS `', nombre_materia, '` (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        alumno_id INT,
+        nota DECIMAL(5,2),
+        observaciones TEXT,
+        FOREIGN KEY (alumno_id) REFERENCES Alumnos(id) ON DELETE CASCADE
+    )');
+
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ;
 
     DELIMITER $$
 
@@ -205,6 +229,5 @@ DELIMITER ;
 	('jose','','curvelo','','18','12321323','andrescamilo@gmail.com','direccion','34'),
 	('fernanda','','fernanda','','18','123223','camila@gmail.com','direccion','4545');
 
-	insert into materias_existentes values('java','libre');
-    select*from materias_existentes;
+	CALL sp_insertar_materia('matematicas', 'activa');
 

@@ -26,100 +26,105 @@ public class JiFrmDatosEstudiandres extends javax.swing.JInternalFrame {
         cargarEstudiantes();
     }
     
-   private void cargarEstudiantes() {
-        // Modelo editable pero sin permitir editar la columna de CC
-        DefaultTableModel modelo = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                // Evitamos que la CC sea editable
-                return column != 0;
-            }
-        };
+    private void cargarEstudiantes() {
+    // 🔹 Modelo que permite edición en todas las columnas menos el id oculto
+    DefaultTableModel modelo = new DefaultTableModel() {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            // Todas las columnas editables excepto la última (id oculto)
+            return column != 9;
+        }
+    };
 
-        // 🔹 Columnas visibles (usamos CC en vez de ID)
-        modelo.addColumn("CC");
-        modelo.addColumn("Nombre");
-        modelo.addColumn("Segundo Nombre");
-        modelo.addColumn("Apellido");
-        modelo.addColumn("Segundo Apellido");
-        modelo.addColumn("Edad");
-        modelo.addColumn("Teléfono");
-        modelo.addColumn("Correo");
-        modelo.addColumn("Dirección");
-   
+    modelo.addColumn("CC");
+    modelo.addColumn("Nombre");
+    modelo.addColumn("Segundo Nombre");
+    modelo.addColumn("Apellido");
+    modelo.addColumn("Segundo Apellido");
+    modelo.addColumn("Edad");
+    modelo.addColumn("Teléfono");
+    modelo.addColumn("Correo");
+    modelo.addColumn("Dirección");
+    modelo.addColumn("ID"); // 🔹 clave primaria oculta
 
-        tablaEstudiantes.setModel(modelo);
+    tablaEstudiantes.setModel(modelo);
 
-        String sql = "SELECT cc, nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion  FROM Alumnos";
+    String sql = "SELECT id, cc, nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion FROM Alumnos";
 
-        try (Connection conn = baseDatos.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+    try (Connection conn = baseDatos.getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(sql)) {
 
-            while (rs.next()) {
-                Object[] fila = {
-                    rs.getString("cc"),
-                    rs.getString("nombre"),
-                    rs.getString("segundo_nombre"),
-                    rs.getString("apellido"),
-                    rs.getString("segundo_apellido"),
-                    rs.getString("edad"),
-                    rs.getString("telefono"),
-                    rs.getString("correo"),
-                    rs.getString("direccion"),
-               
-                };
-                modelo.addRow(fila);
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error cargando estudiantes: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+        while (rs.next()) {
+            Object[] fila = {
+                rs.getString("cc"),
+                rs.getString("nombre"),
+                rs.getString("segundo_nombre"),
+                rs.getString("apellido"),
+                rs.getString("segundo_apellido"),
+                rs.getString("edad"),
+                rs.getString("telefono"),
+                rs.getString("correo"),
+                rs.getString("direccion"),
+                rs.getInt("id") // 🔹 guardamos id para el WHERE
+            };
+            modelo.addRow(fila);
         }
 
-        // 🔹 Listener para actualizar cambios en la BD
-        modelo.addTableModelListener(e -> {
-            if (e.getType() == javax.swing.event.TableModelEvent.UPDATE) {
-                int fila = e.getFirstRow();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error cargando estudiantes: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+    }
 
-                if (fila >= 0) {
-                    String cc = modelo.getValueAt(fila, 0).toString();
-                    String nombre = modelo.getValueAt(fila, 1).toString();
-                    String segundoNombre = modelo.getValueAt(fila, 2).toString();
-                    String apellido = modelo.getValueAt(fila, 3).toString();
-                    String segundoApellido = modelo.getValueAt(fila, 4).toString();
-                    String edad = modelo.getValueAt(fila, 5).toString();
-                    String telefono = modelo.getValueAt(fila, 6).toString();
-                    String correo = modelo.getValueAt(fila, 7).toString();
-                    String direccion = modelo.getValueAt(fila, 8).toString();
-     
+    // 🔹 Ocultar la columna de id
+    tablaEstudiantes.getColumnModel().removeColumn(tablaEstudiantes.getColumnModel().getColumn(9));
 
-                    String updateSQL = "UPDATE Alumnos SET nombre=?, segundo_nombre=?, apellido=?, segundo_apellido=?, edad=?, telefono=?, correo=?, direccion=? WHERE cc=?";
+    // Listener para actualizar
+    modelo.addTableModelListener(e -> {
+        if (e.getType() == javax.swing.event.TableModelEvent.UPDATE) {
+            int fila = e.getFirstRow();
 
-                    try (Connection conn = baseDatos.getConnection();
-                         PreparedStatement ps = conn.prepareStatement(updateSQL)) {
+            if (fila >= 0) {
+                String nuevaCc = modelo.getValueAt(fila, 0).toString();
+                String nombre = modelo.getValueAt(fila, 1).toString();
+                String segundoNombre = modelo.getValueAt(fila, 2).toString();
+                String apellido = modelo.getValueAt(fila, 3).toString();
+                String segundoApellido = modelo.getValueAt(fila, 4).toString();
+                String edad = modelo.getValueAt(fila, 5).toString();
+                String telefono = modelo.getValueAt(fila, 6).toString();
+                String correo = modelo.getValueAt(fila, 7).toString();
+                String direccion = modelo.getValueAt(fila, 8).toString();
+                int id = Integer.parseInt(modelo.getValueAt(fila, 9).toString()); // 🔹 id PK
 
-                        ps.setString(1, nombre);
-                        ps.setString(2, segundoNombre);
-                        ps.setString(3, apellido);
-                        ps.setString(4, segundoApellido);
-                        ps.setString(5, edad);
-                        ps.setString(6, telefono);
-                        ps.setString(7, correo);
-                        ps.setString(8, direccion);
-        
-                        ps.setString(9, cc);
+                String updateSQL = "UPDATE Alumnos SET cc=?, nombre=?, segundo_nombre=?, apellido=?, segundo_apellido=?, edad=?, telefono=?, correo=?, direccion=? WHERE id=?";
 
-                        ps.executeUpdate();
+                try (Connection conn = baseDatos.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(updateSQL)) {
 
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(this, "Error actualizando estudiante: " + ex.getMessage(),
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                    ps.setString(1, nuevaCc);
+                    ps.setString(2, nombre);
+                    ps.setString(3, segundoNombre);
+                    ps.setString(4, apellido);
+                    ps.setString(5, segundoApellido);
+                    ps.setString(6, edad);
+                    ps.setString(7, telefono);
+                    ps.setString(8, correo);
+                    ps.setString(9, direccion);
+                    ps.setInt(10, id); // 🔹 el margen es id
+
+                    ps.executeUpdate();
+
+                    
+
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error actualizando estudiante: " + ex.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-        });
-    }
+        }
+    });
+}
+
 
 
 

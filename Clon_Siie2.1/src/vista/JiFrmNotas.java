@@ -26,7 +26,7 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
         cargarNotas();    
     }
 
-    
+    // OBTENER ID DEL ALUMNO LOGUEADO
     private void cargarIdAlumno() {
         String sql = "SELECT id FROM Alumnos WHERE nombre = ?";
         try (Connection conn = ConexionBD.getConnection();
@@ -44,7 +44,6 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
         }
     }
 
-
     // CARGAR NOTAS DEL ALUMNO
     private void cargarNotas() {
         DefaultTableModel modeloNotas = new DefaultTableModel(
@@ -56,53 +55,49 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
             }
         };
 
-        String[] materias = {"Java", "Poo", "Materias_net"};
-
         double sumaNotas = 0;
         int cantidadNotas = 0;
 
         if (alumnoId == -1) {
-            lblPromedio.setText("No se encontró el alumno.");
+            lblPromedio.setText("❌ No se encontró el alumno.");
             tablaNotas.setModel(modeloNotas);
             return;
         }
 
-        try (Connection conn = ConexionBD.getConnection()) {
-            for (String mat : materias) {
-                double[] notas = new double[3];
+        String sql = "SELECT m.nombre_materia, m.corte1, m.corte2, m.corte3 " +
+                     "FROM Materias m " +
+                     "WHERE m.alumno_id = ?";
+
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, alumnoId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String materia = rs.getString("nombre_materia");
+                double c1 = rs.getDouble("corte1");
+                double c2 = rs.getDouble("corte2");
+                double c3 = rs.getDouble("corte3");
+
+                // Calcular promedio de esta materia
+                int cortesValidos = 0;
                 double sumaMateria = 0;
-                int cantidadCortes = 0;
 
-                String sql = "SELECT corte, nota FROM `" + mat + "` WHERE alumno_id = ?";
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setInt(1, alumnoId);
-                    ResultSet rs = stmt.executeQuery();
+                if (c1 > 0) { sumaMateria += c1; cortesValidos++; sumaNotas += c1; cantidadNotas++; }
+                if (c2 > 0) { sumaMateria += c2; cortesValidos++; sumaNotas += c2; cantidadNotas++; }
+                if (c3 > 0) { sumaMateria += c3; cortesValidos++; sumaNotas += c3; cantidadNotas++; }
 
-                    while (rs.next()) {
-                        int corte = rs.getInt("corte");
-                        double nota = rs.getDouble("nota");
-                        if (corte >= 1 && corte <= 3) {
-                            notas[corte - 1] = nota;
-                            sumaMateria += nota;
-                            cantidadCortes++;
-                            sumaNotas += nota;
-                            cantidadNotas++;
-                        }
-                    }
-                }
+                double promedioMateria = (cortesValidos > 0) ? (sumaMateria / cortesValidos) : 0;
 
-                // Solo mostrar si tiene notas cargadas
-                if (cantidadCortes > 0) {
-                    double promedioMateria = sumaMateria / cantidadCortes;
-                    modeloNotas.addRow(new Object[]{
-                            mat.toUpperCase(),
-                            notas[0],
-                            notas[1],
-                            notas[2],
-                            String.format("%.2f", promedioMateria)
-                    });
-                }
+                modeloNotas.addRow(new Object[]{
+                        materia,
+                        c1,
+                        c2,
+                        c3,
+                        String.format("%.2f", promedioMateria)
+                });
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,12 +106,11 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
 
         if (cantidadNotas > 0) {
             double promedio = sumaNotas / cantidadNotas;
-            lblPromedio.setText("Promedio general: " + String.format("%.2f", promedio));
+            lblPromedio.setText("📊 Promedio general: " + String.format("%.2f", promedio));
         } else {
-            lblPromedio.setText("El alumno no tiene notas registradas.");
+            lblPromedio.setText("ℹ️ El alumno no tiene notas registradas.");
         }
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -154,7 +148,7 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 705, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lblPromedio, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE)

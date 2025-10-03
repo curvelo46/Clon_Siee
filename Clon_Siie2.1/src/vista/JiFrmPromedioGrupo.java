@@ -1,110 +1,67 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
- */
 package vista;
 
-import clases.Base_De_Datos;
 import clases.ConexionBD;
-
-import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class JiFrmPromedioGrupo extends javax.swing.JInternalFrame {
 
-    private final Base_De_Datos baseDatos = new Base_De_Datos(); 
-    private final String docente; 
-    private String tablaNotasMateria; // 👈 aquí se guarda la tabla de notas correspondiente
+    private final String docente;
 
     public JiFrmPromedioGrupo(String docente) {
         initComponents();
         this.docente = docente;
         this.getContentPane().setBackground(new Color(214, 245, 255));
 
-        // Detectar qué tabla de notas usar
-        this.tablaNotasMateria = obtenerTablaNotasMateria();
         cargarPromedios();
-    }
-
-   
-     private String obtenerTablaNotasMateria() {
-        String materia = null;
-        String sql = "SELECT m.materia FROM Materias m "
-                   + "INNER JOIN Docentes d ON m.docente_id = d.id "
-                   + "WHERE d.nombre = ? LIMIT 1";
-
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, docente);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                materia = rs.getString("materia");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (materia == null || materia.equalsIgnoreCase("sin asignatura")) {
-            JOptionPane.showMessageDialog(this, "❌ El docente no tiene materia asignada.");
-            return null;
-        }
-
-        switch (materia.toLowerCase()) {
-            case "java": return "Java";
-            case "poo": return "Poo";
-            case "materias_net": return "Materias_net";
-            default:
-                JOptionPane.showMessageDialog(this, "❌ La materia '" + materia + "' no tiene tabla de notas definida.");
-                return null;
-        }
     }
 
     /**
      * Cargar los promedios por estudiante y el promedio general del grupo
      */
-    private void cargarPromedios() {
+     private void cargarPromedios() {
         DefaultTableModel modelo = new DefaultTableModel(
-            new Object[]{"Estudiante", "Promedio"}, 0
+                new Object[]{"Estudiante", "Corte 1", "Corte 2", "Corte 3", "Promedio"}, 0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // 👈 tabla solo de lectura
+                return false; // tabla solo de lectura
             }
         };
 
         double sumaGeneral = 0;
         int cantidadEstudiantes = 0;
 
-        if (tablaNotasMateria == null) {
-            tablaNotas.setModel(modelo);
-            lbPromedio.setText("N/A");
-            return;
-        }
-
-        String sqlNotas = "SELECT a.nombre, a.apellido, AVG(n.nota) AS promedio " +
-                          "FROM Alumnos a " +
-                          "LEFT JOIN " + tablaNotasMateria + " n ON a.id = n.alumno_id " +
-                          "GROUP BY a.id, a.nombre, a.apellido";
+        String sql = "SELECT a.nombre, a.apellido, m.corte1, m.corte2, m.corte3 " +
+                     "FROM Materias m " +
+                     "INNER JOIN Alumnos a ON m.alumno_id = a.id " +
+                     "INNER JOIN Docentes d ON m.docente_id = d.id " +
+                     "WHERE d.nombre = ?";
 
         try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sqlNotas);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, docente);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 String estudiante = rs.getString("nombre") + " " + rs.getString("apellido");
-                double promedio = rs.getDouble("promedio");
+                double c1 = rs.getDouble("corte1");
+                double c2 = rs.getDouble("corte2");
+                double c3 = rs.getDouble("corte3");
 
-                if (rs.wasNull()) {
-                    promedio = 0.0; // si no tiene notas → 0
-                }
+                double promedio = (c1 + c2 + c3) / 3.0;
 
                 modelo.addRow(new Object[]{
-                    estudiante,
-                    String.format("%.2f", promedio)
+                        estudiante,
+                        String.format("%.2f", c1),
+                        String.format("%.2f", c2),
+                        String.format("%.2f", c3),
+                        String.format("%.2f", promedio)
                 });
 
                 sumaGeneral += promedio;
@@ -113,6 +70,7 @@ public class JiFrmPromedioGrupo extends javax.swing.JInternalFrame {
 
         } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "❌ Error al cargar promedios: " + e.getMessage());
         }
 
         tablaNotas.setModel(modelo);

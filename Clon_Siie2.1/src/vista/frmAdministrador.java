@@ -50,6 +50,7 @@ public class frmAdministrador extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         btncrearMateria = new javax.swing.JMenuItem();
         btnAsignarMateria = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         btnAlumnosDatos = new javax.swing.JMenuItem();
         btnDocentesDatos = new javax.swing.JMenuItem();
@@ -125,6 +126,14 @@ public class frmAdministrador extends javax.swing.JFrame {
             }
         });
         jMenu1.add(btnAsignarMateria);
+
+        jMenuItem1.setText("Quitar Asignatura");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
 
         btngestionp.add(jMenu1);
 
@@ -217,13 +226,25 @@ public class frmAdministrador extends javax.swing.JFrame {
 
     private void btnRegistrarDocentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarDocentesActionPerformed
         // TODO add your handling code here:
-        
+        JiFrmRegistrarDocente Docente=new JiFrmRegistrarDocente();
+        jPanel.add(Docente);
+        Docente.show();
         
     }//GEN-LAST:event_btnRegistrarDocentesActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
+        JiFrmRegistraralumnos Estudiantes=new JiFrmRegistraralumnos();
+        jPanel.add(Estudiantes);
+        Estudiantes.show();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        JiFrmQuitarMateria DELETE=new JiFrmQuitarMateria(nombre);
+        jPanel.add(DELETE);
+        DELETE.show();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -243,6 +264,7 @@ public class frmAdministrador extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JDesktopPane jPanel;
     private javax.swing.JMenu menuMatriculas;

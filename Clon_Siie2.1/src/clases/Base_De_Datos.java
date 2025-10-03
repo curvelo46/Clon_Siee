@@ -10,20 +10,20 @@ public class Base_De_Datos {
     
     private static final String URL = "jdbc:mysql://localhost:3306/CBN?useSSL=false&serverTimezone=UTC";
     private static final String USER = "root";   
-    private static final String PASS = "cbn2016"; 
+    private static final String PASS = "316484"; 
     private Integer corte = 1;
 
     
     // LOGIN
-    public String login(String usuario, String contraseña) {
-        String sql = "SELECT cargo FROM Usuarios WHERE user_ = ? AND contraseña = ?";
+    public String login(String usuario, String contrasena) {
+        String sql = "SELECT cargo FROM Usuarios WHERE user_ = ? AND contrasena = ?";
         
         
         
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, usuario);
-            ps.setString(2, contraseña);
+            ps.setString(2, contrasena);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getString("cargo"); 

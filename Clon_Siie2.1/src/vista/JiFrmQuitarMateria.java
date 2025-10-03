@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author cymaniatico
  */
-public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
+public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
  
        private final String alumno;
         
@@ -28,7 +28,7 @@ public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
      * Creates new form JiFrmPrueba
      */
 
-    public JiFrmCrearMateria( String alumno) {
+    public JiFrmQuitarMateria( String alumno) {
         initComponents();
         this.alumno = alumno;
         this.getContentPane().setBackground(new Color(214, 245, 255));
@@ -56,7 +56,7 @@ public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
 
         jLabel1.setText("Nombre de la materia");
 
-        jButton1.setText("Registrar Materia");
+        jButton1.setText("quitar materia");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -74,7 +74,7 @@ public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
                     .addComponent(txtNombreMateria))
                 .addGap(30, 30, 30)
                 .addComponent(jButton1)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -93,40 +93,66 @@ public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-      String nombreMateria = txtNombreMateria.getText().trim();
+    String nombreMateria = txtNombreMateria.getText().trim();
 
     if (nombreMateria.isEmpty()) {
         javax.swing.JOptionPane.showMessageDialog(this,
-                "⚠ Debes ingresar un nombre para la materia.",
+                "⚠ Debes ingresar el nombre de la materia a quitar.",
                 "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    // Consulta con placeholders
-    String sql = "INSERT INTO Materias (nombre_materia, docente_id, alumno_id, estado) VALUES (?, null, null, 'libre')";
+    try (Connection conn = ConexionBD.getConnection()) {
+        conn.setAutoCommit(false); // Usamos transacción
 
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-        // Asignamos el valor al placeholder
-        stmt.setString(1, nombreMateria);
-
-        int filas = stmt.executeUpdate();
-
-        if (filas > 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "✅ Materia registrada correctamente.",
-                    "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            txtNombreMateria.setText("");
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "❌ No se pudo registrar la materia.",
-                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        // 1. Buscar el docente asignado a la materia
+        Integer idDocente = null;
+        String sqlBuscar = "SELECT docente_id FROM Materias WHERE nombre_materia = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlBuscar)) {
+            stmt.setString(1, nombreMateria);
+            try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    idDocente = rs.getInt("docente_id");
+                    if (rs.wasNull()) {
+                        idDocente = null; // si estaba NULL
+                    }
+                }
+            }
         }
+
+        if (idDocente == null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "⚠ La materia no tiene un docente asignado o no existe.",
+                    "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
+            conn.rollback();
+            return;
+        }
+
+        // 2. Actualizar docente → dejarlo sin asignatura
+        String sqlDocente = "UPDATE Docentes SET materia = 'sin asignatura' WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlDocente)) {
+            stmt.setInt(1, idDocente);
+            stmt.executeUpdate();
+        }
+
+        // 3. Actualizar materia → dejarla libre y sin docente
+        String sqlMateria = "UPDATE Materias SET docente_id = NULL, estado = 'libre' WHERE nombre_materia = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlMateria)) {
+            stmt.setString(1, nombreMateria);
+            stmt.executeUpdate();
+        }
+
+        conn.commit(); // Confirmamos la transacción
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "✅ Materia liberada correctamente.\nEl docente quedó sin asignatura.",
+                "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+
+        txtNombreMateria.setText("");
 
     } catch (SQLException ex) {
         javax.swing.JOptionPane.showMessageDialog(this,
-                "❌ Error al registrar la materia: " + ex.getMessage(),
+                "❌ Error al liberar la materia: " + ex.getMessage(),
                 "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         ex.printStackTrace();
     }

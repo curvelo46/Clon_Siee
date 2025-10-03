@@ -16,7 +16,7 @@ import java.sql.ResultSet;
  *
  * @author cymaniatico
  */
-public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
+public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
  
      
         
@@ -24,7 +24,7 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
      * Creates new form JiFrmPrueba
      */
 
-    public JiFrmRegistrarDocente() {
+    public JiFrmRegistraralumnos() {
         initComponents();
         this.getContentPane().setBackground(new Color(214, 245, 255));
     }
@@ -61,6 +61,8 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
         txtCorreo = new javax.swing.JTextField();
         txtDireccion = new javax.swing.JTextField();
         txtCedula = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        txtGenero = new javax.swing.JTextField();
 
         setClosable(true);
         setMaximizable(true);
@@ -91,6 +93,8 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
 
         jLabel10.setText("CC");
 
+        jLabel11.setText("Genero");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -106,42 +110,47 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
                         .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING))
                     .addComponent(jLabel10))
                 .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(txtCorreo, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jLabel4))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtSegundoNombr, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel7))
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel8)
-                                    .addGap(0, 0, Short.MAX_VALUE))
-                                .addComponent(txtApellido))))
-                    .addComponent(btnGuerdarDocente))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel5))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addGap(18, 18, 18)
-                            .addComponent(txtDireccion))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addGap(21, 21, 21)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel9)
-                                .addComponent(txtSegundoApellido, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtCorreo, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel4))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtSegundoNombr, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel7))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel8)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(txtApellido))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel2)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel5))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addGap(18, 18, 18)
+                                    .addComponent(txtDireccion))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addGap(21, 21, 21)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel9)
+                                        .addComponent(txtSegundoApellido, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                    .addComponent(jLabel11)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(20, 20, 20)
+                        .addComponent(btnGuerdarDocente)))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -173,11 +182,14 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
                     .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jLabel10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtCedula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnGuerdarDocente))
+                    .addComponent(btnGuerdarDocente)
+                    .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
@@ -186,26 +198,20 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
 
     private void btnGuerdarDocenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuerdarDocenteActionPerformed
         // TODO add your handling code here:
-            String nombre = txtNombre.getText().trim();
-    String segundoNombre = txtSegundoNombr.getText().trim();
-    String apellido = txtApellido.getText().trim();
-    String segundoApellido = txtSegundoApellido.getText().trim();
-    String edad = txtEdad.getText().trim();
-    String telefono = txtTelefono.getText().trim();
-    String correo = txtCorreo.getText().trim();
-    String direccion = txtDireccion.getText().trim();
-    String cc = txtCedula.getText().trim();
+      String nombre = txtNombre.getText();
+    String segundoNombre = txtSegundoNombr.getText();
+    String apellido = txtApellido.getText();
+    String segundoApellido = txtSegundoApellido.getText();
+    String edad = txtEdad.getText();
+    String telefono = txtTelefono.getText();
+    String correo = txtCorreo.getText();
+    String direccion = txtDireccion.getText();
+    String cedula = txtCedula.getText();
+    String genero = txtGenero.getText(); // ✅ corregido
 
-    // Validar campos obligatorios
-    if (nombre.isEmpty() || apellido.isEmpty() || edad.isEmpty() || cc.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this,
-                "⚠ Debes llenar los campos obligatorios: Nombre, Apellido, Edad y CC.",
-                "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    String sql = "INSERT INTO Docentes (nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cc, materia) "
-               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'sin asignatura')";
+    String sql = "INSERT INTO Alumnos " +
+                 "(nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cc, sexo) " +
+                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -218,37 +224,28 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
         stmt.setString(6, telefono);
         stmt.setString(7, correo);
         stmt.setString(8, direccion);
-        stmt.setString(9, cc);
+        stmt.setString(9, cedula);
+        stmt.setString(10, genero);
 
-        int filas = stmt.executeUpdate();
+        stmt.executeUpdate();
+        javax.swing.JOptionPane.showMessageDialog(this, "✅ Estudiante registrado con éxito");
 
-        if (filas > 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "✅ Docente registrado correctamente.",
-                    "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        // limpiar campos
+        txtNombre.setText("");
+        txtSegundoNombr.setText("");
+        txtApellido.setText("");
+        txtSegundoApellido.setText("");
+        txtEdad.setText("");
+        txtTelefono.setText("");
+        txtCorreo.setText("");
+        txtDireccion.setText("");
+        txtCedula.setText("");
+        txtGenero.setText("");
 
-            // Limpiar campos
-            txtNombre.setText("");
-            txtSegundoNombr.setText("");
-            txtApellido.setText("");
-            txtSegundoApellido.setText("");
-            txtEdad.setText("");
-            txtTelefono.setText("");
-            txtCorreo.setText("");
-            txtDireccion.setText("");
-            txtCedula.setText("");
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "❌ No se pudo registrar el docente.",
-                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-
-    } catch (Exception ex) {
-        javax.swing.JOptionPane.showMessageDialog(this,
-                "❌ Error al registrar docente: " + ex.getMessage(),
-                "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        ex.printStackTrace();
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "❌ Error al registrar estudiante: " + e.getMessage());
     }
+
     }//GEN-LAST:event_btnGuerdarDocenteActionPerformed
 
 
@@ -256,6 +253,7 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnGuerdarDocente;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -269,6 +267,7 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtCorreo;
     private javax.swing.JTextField txtDireccion;
     private javax.swing.JTextField txtEdad;
+    private javax.swing.JTextField txtGenero;
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtSegundoApellido;
     private javax.swing.JTextField txtSegundoNombr;

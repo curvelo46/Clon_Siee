@@ -206,10 +206,7 @@ public class frmLogin extends javax.swing.JFrame {
             frmAdm.setVisible(true);
             this.dispose();
             break;
-        case "master":
-            new frmdesarrollador(baseDatos, usuario).setVisible(true);            
-            this.dispose();
-            break;
+        
 
         default:
             JOptionPane.showMessageDialog(this, "Rol no reconocido en la BD: " + rol, "Error", JOptionPane.ERROR_MESSAGE);

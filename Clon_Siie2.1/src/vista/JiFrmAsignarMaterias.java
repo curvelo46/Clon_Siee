@@ -36,36 +36,38 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     }
     
      private void cargarDocentesDisponibles() {
-        comboDocentes.removeAllItems();
+    comboDocentes.removeAllItems();
 
-        String sql = "SELECT * FROM materias WHERE materia IS NULL OR materia = 'sin asignatura'";
+    String sql = "SELECT id, nombre, apellido FROM Docentes WHERE materia = 'sin asignatura'";
 
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            
-            boolean hayDocentes = false;
-            while (rs.next()) {
-                String nombreCompleto = rs.getString("nombre") ;
-                comboDocentes.addItem(nombreCompleto);
-                hayDocentes = true;
-            }
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
 
-            if (!hayDocentes) {
-                comboDocentes.addItem("⚠ No hay docentes libres");
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error cargando docentes: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+        boolean hayDocentes = false;
+        while (rs.next()) {
+            // Guarda ID oculto pero muestra nombre completo
+            String docente = rs.getInt("id") + " - " +
+                             rs.getString("nombre") + " " +
+                             rs.getString("apellido");
+            comboDocentes.addItem(docente);
+            hayDocentes = true;
         }
+
+        if (!hayDocentes) {
+            comboDocentes.addItem("⚠ No hay docentes libres");
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error cargando docentes: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
     }
-     
-   private void cargarMateriasDisponibles() {
+}
+
+private void cargarMateriasDisponibles() {
     comboMaterias.removeAllItems();
 
-    // ✅ Selecciona solo materias que no tienen docente asignado
-    String sql = "SELECT nombre FROM materias_existentes WHERE materias_existentes.estado = 'activa'";
+    String sql = "SELECT id_materia, nombre_materia FROM Materias WHERE estado = 'libre'";
 
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql);
@@ -73,8 +75,8 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
 
         boolean hayMaterias = false;
         while (rs.next()) {
-            String nombreMateria = rs.getString("nombre");
-            comboMaterias.addItem(nombreMateria);
+            String materia = rs.getInt("id_materia") + " - " + rs.getString("nombre_materia");
+            comboMaterias.addItem(materia);
             hayMaterias = true;
         }
 
@@ -88,6 +90,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
                 "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
 
 
 
@@ -141,7 +144,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
                         .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnAsignar)))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -162,16 +165,16 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAsignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarActionPerformed
-         String materiaSeleccionada = (String) comboMaterias.getSelectedItem();
+       String materiaSeleccionada = (String) comboMaterias.getSelectedItem();
     String docenteSeleccionado = (String) comboDocentes.getSelectedItem();
 
+    // Validaciones
     if (materiaSeleccionada == null || materiaSeleccionada.startsWith("⚠")) {
         JOptionPane.showMessageDialog(this,
                 "⚠ Debes seleccionar una materia válida.",
                 "Advertencia", JOptionPane.WARNING_MESSAGE);
         return;
     }
-
     if (docenteSeleccionado == null || docenteSeleccionado.startsWith("⚠")) {
         JOptionPane.showMessageDialog(this,
                 "⚠ Debes seleccionar un docente válido.",
@@ -180,34 +183,43 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     }
 
     try (Connection conn = ConexionBD.getConnection()) {
-        // ✅ Actualizar la tabla materias
-        String sql = "UPDATE materias SET materia = ? WHERE nombre = ? AND (materia = 'sin asignatura' OR materia IS NULL)";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, materiaSeleccionada);
-            stmt.setString(2, docenteSeleccionado);
+        conn.setAutoCommit(false);
 
-            int filas = stmt.executeUpdate();
-            if (filas > 0) {
-                JOptionPane.showMessageDialog(this,
-                        "✅ Se asignó la materia '" + materiaSeleccionada +
-                        "' al docente '" + docenteSeleccionado + "'.",
-                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                
-                // Opcional: refrescar listas después de asignar
-                cargarDocentesDisponibles();
-                cargarMateriasDisponibles();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "⚠ No se pudo asignar la materia. Verifica los datos.",
-                        "Advertencia", JOptionPane.WARNING_MESSAGE);
-            }
+        // Extraer IDs de los combobox
+        int idMateria = Integer.parseInt(materiaSeleccionada.split(" - ")[0]);
+        int idDocente = Integer.parseInt(docenteSeleccionado.split(" - ")[0]);
+
+        // 1) Asignar el docente a la materia
+        String sqlMateria = "UPDATE Materias SET docente_id = ?, estado = 'activa' WHERE id_materia = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlMateria)) {
+            stmt.setInt(1, idDocente);
+            stmt.setInt(2, idMateria);
+            stmt.executeUpdate();
         }
+
+        // 2) Actualizar el docente con el nombre de la materia
+        String sqlDocente = "UPDATE Docentes SET materia = (SELECT nombre_materia FROM Materias WHERE id_materia = ?) WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlDocente)) {
+            stmt.setInt(1, idMateria);
+            stmt.setInt(2, idDocente);
+            stmt.executeUpdate();
+        }
+
+        conn.commit();
+
+        JOptionPane.showMessageDialog(this,
+                "✅ Materia asignada correctamente al docente.",
+                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+        // Recargar combos
+        cargarDocentesDisponibles();
+        cargarMateriasDisponibles();
+
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this,
                 "❌ Error al asignar la materia: " + e.getMessage(),
                 "Error", JOptionPane.ERROR_MESSAGE);
     }
-  
     }//GEN-LAST:event_btnAsignarActionPerformed
 
 

@@ -38,11 +38,11 @@ public class JiFrmDatosProfesores extends javax.swing.JInternalFrame {
     
     private void cargarDocentes() {
         DefaultTableModel modelo = new DefaultTableModel(
-            new Object[]{ "CC", "Nombre", "Segundo Nombre", "Apellido", "Segundo Apellido", "Edad", "Teléfono", "Correo", "Dirección"}, 0
+            new Object[]{ "CC", "Nombre", "Segundo Nombre", "Apellido", "Segundo Apellido", "Edad", "Teléfono", "Correo", "Dirección","Materia"}, 0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column != 0; // NO permitir editar la columna "CC" (clave primaria)
+                return column != 0 &&column !=9 ; // NO permitir editar la columna "CC" (clave primaria)
             }
         };
 
@@ -61,6 +61,7 @@ public class JiFrmDatosProfesores extends javax.swing.JInternalFrame {
                     rs.getString("telefono"),
                     rs.getString("correo"),
                     rs.getString("direccion"),
+                    rs.getString("materia"),
                 };
                 modelo.addRow(fila);
             }

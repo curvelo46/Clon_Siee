@@ -38,7 +38,7 @@ public class JiFrmListaestudiantes extends javax.swing.JInternalFrame {
         
     }
     
-  private void cargarEstudiantes() {
+    private void cargarEstudiantes() {
     // Modelo no editable
     DefaultTableModel modelo = new DefaultTableModel() {
         @Override
@@ -55,14 +55,20 @@ public class JiFrmListaestudiantes extends javax.swing.JInternalFrame {
     modelo.addColumn("Teléfono");
     modelo.addColumn("Correo");
 
-    // Asignar el modelo a la tabla
+    // Asignar modelo a la tabla
     tablaEstudiantes.setModel(modelo);
 
-    String sql = "SELECT * FROM Alumnos";
-    
+    String sql = "SELECT a.cc, a.nombre, a.apellido, a.edad, a.telefono, a.correo\n" +
+"        FROM Materias m\n" +
+"        INNER JOIN Alumnos a ON m.alumno_id = a.id\n" +
+"        INNER JOIN Docentes d ON m.docente_id = d.id\n" +
+"        WHERE d.nombre = ? AND m.estado = 'activa';";
+
     try (Connection conn = baseDatos.getConnection();
-         Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery(sql)) {
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, profesor); // 👈 profesor que viene del constructor
+        ResultSet rs = ps.executeQuery();
 
         while (rs.next()) {
             Object[] fila = {
@@ -77,10 +83,13 @@ public class JiFrmListaestudiantes extends javax.swing.JInternalFrame {
         }
 
     } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error cargando estudiantes: " + e.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this,
+            "Error cargando estudiantes: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
+
 
  
 

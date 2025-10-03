@@ -17,6 +17,9 @@ public class Base_De_Datos {
     // LOGIN
     public String login(String usuario, String contraseña) {
         String sql = "SELECT cargo FROM Usuarios WHERE user_ = ? AND contraseña = ?";
+        
+        
+        
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, usuario);
@@ -29,6 +32,11 @@ public class Base_De_Datos {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
+        
+        
+        
+        
         return null; 
     }
 

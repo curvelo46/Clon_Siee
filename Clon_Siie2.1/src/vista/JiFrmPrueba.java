@@ -22,8 +22,8 @@ import javax.swing.table.DefaultTableModel;
     private final Base_De_Datos baseDatos;
     private final String profesor;
     private int corteSeleccionado; 
-    private String tablaNotasMateria; // 👈 tabla de notas asociada a la materia
-
+    private String tablaNotasMateria; 
+    
     public JiFrmPrueba(Base_De_Datos basedatos, String profesor) {
         initComponents();
         this.baseDatos = basedatos;
@@ -60,21 +60,14 @@ import javax.swing.table.DefaultTableModel;
         }
 
         // Mapear nombre de materia → tabla de notas
-        switch (materia.toLowerCase()) {
-            case "java": return "Java";
-            case "poo": return "Poo";
-            case "materias_net": return "Materias_net";
-            default:
-                JOptionPane.showMessageDialog(this, "❌ Materia '" + materia + "' no tiene tabla de notas");
-                return null;
-        }
+        return materia;
     }
 
     /**
      * Carga lista de alumnos con sus notas (si existen) en la tabla de la materia
      */
     private void cargarTabla() {
-        if (tablaNotasMateria == null) return; // sin materia
+        if (tablaNotasMateria == null) return; 
 
         jMenuBar1.add(Box.createHorizontalGlue());
         jMenuBar1.add(btnGuardar);
@@ -101,7 +94,7 @@ import javax.swing.table.DefaultTableModel;
             while (rs.next()) {
                 String estudiante = rs.getString("nombre") + " " + rs.getString("apellido");
                 double nota = rs.getDouble("nota");
-                if (rs.wasNull()) nota = 0.0; // si no tiene nota → 0
+                if (rs.wasNull()) nota = 0.0; 
                 modelo.addRow(new Object[]{estudiante, nota});
             }
 

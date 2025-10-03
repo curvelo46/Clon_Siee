@@ -1,14 +1,15 @@
 
+    
+    
 	CREATE DATABASE CBN;
 	USE CBN;
-
 
 	-- TABLA USUARIOS
 	CREATE TABLE Usuarios (
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		user_ VARCHAR(50) NOT NULL,
 		contraseña VARCHAR(50) NOT NULL,
-		cargo ENUM('alumno','docente','administrador') NOT NULL,
+		cargo ENUM('alumno','docente','administrador','master') NOT NULL,
 		UNIQUE KEY unq_user_pass (user_, contraseña)  -- 🔹 No permite mismo nombre con misma contraseña
 	);
 
@@ -86,8 +87,9 @@ BEGIN
         id INT AUTO_INCREMENT PRIMARY KEY,
         alumno_id INT,
         nota DECIMAL(5,2),
-        observaciones TEXT,
-        FOREIGN KEY (alumno_id) REFERENCES Alumnos(id) ON DELETE CASCADE
+        corte int,
+        FOREIGN KEY (alumno_id) REFERENCES Alumnos(id) ON DELETE CASCADE,UNIQUE(alumno_id, corte)
+
     )');
 
     PREPARE stmt FROM @sql;
@@ -137,6 +139,7 @@ DELIMITER ;
 	END$$
 
 
+	
 	CREATE TRIGGER trg_alumno_delete
 	AFTER DELETE ON Alumnos
 	FOR EACH ROW
@@ -228,6 +231,8 @@ DELIMITER ;
 	VALUES
 	('jose','','curvelo','','18','12321323','andrescamilo@gmail.com','direccion','34'),
 	('fernanda','','fernanda','','18','123223','camila@gmail.com','direccion','4545');
-
+    
+	insert into usuarios values("12","master","007","master");
 	CALL sp_insertar_materia('matematicas', 'activa');
+
 

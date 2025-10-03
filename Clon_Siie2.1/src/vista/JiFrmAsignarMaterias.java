@@ -65,7 +65,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     comboMaterias.removeAllItems();
 
     // ✅ Selecciona solo materias que no tienen docente asignado
-    String sql = "SELECT nombre FROM materias_existentes WHERE materias_existentes.estado = 'libre'";
+    String sql = "SELECT nombre FROM materias_existentes WHERE materias_existentes.estado = 'activa'";
 
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql);

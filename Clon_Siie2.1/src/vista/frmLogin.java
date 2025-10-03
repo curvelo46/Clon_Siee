@@ -2,6 +2,7 @@ package vista;
 
 import clases.Base_De_Datos;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 
 
@@ -164,13 +165,18 @@ public class frmLogin extends javax.swing.JFrame {
     private void btnSecionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSecionActionPerformed
         // TODO add your handling code here:
         String usuario = txtUsuario.getText().trim();
-    String contraseña = new String(txtContraseña.getPassword());
+        String contraseña = new String(txtContraseña.getPassword());
+        
+         
     
     if (usuario.isEmpty() || contraseña.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
+    
+   
+    
     // Consultar en la BD
     String rol = baseDatos.login(usuario, contraseña);
 
@@ -200,6 +206,10 @@ public class frmLogin extends javax.swing.JFrame {
             frmAdm.setVisible(true);
             this.dispose();
             break;
+        case "master":
+            new frmdesarrollador(baseDatos, usuario).setVisible(true);            
+            this.dispose();
+            break;
 
         default:
             JOptionPane.showMessageDialog(this, "Rol no reconocido en la BD: " + rol, "Error", JOptionPane.ERROR_MESSAGE);
@@ -210,11 +220,16 @@ public class frmLogin extends javax.swing.JFrame {
    
     private void txtContraseñaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContraseñaKeyPressed
         // TODO add your handling code here:
-        
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnSecion.doClick();
+        }
     }//GEN-LAST:event_txtContraseñaKeyPressed
 
     private void txtUsuarioKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUsuarioKeyPressed
         // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnSecion.doClick();
+        }
     }//GEN-LAST:event_txtUsuarioKeyPressed
 
     /**

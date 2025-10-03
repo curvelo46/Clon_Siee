@@ -65,10 +65,12 @@ public class frmdesarrollador extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        btnAsignarnotas = new javax.swing.JMenu();
-        btnNotas = new javax.swing.JMenuItem();
-        btnListaEstudiantes = new javax.swing.JMenuItem();
-        btnPromedio = new javax.swing.JMenuItem();
+        btnDocentes = new javax.swing.JMenu();
+        btnDnotas = new javax.swing.JMenuItem();
+        btnDlista = new javax.swing.JMenuItem();
+        btnDpromedio = new javax.swing.JMenuItem();
+        btnAlumno = new javax.swing.JMenu();
+        btnAdmin = new javax.swing.JMenu();
 
         jCheckBoxMenuItem1.setSelected(true);
         jCheckBoxMenuItem1.setText("jCheckBoxMenuItem1");
@@ -108,40 +110,38 @@ public class frmdesarrollador extends javax.swing.JFrame {
 
         jMenuBar1.setPreferredSize(new java.awt.Dimension(110, 30));
 
-        jMenu1.setText("File");
+        jMenu1.setText("Un gusto verlo de nuevo señor");
         jMenuBar1.add(jMenu1);
 
-        btnAsignarnotas.setText("estudiantes");
-        btnAsignarnotas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnDocentes.setText("Docente");
+        btnDocentes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        btnNotas.setText("Notas");
-        btnNotas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnNotas.addActionListener(new java.awt.event.ActionListener() {
+        btnDnotas.setText("Notas");
+        btnDnotas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNotasActionPerformed(evt);
+                btnDnotasActionPerformed(evt);
             }
         });
-        btnAsignarnotas.add(btnNotas);
+        btnDocentes.add(btnDnotas);
 
-        btnListaEstudiantes.setText("Listado");
-        btnListaEstudiantes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnListaEstudiantes.addActionListener(new java.awt.event.ActionListener() {
+        btnDlista.setText("Listado");
+        btnDlista.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnListaEstudiantesActionPerformed(evt);
+                btnDlistaActionPerformed(evt);
             }
         });
-        btnAsignarnotas.add(btnListaEstudiantes);
+        btnDocentes.add(btnDlista);
 
-        btnPromedio.setText("promedio academico");
-        btnPromedio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnPromedio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPromedioActionPerformed(evt);
-            }
-        });
-        btnAsignarnotas.add(btnPromedio);
+        btnDpromedio.setText("Promedio del grupo");
+        btnDocentes.add(btnDpromedio);
 
-        jMenuBar1.add(btnAsignarnotas);
+        jMenuBar1.add(btnDocentes);
+
+        btnAlumno.setText("Alumno");
+        jMenuBar1.add(btnAlumno);
+
+        btnAdmin.setText("Administrador");
+        jMenuBar1.add(btnAdmin);
 
         setJMenuBar(jMenuBar1);
 
@@ -159,43 +159,29 @@ public class frmdesarrollador extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
-        // TODO add your handling code here:
-        abrirNotas();
-    }//GEN-LAST:event_btnNotasActionPerformed
-
-    private void btnListaEstudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListaEstudiantesActionPerformed
-        // TODO add your handling code here:
-        JiFrmListaestudiantes lista=new JiFrmListaestudiantes(baseDatos, Nombre);
-        jdescritorio.add(lista);
-        lista.show();
-        
-    }//GEN-LAST:event_btnListaEstudiantesActionPerformed
-
     private void btnsalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsalirActionPerformed
         // TODO add your handling code here:
         cerrarSesion(); 
     }//GEN-LAST:event_btnsalirActionPerformed
 
-    private void btnPromedioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPromedioActionPerformed
-        // TODO add your handling code here:
-        JiFrmPromedioGrupo nota=new JiFrmPromedioGrupo(Nombre);
-        jdescritorio.add(nota);
-        nota.show();
-    }//GEN-LAST:event_btnPromedioActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void btnDlistaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDlistaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnDlistaActionPerformed
+
+    private void btnDnotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDnotasActionPerformed
+        // TODO add your handling code here:
+        JiFrmPrueba notas=new JiFrmPrueba(baseDatos, Nombre);
+        jdescritorio.add(notas);
+        notas.show();
+    }//GEN-LAST:event_btnDnotasActionPerformed
+
   
 
-    private void abrirNotas() {
-        JiFrmPrueba prueba = new JiFrmPrueba(baseDatos,Nombre);
-        jdescritorio.add(prueba);
-        prueba.show();
-        
-    }
+   
 
     private void cerrarSesion() {
         this.dispose();
@@ -207,10 +193,12 @@ public class frmdesarrollador extends javax.swing.JFrame {
      */
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu btnAsignarnotas;
-    private javax.swing.JMenuItem btnListaEstudiantes;
-    private javax.swing.JMenuItem btnNotas;
-    private javax.swing.JMenuItem btnPromedio;
+    private javax.swing.JMenu btnAdmin;
+    private javax.swing.JMenu btnAlumno;
+    private javax.swing.JMenuItem btnDlista;
+    private javax.swing.JMenuItem btnDnotas;
+    private javax.swing.JMenu btnDocentes;
+    private javax.swing.JMenuItem btnDpromedio;
     private javax.swing.JButton btnsalir;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;

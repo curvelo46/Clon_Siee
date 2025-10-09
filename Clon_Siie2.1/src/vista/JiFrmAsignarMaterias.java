@@ -19,8 +19,7 @@ import javax.swing.JOptionPane;
  */
 public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
  
-       private final String alumno;
-       private final Base_De_Datos baseDatos;
+  
         
     /**
      * Creates new form JiFrmPrueba
@@ -28,68 +27,66 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
 
     public JiFrmAsignarMaterias( String alumno,Base_De_Datos basedatos) {
         initComponents();
-        this.baseDatos = basedatos;
-        this.alumno = alumno;
         this.getContentPane().setBackground(new Color(214, 245, 255));
         cargarDocentesDisponibles();  
         cargarMateriasDisponibles();
     }
     
-     private void cargarDocentesDisponibles() {
-    comboDocentes.removeAllItems();
+    private void cargarDocentesDisponibles() {
+        comboDocentes.removeAllItems();
 
-    String sql = "SELECT id, nombre, apellido FROM Docentes WHERE materia = 'sin asignatura'";
+        String sql = "SELECT id, nombre, apellido FROM Docentes WHERE materia = 'sin asignatura'";
 
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql);
-         ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-        boolean hayDocentes = false;
-        while (rs.next()) {
-            // Guarda ID oculto pero muestra nombre completo
-            String docente = rs.getInt("id") + " - " +
-                             rs.getString("nombre") + " " +
-                             rs.getString("apellido");
-            comboDocentes.addItem(docente);
-            hayDocentes = true;
+            boolean hayDocentes = false;
+            while (rs.next()) {
+                // Guarda ID oculto pero muestra nombre completo
+                String docente = rs.getInt("id") + " - " +
+                                 rs.getString("nombre") + " " +
+                                 rs.getString("apellido");
+                comboDocentes.addItem(docente);
+                hayDocentes = true;
+            }
+
+            if (!hayDocentes) {
+                comboDocentes.addItem("⚠ No hay docentes libres");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error cargando docentes: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        if (!hayDocentes) {
-            comboDocentes.addItem("⚠ No hay docentes libres");
-        }
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error cargando docentes: " + e.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
 
-private void cargarMateriasDisponibles() {
-    comboMaterias.removeAllItems();
+    private void cargarMateriasDisponibles() {
+        comboMaterias.removeAllItems();
 
-    String sql = "SELECT id_materia, nombre_materia FROM Materias WHERE estado = 'libre'";
+        String sql = "SELECT nombre_materia FROM Materias  where Materias.id_asignatura=\"x\";";
 
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql);
-         ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-        boolean hayMaterias = false;
-        while (rs.next()) {
-            String materia = rs.getInt("id_materia") + " - " + rs.getString("nombre_materia");
-            comboMaterias.addItem(materia);
-            hayMaterias = true;
+            boolean hayMaterias = false;
+            while (rs.next()) {
+                String materia = rs.getString("nombre_materia");
+                comboMaterias.addItem(materia);
+                hayMaterias = true;
+            }
+
+            if (!hayMaterias) {
+                comboMaterias.addItem("⚠ No hay materias disponibles");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error cargando materias: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        if (!hayMaterias) {
-            comboMaterias.addItem("⚠ No hay materias disponibles");
-        }
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this,
-                "Error cargando materias: " + e.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
 
 
 
@@ -108,6 +105,8 @@ private void cargarMateriasDisponibles() {
         comboDocentes = new javax.swing.JComboBox<>();
         btnAsignar = new javax.swing.JButton();
         comboMaterias = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
+        txtID = new javax.swing.JTextField();
 
         setClosable(true);
         setMaximizable(true);
@@ -128,6 +127,8 @@ private void cargarMateriasDisponibles() {
 
         comboMaterias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        jLabel3.setText("id de la signatura");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -139,12 +140,17 @@ private void cargarMateriasDisponibles() {
                     .addComponent(comboMaterias, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(btnAsignar)))
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -152,21 +158,24 @@ private void cargarMateriasDisponibles() {
                 .addGap(14, 14, 14)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAsignar)
-                    .addComponent(comboMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(15, Short.MAX_VALUE))
+                    .addComponent(comboMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAsignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarActionPerformed
-       String materiaSeleccionada = (String) comboMaterias.getSelectedItem();
+        String materiaSeleccionada = (String) comboMaterias.getSelectedItem();
     String docenteSeleccionado = (String) comboDocentes.getSelectedItem();
+    String idAsignatura = txtID.getText().trim();
 
     // Validaciones
     if (materiaSeleccionada == null || materiaSeleccionada.startsWith("⚠")) {
@@ -175,6 +184,7 @@ private void cargarMateriasDisponibles() {
                 "Advertencia", JOptionPane.WARNING_MESSAGE);
         return;
     }
+
     if (docenteSeleccionado == null || docenteSeleccionado.startsWith("⚠")) {
         JOptionPane.showMessageDialog(this,
                 "⚠ Debes seleccionar un docente válido.",
@@ -182,38 +192,65 @@ private void cargarMateriasDisponibles() {
         return;
     }
 
+    if (idAsignatura.isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+                "⚠ Debes ingresar un ID de asignatura (campo vacío).",
+                "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Validar que el ID de asignatura sea solo una letra, ya que en BD es varchar(1)
+    if (!idAsignatura.matches("[a-zA-Z]")) {
+        JOptionPane.showMessageDialog(this,
+                "⚠ El ID de asignatura debe ser una sola letra (ejemplo: A, B, C...).",
+                "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
     try (Connection conn = ConexionBD.getConnection()) {
         conn.setAutoCommit(false);
 
-        // Extraer IDs de los combobox
-        int idMateria = Integer.parseInt(materiaSeleccionada.split(" - ")[0]);
+        // Obtener el ID del docente desde el combo (formato: "id - Nombre Apellido")
         int idDocente = Integer.parseInt(docenteSeleccionado.split(" - ")[0]);
 
-        // 1) Asignar el docente a la materia
-        String sqlMateria = "UPDATE Materias SET docente_id = ?, estado = 'activa' WHERE id_materia = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sqlMateria)) {
+        // Obtener el ID de la materia según el nombre
+        String sqlGetMateria = "SELECT nombre_materia FROM Materias WHERE nombre_materia = ? AND id_asignatura = 'x'";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlGetMateria)) {
+            stmt.setString(1, materiaSeleccionada);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                throw new Exception("La materia seleccionada ya fue asignada o no existe.");
+            }
+        }
+
+        // 1) Actualizar tabla MATERIAS con el ID del docente y el nuevo ID de asignatura
+        String sqlUpdateMateria = "UPDATE Materias SET docente_id = ?, id_asignatura = ? WHERE nombre_materia = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlUpdateMateria)) {
             stmt.setInt(1, idDocente);
-            stmt.setInt(2, idMateria);
+            stmt.setString(2, idAsignatura);
+            stmt.setString(3, materiaSeleccionada);
             stmt.executeUpdate();
         }
 
-        // 2) Actualizar el docente con el nombre de la materia
-        String sqlDocente = "UPDATE Docentes SET materia = (SELECT nombre_materia FROM Materias WHERE id_materia = ?) WHERE id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sqlDocente)) {
-            stmt.setInt(1, idMateria);
-            stmt.setInt(2, idDocente);
+        // 2) Actualizar tabla DOCENTES con nombre de materia y el id de asignatura
+        String sqlUpdateDocente = "UPDATE Docentes SET materia = ?, id_materia = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlUpdateDocente)) {
+            stmt.setString(1, materiaSeleccionada);
+            stmt.setString(2, idAsignatura);
+            stmt.setInt(3, idDocente);
             stmt.executeUpdate();
         }
 
         conn.commit();
 
         JOptionPane.showMessageDialog(this,
-                "✅ Materia asignada correctamente al docente.",
+                "✅ Materia '" + materiaSeleccionada + "' asignada correctamente al docente.",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
-        // Recargar combos
+        // Limpiar campos y recargar combos
         cargarDocentesDisponibles();
         cargarMateriasDisponibles();
+        txtID.setText("");
 
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this,
@@ -229,5 +266,7 @@ private void cargarMateriasDisponibles() {
     private javax.swing.JComboBox<String> comboMaterias;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JTextField txtID;
     // End of variables declaration//GEN-END:variables
 }

@@ -43,7 +43,7 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
 
         jLabel1 = new javax.swing.JLabel();
         txtNombre = new javax.swing.JTextField();
-        btnGuerdarDocente = new javax.swing.JButton();
+        btnGuerdarAlumno = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txtSegundoNombr = new javax.swing.JTextField();
@@ -63,6 +63,7 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
         txtCedula = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         txtGenero = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
 
         setClosable(true);
         setMaximizable(true);
@@ -70,10 +71,10 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
 
         jLabel1.setText("Primer  Nombre ");
 
-        btnGuerdarDocente.setText("Registrar Docente");
-        btnGuerdarDocente.addActionListener(new java.awt.event.ActionListener() {
+        btnGuerdarAlumno.setText("Registrar Alumno");
+        btnGuerdarAlumno.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuerdarDocenteActionPerformed(evt);
+                btnGuerdarAlumnoActionPerformed(evt);
             }
         });
 
@@ -94,6 +95,13 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
         jLabel10.setText("CC");
 
         jLabel11.setText("Genero");
+
+        jButton1.setText("Limpiar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -149,9 +157,11 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
                     .addComponent(jLabel11)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20)
-                        .addComponent(btnGuerdarDocente)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnGuerdarAlumno)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
+                .addGap(59, 59, 59))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -188,49 +198,68 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtCedula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnGuerdarDocente)
-                    .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnGuerdarAlumno)
+                    .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnGuerdarDocenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuerdarDocenteActionPerformed
+    private void btnGuerdarAlumnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuerdarAlumnoActionPerformed
         // TODO add your handling code here:
-      String nombre = txtNombre.getText();
-    String segundoNombre = txtSegundoNombr.getText();
-    String apellido = txtApellido.getText();
-    String segundoApellido = txtSegundoApellido.getText();
-    String edad = txtEdad.getText();
-    String telefono = txtTelefono.getText();
-    String correo = txtCorreo.getText();
-    String direccion = txtDireccion.getText();
-    String cedula = txtCedula.getText();
-    String genero = txtGenero.getText(); // ✅ corregido
+        String nombre = txtNombre.getText();
+        String segundoNombre = txtSegundoNombr.getText();
+        String apellido = txtApellido.getText();
+        String segundoApellido = txtSegundoApellido.getText();
+        String edad = txtEdad.getText();
+        String telefono = txtTelefono.getText();
+        String correo = txtCorreo.getText();
+        String direccion = txtDireccion.getText();
+        String cedula = txtCedula.getText();
+        String genero = txtGenero.getText(); 
 
-    String sql = "INSERT INTO Alumnos " +
-                 "(nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cc, sexo) " +
-                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "CALL mi_procedimiento_ejemplo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        stmt.setString(1, nombre);
-        stmt.setString(2, segundoNombre);
-        stmt.setString(3, apellido);
-        stmt.setString(4, segundoApellido);
-        stmt.setString(5, edad);
-        stmt.setString(6, telefono);
-        stmt.setString(7, correo);
-        stmt.setString(8, direccion);
-        stmt.setString(9, cedula);
-        stmt.setString(10, genero);
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        stmt.executeUpdate();
-        javax.swing.JOptionPane.showMessageDialog(this, "✅ Estudiante registrado con éxito");
+            stmt.setString(1, nombre);
+            stmt.setString(2, segundoNombre);
+            stmt.setString(3, apellido);
+            stmt.setString(4, segundoApellido);
+            stmt.setString(5, edad);
+            stmt.setString(6, telefono);
+            stmt.setString(7, correo);
+            stmt.setString(8, direccion);
+            stmt.setString(9, cedula);
+            stmt.setString(10, genero);
 
-        // limpiar campos
+            stmt.executeUpdate();
+            javax.swing.JOptionPane.showMessageDialog(this, "✅ Estudiante registrado con éxito");
+
+            // limpiar campos
+            txtNombre.setText("");
+            txtSegundoNombr.setText("");
+            txtApellido.setText("");
+            txtSegundoApellido.setText("");
+            txtEdad.setText("");
+            txtTelefono.setText("");
+            txtCorreo.setText("");
+            txtDireccion.setText("");
+            txtCedula.setText("");
+            txtGenero.setText("");
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "❌ Error al registrar estudiante: " + e.getMessage());
+        }
+
+    }//GEN-LAST:event_btnGuerdarAlumnoActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
         txtNombre.setText("");
         txtSegundoNombr.setText("");
         txtApellido.setText("");
@@ -240,17 +269,12 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
         txtCorreo.setText("");
         txtDireccion.setText("");
         txtCedula.setText("");
-        txtGenero.setText("");
-
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "❌ Error al registrar estudiante: " + e.getMessage());
-    }
-
-    }//GEN-LAST:event_btnGuerdarDocenteActionPerformed
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnGuerdarDocente;
+    private javax.swing.JButton btnGuerdarAlumno;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

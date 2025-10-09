@@ -12,8 +12,7 @@ import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 
 /**
@@ -22,15 +21,15 @@ import java.util.logging.Logger;
  */
 public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
  
-       private final String alumno;
+      
         
     /**
      * Creates new form JiFrmPrueba
      */
 
-    public JiFrmCrearMateria( String alumno) {
+    public JiFrmCrearMateria( ) {
         initComponents();
-        this.alumno = alumno;
+     
         this.getContentPane().setBackground(new Color(214, 245, 255));
     }
     
@@ -103,12 +102,12 @@ public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
     }
 
     // Consulta con placeholders
-    String sql = "INSERT INTO Materias (nombre_materia, docente_id, alumno_id, estado) VALUES (?, null, null, 'libre')";
+    String sql = "call crear_materia(?)";
 
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        // Asignamos el valor al placeholder
+        
         stmt.setString(1, nombreMateria);
 
         int filas = stmt.executeUpdate();

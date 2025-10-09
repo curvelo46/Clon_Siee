@@ -203,7 +203,7 @@ public class frmAdministrador extends javax.swing.JFrame {
 
     private void btncrearMateriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncrearMateriaActionPerformed
         // TODO add your handling code here:
-        JiFrmCrearMateria Materia2=new JiFrmCrearMateria(nombre);
+        JiFrmCrearMateria Materia2=new JiFrmCrearMateria();
         jPanel.add(Materia2);
         Materia2.show();
     }//GEN-LAST:event_btncrearMateriaActionPerformed

@@ -10,18 +10,20 @@ BEGIN
     SELECT id FROM Alumnos WHERE nombre = Nombres;
 END //
 
-CREATE PROCEDURE listar_promedios_por_docente(IN p_docente_nombre VARCHAR(100))
+CREATE PROCEDURE listar_promedios_por_docente_materia(IN p_docente VARCHAR(100), IN p_materia VARCHAR(100))
 BEGIN
     SELECT 
-        a.nombre AS nombre,
-        a.apellido AS apellido,
+        a.nombre,
+        a.apellido,
         m.corte1,
         m.corte2,
-        m.corte3
+        m.corte3,
+        ROUND((m.corte1 + m.corte2 + m.corte3) / 3, 2) AS promedio
     FROM Materias m
     INNER JOIN Alumnos a ON m.alumno_id = a.id
     INNER JOIN Docentes d ON m.docente_id = d.id
-    WHERE d.nombre = p_docente_nombre;
+    WHERE d.nombre = p_docente
+      AND m.nombre_materia = p_materia;
 END //
 
 CREATE PROCEDURE obtener_materia_docente(IN p_docente_nombre VARCHAR(100))
@@ -33,18 +35,22 @@ BEGIN
     LIMIT 1;
 END //
 
-CREATE PROCEDURE listar_notas_docente(IN p_docente_nombre VARCHAR(100))
+
+CREATE PROCEDURE listar_notas_docente_materia(IN p_docente VARCHAR(100), IN p_materia VARCHAR(100))
 BEGIN
-    SELECT a.id,
-           CONCAT(a.nombre, ' ', a.apellido) AS estudiante,
-           m.corte1,
-           m.corte2,
-           m.corte3
+    SELECT 
+        a.nombre AS estudiante,
+        a.apellido,
+        m.corte1,
+        m.corte2,
+        m.corte3
     FROM Materias m
-    JOIN Alumnos a ON m.alumno_id = a.id
-    JOIN Docentes d ON m.docente_id = d.id
-    WHERE d.nombre = p_docente_nombre;
+    INNER JOIN Alumnos a ON m.alumno_id = a.id
+    INNER JOIN Docentes d ON m.docente_id = d.id
+    WHERE d.nombre = p_docente
+      AND m.nombre_materia = p_materia;
 END //
+
 
 CREATE PROCEDURE actualizar_nota_alumno(
     IN p_docente_nombre VARCHAR(100),
@@ -151,7 +157,7 @@ BEGIN
     FROM Docentes;
 END //
 
-CREATE PROCEDURE listar_estudiantes_por_docente(IN p_docente_nombre VARCHAR(100))
+CREATE PROCEDURE listar_estudiantes_por_docente_materia(IN p_docente VARCHAR(100), IN p_materia VARCHAR(100))
 BEGIN
     SELECT 
         a.cc,
@@ -163,8 +169,8 @@ BEGIN
     FROM Materias m
     INNER JOIN Alumnos a ON m.alumno_id = a.id
     INNER JOIN Docentes d ON m.docente_id = d.id
-    WHERE d.nombre = p_docente_nombre;
-      
+    WHERE d.nombre = p_docente
+      AND m.nombre_materia = p_materia;
 END //
 
 
@@ -245,7 +251,7 @@ END //
 
 CREATE PROCEDURE listado_docentes_disponibles()
 BEGIN
-	SELECT id, nombre, apellido FROM Docentes WHERE materia = 'sin asignatura';
+	SELECT id, nombre, apellido FROM Docentes ;
 END //
 
 CREATE PROCEDURE Cargos(in usuario varchar(50), in pass varchar(50) )

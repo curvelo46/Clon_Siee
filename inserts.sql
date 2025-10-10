@@ -33,7 +33,7 @@ VALUES
 -- INSERTAR MATERIAS
 -- =============================
 
-insert into materias (id_asignatura,nombre_materia,docente_id)values('a','matematica',7);
+insert into materias (id_asignatura,nombre_materia,docente_id,alumno_id)values('a','matematica',7,1);
 insert into materias (id_asignatura,nombre_materia,docente_id)values('b','matematica',8);
 
-
+select*from materias

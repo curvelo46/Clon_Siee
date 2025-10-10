@@ -3,30 +3,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package vista;
-
-
-
-
 import clases.ConexionBD;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-
-
 /**
  *
  * @author cymaniatico
  */
 public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
- 
-      
-        
     /**
      * Creates new form JiFrmPrueba
      */
-
     public JiFrmCrearMateria( ) {
         initComponents();
      
@@ -34,8 +24,6 @@ public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
     }
     
     
-
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -96,7 +84,7 @@ public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
 
     if (nombreMateria.isEmpty()) {
         javax.swing.JOptionPane.showMessageDialog(this,
-                "⚠ Debes ingresar un nombre para la materia.",
+                " Debes ingresar un nombre para la materia.",
                 "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
         return;
     }
@@ -114,18 +102,18 @@ public class JiFrmCrearMateria extends javax.swing.JInternalFrame {
 
         if (filas > 0) {
             javax.swing.JOptionPane.showMessageDialog(this,
-                    "✅ Materia registrada correctamente.",
+                    " Materia registrada correctamente.",
                     "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             txtNombreMateria.setText("");
         } else {
             javax.swing.JOptionPane.showMessageDialog(this,
-                    "❌ No se pudo registrar la materia.",
+                    " No se pudo registrar la materia.",
                     "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
 
     } catch (SQLException ex) {
         javax.swing.JOptionPane.showMessageDialog(this,
-                "❌ Error al registrar la materia: " + ex.getMessage(),
+                " Error al registrar la materia: " + ex.getMessage(),
                 "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         ex.printStackTrace();
     }

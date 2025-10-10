@@ -213,7 +213,7 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
         // Validar campos obligatorios
         if (nombre.isEmpty() || apellido.isEmpty() || edad.isEmpty() || cc.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this,
-                    "⚠ Debes llenar los campos obligatorios: Nombre, Apellido, Edad y CC.",
+                    "Debes llenar los campos obligatorios: Nombre, Apellido, Edad y CC.",
                     "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
             return;
         }

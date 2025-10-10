@@ -1,4 +1,3 @@
-
 DROP DATABASE IF EXISTS CBN;
 CREATE DATABASE CBN;
 USE CBN;
@@ -85,4 +84,4 @@ CREATE TABLE Materias (
 );
 
 
-SELECT nombre_materia FROM Materias  where Materias.id_asignatura="x";
+select*from docentes

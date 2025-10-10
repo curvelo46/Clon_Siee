@@ -198,7 +198,6 @@ public class frmAdministrador extends javax.swing.JFrame {
     private void btnReinicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReinicioActionPerformed
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "✅ semestre reiniciado");
-        baseDatos.reiniciarNotas();
     }//GEN-LAST:event_btnReinicioActionPerformed
 
     private void btncrearMateriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncrearMateriaActionPerformed

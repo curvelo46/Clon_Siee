@@ -19,8 +19,6 @@ import javax.swing.JOptionPane;
  */
 public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
  
-  
-        
     /**
      * Creates new form JiFrmPrueba
      */
@@ -34,8 +32,8 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     
     private void cargarDocentesDisponibles() {
         comboDocentes.removeAllItems();
-
-        String sql = "SELECT id, nombre, apellido FROM Docentes WHERE materia = 'sin asignatura'";
+        
+        String sql = "call listado_docentes_disponibles";
 
         try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -43,7 +41,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
 
             boolean hayDocentes = false;
             while (rs.next()) {
-                // Guarda ID oculto pero muestra nombre completo
+                
                 String docente = rs.getInt("id") + " - " +
                                  rs.getString("nombre") + " " +
                                  rs.getString("apellido");
@@ -64,7 +62,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     private void cargarMateriasDisponibles() {
         comboMaterias.removeAllItems();
 
-        String sql = "SELECT nombre_materia FROM Materias  where Materias.id_asignatura=\"x\";";
+        String sql = "call Materias_disponibles()";
 
         try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -177,7 +175,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     String docenteSeleccionado = (String) comboDocentes.getSelectedItem();
     String idAsignatura = txtID.getText().trim();
 
-    // Validaciones
+    
     if (materiaSeleccionada == null || materiaSeleccionada.startsWith("⚠")) {
         JOptionPane.showMessageDialog(this,
                 "⚠ Debes seleccionar una materia válida.",
@@ -199,7 +197,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
         return;
     }
 
-    // Validar que el ID de asignatura sea solo una letra, ya que en BD es varchar(1)
+    
     if (!idAsignatura.matches("[a-zA-Z]")) {
         JOptionPane.showMessageDialog(this,
                 "⚠ El ID de asignatura debe ser una sola letra (ejemplo: A, B, C...).",
@@ -210,11 +208,11 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     try (Connection conn = ConexionBD.getConnection()) {
         conn.setAutoCommit(false);
 
-        // Obtener el ID del docente desde el combo (formato: "id - Nombre Apellido")
+    
         int idDocente = Integer.parseInt(docenteSeleccionado.split(" - ")[0]);
 
-        // Obtener el ID de la materia según el nombre
-        String sqlGetMateria = "SELECT nombre_materia FROM Materias WHERE nombre_materia = ? AND id_asignatura = 'x'";
+    
+        String sqlGetMateria = "call id_materia (?)";
         try (PreparedStatement stmt = conn.prepareStatement(sqlGetMateria)) {
             stmt.setString(1, materiaSeleccionada);
             ResultSet rs = stmt.executeQuery();
@@ -223,8 +221,8 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
             }
         }
 
-        // 1) Actualizar tabla MATERIAS con el ID del docente y el nuevo ID de asignatura
-        String sqlUpdateMateria = "UPDATE Materias SET docente_id = ?, id_asignatura = ? WHERE nombre_materia = ?";
+        
+        String sqlUpdateMateria = "call asignar_p_a_m (?,?,?)";
         try (PreparedStatement stmt = conn.prepareStatement(sqlUpdateMateria)) {
             stmt.setInt(1, idDocente);
             stmt.setString(2, idAsignatura);
@@ -232,8 +230,8 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
             stmt.executeUpdate();
         }
 
-        // 2) Actualizar tabla DOCENTES con nombre de materia y el id de asignatura
-        String sqlUpdateDocente = "UPDATE Docentes SET materia = ?, id_materia = ? WHERE id = ?";
+        
+        String sqlUpdateDocente = "call asignar_m_a_p(?,?,?)";
         try (PreparedStatement stmt = conn.prepareStatement(sqlUpdateDocente)) {
             stmt.setString(1, materiaSeleccionada);
             stmt.setString(2, idAsignatura);

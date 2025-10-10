@@ -2,8 +2,39 @@ DELIMITER //
 
 CREATE PROCEDURE listado_alumnos()
 BEGIN
-    select*from alumnos;
+    SELECT nombre, apellido FROM Alumnos;
 END //
+
+CREATE PROCEDURE Materias_disponibles()
+BEGIN
+    SELECT nombre_materia FROM Materias  where Materias.id_asignatura="x";
+END //
+
+CREATE PROCEDURE id_materia(in nombre varchar(125))
+BEGIN
+    SELECT nombre_materia FROM Materias WHERE nombre_materia = nombre AND id_asignatura = 'x';
+END //
+
+CREATE PROCEDURE asignar_p_a_m(in id_d int, in id_a varchar(1) , nombre_m varchar(125))
+BEGIN
+    UPDATE Materias SET docente_id = id_d, id_asignatura = id_a WHERE nombre_materia = nombre_m;
+END //
+
+CREATE PROCEDURE asignar_m_a_p(in materias varchar(125), in id_m varchar(1),in id_d int )
+BEGIN
+    UPDATE Docentes SET materia = materias, id_materia = id_m WHERE id = id_d;
+END //
+
+CREATE PROCEDURE listado_docentes_disponibles()
+BEGIN
+	SELECT id, nombre, apellido FROM Docentes WHERE materia = 'sin asignatura';
+END //
+
+CREATE PROCEDURE Cargos(in usuario varchar(50), in pass varchar(50) )
+BEGIN
+    SELECT cargo FROM Usuarios WHERE user_ = usuario AND contrasena = pass ;
+END //
+
 
 CREATE PROCEDURE crear_materia(in materia varchar(125))
 BEGIN
@@ -62,7 +93,6 @@ BEGIN
         DELETE FROM Materias WHERE id_materia = materiaId;
     END IF;
 END$$
-
 
 DELIMITER ;
 

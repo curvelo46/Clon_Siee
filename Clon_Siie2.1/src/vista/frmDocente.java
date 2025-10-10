@@ -1,10 +1,13 @@
 package vista;
 
 import clases.Base_De_Datos;
+import clases.ConexionBD;
 import java.awt.Color;
-import java.sql.SQLException;
-import java.util.Locale;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import javax.swing.Box;
+import javax.swing.JOptionPane;
 
 
 public class frmDocente extends javax.swing.JFrame {
@@ -19,7 +22,7 @@ public class frmDocente extends javax.swing.JFrame {
 
     
     ajustarImagenBoton();
-
+    cargarAsignaturasDocente();
     
     this.addComponentListener(new java.awt.event.ComponentAdapter() {
         @Override
@@ -34,18 +37,49 @@ public class frmDocente extends javax.swing.JFrame {
 }
 
     
+   
+     private void cargarAsignaturasDocente() {
+        comboAsignaturas.removeAllItems(); 
+
+        String sql = "SELECT m.nombre_materia FROM Materias m INNER JOIN Docentes d ON m.docente_id = d.id WHERE d.nombre = ?";
+
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, Nombre);
+            ResultSet rs = stmt.executeQuery();
+
+            boolean tieneMaterias = false;
+            while (rs.next()) {
+                comboAsignaturas.addItem(rs.getString("nombre_materia"));
+                tieneMaterias = true;
+            }
+
+            if (!tieneMaterias) {
+                comboAsignaturas.addItem("Sin materias asignadas");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "❌ Error al cargar las asignaturas del docente:\n" + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+   
     
     private void ajustarImagenBoton() {
-    java.awt.Image img = new javax.swing.ImageIcon(getClass().getResource("/vista/hq720.jpg")).getImage();
-    java.awt.Image imgEscalada = img.getScaledInstance(jButton1.getWidth(), jButton1.getHeight(), java.awt.Image.SCALE_SMOOTH);
-    jButton1.setIcon(new javax.swing.ImageIcon(imgEscalada));
-}
+        java.awt.Image img = new javax.swing.ImageIcon(getClass().getResource("/vista/hq720.jpg")).getImage();
+        java.awt.Image imgEscalada = img.getScaledInstance(jButton1.getWidth(), jButton1.getHeight(), java.awt.Image.SCALE_SMOOTH);
+        jButton1.setIcon(new javax.swing.ImageIcon(imgEscalada));
+    }
 
     
     
     public void setUsuario(String usuario){
             this.Nombre = usuario;
             jMenu1.setText("Bienvenido profesor " + usuario);
+            jMenuBar1.add(comboAsignaturas);
              jMenuBar1.add(Box.createHorizontalGlue()); 
              jMenuBar1.add(btnsalir);
     }
@@ -61,6 +95,7 @@ public class frmDocente extends javax.swing.JFrame {
 
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         btnsalir = new javax.swing.JButton();
+        comboAsignaturas = new javax.swing.JComboBox<>();
         jdescritorio = new javax.swing.JDesktopPane();
         jButton1 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -80,6 +115,8 @@ public class frmDocente extends javax.swing.JFrame {
             }
         });
 
+        comboAsignaturas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jdescritorio.setPreferredSize(new java.awt.Dimension(0, 231));
@@ -97,7 +134,7 @@ public class frmDocente extends javax.swing.JFrame {
         jdescritorio.setLayout(jdescritorioLayout);
         jdescritorioLayout.setHorizontalGroup(
             jdescritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 688, Short.MAX_VALUE)
+            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 685, Short.MAX_VALUE)
         );
         jdescritorioLayout.setVerticalGroup(
             jdescritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -149,11 +186,11 @@ public class frmDocente extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jdescritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
+            .addComponent(jdescritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jdescritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
+            .addComponent(jdescritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
         );
 
         pack();
@@ -161,27 +198,47 @@ public class frmDocente extends javax.swing.JFrame {
 
     private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
         // TODO add your handling code here:
-        abrirNotas();
+       String materiaSeleccionada = (String) comboAsignaturas.getSelectedItem();
+    if (materiaSeleccionada == null || materiaSeleccionada.equals("Sin materias asignadas")) {
+        JOptionPane.showMessageDialog(this, "⚠️ Seleccione una materia válida antes de continuar.");
+        return;
+    }
+
+    JiFrmPrueba prueba = new JiFrmPrueba(baseDatos, Nombre, materiaSeleccionada);
+    jdescritorio.add(prueba);
+    prueba.show();
     }//GEN-LAST:event_btnNotasActionPerformed
 
     private void btnListaEstudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListaEstudiantesActionPerformed
         // TODO add your handling code here:
-        JiFrmListaestudiantes lista=new JiFrmListaestudiantes(baseDatos, Nombre);
-        jdescritorio.add(lista);
-        lista.show();
-        
+         String materiaSeleccionada = (String) comboAsignaturas.getSelectedItem();
+    if (materiaSeleccionada == null || materiaSeleccionada.equals("Sin materias asignadas")) {
+        JOptionPane.showMessageDialog(this, "⚠️ Seleccione una materia válida antes de continuar.");
+        return;
+    }
+
+    JiFrmListaestudiantes lista = new JiFrmListaestudiantes(baseDatos, Nombre, materiaSeleccionada);
+    jdescritorio.add(lista);
+    lista.show();
     }//GEN-LAST:event_btnListaEstudiantesActionPerformed
 
     private void btnsalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsalirActionPerformed
         // TODO add your handling code here:
-        cerrarSesion(); 
+         this.dispose();
+        new frmLogin(baseDatos).setVisible(true); 
     }//GEN-LAST:event_btnsalirActionPerformed
 
     private void btnPromedioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPromedioActionPerformed
         // TODO add your handling code here:
-        JiFrmPromedioGrupo nota=new JiFrmPromedioGrupo(Nombre);
-        jdescritorio.add(nota);
-        nota.show();
+         String materiaSeleccionada = (String) comboAsignaturas.getSelectedItem();
+    if (materiaSeleccionada == null || materiaSeleccionada.equals("Sin materias asignadas")) {
+        JOptionPane.showMessageDialog(this, "⚠️ Seleccione una materia válida antes de continuar.");
+        return;
+    }
+
+    JiFrmPromedioGrupo promedio = new JiFrmPromedioGrupo(Nombre, materiaSeleccionada);
+    jdescritorio.add(promedio);
+    promedio.show();
     }//GEN-LAST:event_btnPromedioActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -190,18 +247,12 @@ public class frmDocente extends javax.swing.JFrame {
 
   
 
-    private void abrirNotas() {
-        JiFrmPrueba prueba = new JiFrmPrueba(baseDatos,Nombre);
-        jdescritorio.add(prueba);
-        prueba.show();
-        
-    }
-
-    private void cerrarSesion() {
-        this.dispose();
-        new frmLogin(baseDatos).setVisible(true);
-    }
     
+    
+        
+    
+
+  
     /**
      * @param args the command line arguments
      */
@@ -212,6 +263,7 @@ public class frmDocente extends javax.swing.JFrame {
     private javax.swing.JMenuItem btnNotas;
     private javax.swing.JMenuItem btnPromedio;
     private javax.swing.JButton btnsalir;
+    private javax.swing.JComboBox<String> comboAsignaturas;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenu jMenu1;

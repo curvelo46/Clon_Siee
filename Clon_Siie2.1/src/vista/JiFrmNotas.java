@@ -27,17 +27,20 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
     }
 
     // OBTENER ID DEL ALUMNO LOGUEADO
-    private void cargarIdAlumno() {
-        String sql = "SELECT id FROM Alumnos WHERE nombre = ?";
+   private void cargarIdAlumno() {
+        String sql = "call id_alumno(?)";
         try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, alumno);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 alumnoId = rs.getInt("id");
             } else {
-                alumnoId = -1; // si no lo encuentra
+                alumnoId = -1;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             alumnoId = -1;
@@ -45,7 +48,7 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
     }
 
     // CARGAR NOTAS DEL ALUMNO
-    private void cargarNotas() {
+   private void cargarNotas() {
         DefaultTableModel modeloNotas = new DefaultTableModel(
                 new Object[]{"Materia", "Corte 1", "Corte 2", "Corte 3", "Promedio"}, 0
         ) {
@@ -64,12 +67,12 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
             return;
         }
 
-        String sql = "SELECT m.nombre_materia, m.corte1, m.corte2, m.corte3 " +
-                     "FROM Materias m " +
-                     "WHERE m.alumno_id = ?";
+        // 🔹 Usamos el procedimiento almacenado
+        String sql = "CALL listar_notas_por_alumno(?)";
 
         try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, alumnoId);
             ResultSet rs = stmt.executeQuery();
 
@@ -79,7 +82,7 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
                 double c2 = rs.getDouble("corte2");
                 double c3 = rs.getDouble("corte3");
 
-                // Calcular promedio de esta materia
+                // Calcular promedio de la materia
                 int cortesValidos = 0;
                 double sumaMateria = 0;
 
@@ -111,6 +114,7 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
             lblPromedio.setText("ℹ️ El alumno no tiene notas registradas.");
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

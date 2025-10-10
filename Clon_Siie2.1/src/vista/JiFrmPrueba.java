@@ -23,86 +23,79 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
     private final String profesor;
     private int corteSeleccionado; 
     private String tablaNotasMateria; 
-    
-    public JiFrmPrueba(Base_De_Datos basedatos, String profesor) {
+    private final String materia;
+
+    public JiFrmPrueba(Base_De_Datos basedatos, String profesor, String materia) {
         initComponents();
         this.baseDatos = basedatos;
-        this.getContentPane().setBackground(new Color(255, 254, 214));
         this.profesor = profesor;
+        this.materia = materia;
+        this.getContentPane().setBackground(new Color(255, 254, 214));
         this.corteSeleccionado = basedatos.corte();
 
-        // Detectar qué materia tiene asignada el docente
-        this.tablaNotasMateria = obtenerTablaNotasMateria();
+        cargarTabla();
 
-        if (this.tablaNotasMateria != null) {
-            cargarTabla();
-        } else {
-            // Ocultar tabla y botón si no tiene materia
-            jScrollPane1.setVisible(false);
-            btnGuardar.setVisible(false);
-            lbMateria.setText("Materia: No asignada");
-        }
+            this.tablaNotasMateria = obtenerTablaNotasMateria();
+
+            if (this.tablaNotasMateria != null) {
+                cargarTabla();
+            } else {
+                jScrollPane1.setVisible(false);
+                btnGuardar.setVisible(false);
+                lbMateria.setText("Materia: No asignada");
+            }
     }
 
     
-   private void cargarTabla() {
-    if (tablaNotasMateria == null) return;
+    private void cargarTabla() {
+        if (tablaNotasMateria == null) return;
 
-    // Mostrar corte actual en el menú
-    txtCorte.setText("Corte actual: " + corteSeleccionado);
+        txtCorte.setText("Corte actual: " + corteSeleccionado);
 
-    jMenuBar1.add(Box.createHorizontalGlue());
-    jMenuBar1.add(btnGuardar);
+        jMenuBar1.add(Box.createHorizontalGlue());
+        jMenuBar1.add(btnGuardar);
 
-    DefaultTableModel modelo = new DefaultTableModel(
-        new Object[]{"Estudiante", "Corte 1", "Corte 2", "Corte 3"}, 0
-    ) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return column == corteSeleccionado;
+        DefaultTableModel modelo = new DefaultTableModel(
+                new Object[]{"Estudiante", "Corte 1", "Corte 2", "Corte 3"}, 0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == corteSeleccionado;
+            }
+        };
+
+        String sql = "CALL listar_notas_docente_materia(?, ?)"; // debes tener este SP en MySQL
+try (Connection conn = ConexionBD.getConnection();
+     PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+    stmt.setString(1, profesor);
+    stmt.setString(2, materia);
+    ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String estudiante = rs.getString("estudiante");
+                double c1 = rs.getDouble("corte1");
+                double c2 = rs.getDouble("corte2");
+                double c3 = rs.getDouble("corte3");
+                modelo.addRow(new Object[]{estudiante, c1, c2, c3});
+            }
+
+            tablaNotas.setModel(modelo);
+            lbMateria.setText("Materia: " + tablaNotasMateria);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "❌ Error al cargar alumnos/notas: " + e.getMessage());
+            e.printStackTrace();
         }
-    };
-
-    String sql = "SELECT a.id, CONCAT(a.nombre,' ',a.apellido) AS estudiante, " +
-                 "m.corte1, m.corte2, m.corte3 " +
-                 "FROM Materias m " +
-                 "JOIN Alumnos a ON m.alumno_id = a.id " +
-                 "JOIN Docentes d ON m.docente_id = d.id " +
-                 "WHERE d.nombre = ?";
-
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, profesor);
-        ResultSet rs = stmt.executeQuery();
-
-        while (rs.next()) {
-            String estudiante = rs.getString("estudiante");
-            double c1 = rs.getDouble("corte1");
-            double c2 = rs.getDouble("corte2");
-            double c3 = rs.getDouble("corte3");
-            modelo.addRow(new Object[]{estudiante, c1, c2, c3});
-        }
-
-        tablaNotas.setModel(modelo);
-        lbMateria.setText("Materia: " + tablaNotasMateria);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "❌ Error al cargar alumnos/notas: " + e.getMessage());
     }
-}
-
 
     /**
      * Obtiene la materia asignada al docente.
      * Si no tiene, muestra alerta y retorna null.
      */
-    private String obtenerTablaNotasMateria() {
+ private String obtenerTablaNotasMateria() {
         String materia = null;
-        String sql = "SELECT m.nombre_materia " +
-                     "FROM Materias m " +
-                     "INNER JOIN Docentes d ON m.docente_id = d.id " +
-                     "WHERE d.nombre = ? LIMIT 1";
+        String sql = "CALL obtener_materia_docente(?)";
 
         try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -122,53 +115,46 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
 
         return materia;
     }
-    
+
+    // 🔹 Guardar notas usando procedimiento almacenado
     private void guardarNotas() {
-    if (tablaNotasMateria == null) return;
+        if (tablaNotasMateria == null) return;
 
-    DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
 
-    try (Connection conn = ConexionBD.getConnection()) {
-        String columnaCorte = "corte" + corteSeleccionado;
+        try (Connection conn = ConexionBD.getConnection()) {
+            String sql = "CALL actualizar_nota_alumno(?, ?, ?, ?)";
 
-        String sqlUpdate = "UPDATE Materias m "
-                         + "INNER JOIN Alumnos a ON m.alumno_id = a.id "
-                         + "INNER JOIN Docentes d ON m.docente_id = d.id "
-                         + "SET m." + columnaCorte + " = ? "
-                         + "WHERE d.nombre = ? AND CONCAT(a.nombre,' ',a.apellido) = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
 
-        PreparedStatement stmt = conn.prepareStatement(sqlUpdate);
+            for (int i = 0; i < modelo.getRowCount(); i++) {
+                int colIndex = corteSeleccionado;
+                double nota;
+                try {
+                    nota = Double.parseDouble(modelo.getValueAt(i, colIndex).toString());
+                } catch (NumberFormatException e) {
+                    nota = 0.0;
+                }
 
-        for (int i = 0; i < modelo.getRowCount(); i++) {
-            int colIndex = corteSeleccionado; 
-            double nota;
-            try {
-                nota = Double.parseDouble(modelo.getValueAt(i, colIndex).toString());
-            } catch (NumberFormatException e) {
-                nota = Double.parseDouble(modelo.getValueAt(i, colIndex).toString() + ".0");
+                String estudiante = modelo.getValueAt(i, 0).toString();
+
+                stmt.setString(1, profesor);
+                stmt.setString(2, estudiante);
+                stmt.setInt(3, corteSeleccionado);
+                stmt.setDouble(4, nota);
+                stmt.addBatch();
             }
 
-            String estudiante = modelo.getValueAt(i, 0).toString();
+            stmt.executeBatch();
 
-            stmt.setDouble(1, nota);
-            stmt.setString(2, profesor);
-            stmt.setString(3, estudiante);
-            stmt.addBatch();
+            JOptionPane.showMessageDialog(this, "✅ Notas guardadas correctamente (Corte " + corteSeleccionado + ")");
+            cargarTabla();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "❌ Error al guardar notas: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        stmt.executeBatch();
-
-        JOptionPane.showMessageDialog(this, "✅ Notas guardadas en corte " + corteSeleccionado);
-        
-        cargarTabla();
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "❌ Error al guardar notas: " + e.getMessage());
-        e.printStackTrace();
     }
-}
-
-
 
 
     /**

@@ -12,8 +12,8 @@ import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 
 
 /**
@@ -92,70 +92,40 @@ public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    String nombreMateria = txtNombreMateria.getText().trim();
+  
+        String nombreMateria = txtNombreMateria.getText().trim();
 
-    if (nombreMateria.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this,
-                "⚠ Debes ingresar el nombre de la materia a quitar.",
-                "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    try (Connection conn = ConexionBD.getConnection()) {
-        conn.setAutoCommit(false); // Usamos transacción
-
-        // 1. Buscar el docente asignado a la materia
-        Integer idDocente = null;
-        String sqlBuscar = "SELECT docente_id FROM Materias WHERE nombre_materia = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sqlBuscar)) {
-            stmt.setString(1, nombreMateria);
-            try (java.sql.ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    idDocente = rs.getInt("docente_id");
-                    if (rs.wasNull()) {
-                        idDocente = null; // si estaba NULL
-                    }
-                }
-            }
-        }
-
-        if (idDocente == null) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "⚠ La materia no tiene un docente asignado o no existe.",
-                    "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
-            conn.rollback();
+        if (nombreMateria.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "⚠ Debes ingresar el nombre de la materia a quitar.",
+                    "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // 2. Actualizar docente → dejarlo sin asignatura
-        String sqlDocente = "UPDATE Docentes SET materia = 'sin asignatura' WHERE id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sqlDocente)) {
-            stmt.setInt(1, idDocente);
-            stmt.executeUpdate();
-        }
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("CALL quitar_materia(?)")) {
 
-        // 3. Actualizar materia → dejarla libre y sin docente
-        String sqlMateria = "UPDATE Materias SET docente_id = NULL, estado = 'libre' WHERE nombre_materia = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sqlMateria)) {
             stmt.setString(1, nombreMateria);
-            stmt.executeUpdate();
+            stmt.execute();
+
+            JOptionPane.showMessageDialog(this,
+                    "✅ Materia liberada correctamente.\nEl docente quedó sin asignatura.",
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+            txtNombreMateria.setText("");
+
+        } catch (SQLException ex) {
+            String mensaje = ex.getMessage();
+            if (mensaje.contains("La materia no tiene un docente asignado")) {
+                JOptionPane.showMessageDialog(this, "⚠ " + mensaje,
+                        "Advertencia", JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "❌ Error al liberar la materia: " + mensaje,
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            ex.printStackTrace();
         }
-
-        conn.commit(); // Confirmamos la transacción
-
-        javax.swing.JOptionPane.showMessageDialog(this,
-                "✅ Materia liberada correctamente.\nEl docente quedó sin asignatura.",
-                "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-
-        txtNombreMateria.setText("");
-
-    } catch (SQLException ex) {
-        javax.swing.JOptionPane.showMessageDialog(this,
-                "❌ Error al liberar la materia: " + ex.getMessage(),
-                "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        ex.printStackTrace();
-    }
     }//GEN-LAST:event_jButton1ActionPerformed
 
 

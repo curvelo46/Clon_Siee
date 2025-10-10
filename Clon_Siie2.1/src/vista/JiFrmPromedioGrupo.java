@@ -11,19 +11,21 @@ import javax.swing.table.DefaultTableModel;
 public class JiFrmPromedioGrupo extends javax.swing.JInternalFrame {
 
     private final String docente;
+    private final String materia;
 
-    public JiFrmPromedioGrupo(String docente) {
+    public JiFrmPromedioGrupo(String docente, String materia) {
         initComponents();
         this.docente = docente;
+        this.materia = materia;
         this.getContentPane().setBackground(new Color(214, 245, 255));
-
         cargarPromedios();
     }
+
 
     /**
      * Cargar los promedios por estudiante y el promedio general del grupo
      */
-     private void cargarPromedios() {
+    private void cargarPromedios() {
         DefaultTableModel modelo = new DefaultTableModel(
                 new Object[]{"Estudiante", "Corte 1", "Corte 2", "Corte 3", "Promedio"}, 0
         ) {
@@ -36,16 +38,13 @@ public class JiFrmPromedioGrupo extends javax.swing.JInternalFrame {
         double sumaGeneral = 0;
         int cantidadEstudiantes = 0;
 
-        String sql = "SELECT a.nombre, a.apellido, m.corte1, m.corte2, m.corte3 " +
-                     "FROM Materias m " +
-                     "INNER JOIN Alumnos a ON m.alumno_id = a.id " +
-                     "INNER JOIN Docentes d ON m.docente_id = d.id " +
-                     "WHERE d.nombre = ?";
+        // 🔹 Usamos el procedimiento almacenado
+              String sql = "CALL listar_promedios_por_docente_materia(?, ?)";
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, docente);
+        stmt.setString(1, docente);
+        stmt.setString(2, materia);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {

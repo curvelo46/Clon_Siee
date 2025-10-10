@@ -25,70 +25,69 @@ import javax.swing.table.DefaultTableModel;
 public class JiFrmListaestudiantes extends javax.swing.JInternalFrame {
        private final Base_De_Datos baseDatos;
        private final String profesor;
+       private final String materia;
     /**
      * Creates new form JiFrmPrueba
      */
 
-    public JiFrmListaestudiantes(Base_De_Datos basedatos, String profesor) {
+
+
+    public JiFrmListaestudiantes(Base_De_Datos basedatos, String profesor, String materia) {
         initComponents();
-          this.baseDatos=basedatos;
-          this.getContentPane().setBackground(new Color(255, 254, 214));
-          this.profesor = profesor;
-          cargarEstudiantes();
-        
+        this.baseDatos = basedatos;
+        this.profesor = profesor;
+        this.materia = materia;
+        this.getContentPane().setBackground(new Color(255, 254, 214));
+        cargarEstudiantes();
     }
     
-    private void cargarEstudiantes() {
-    // Modelo no editable
-    DefaultTableModel modelo = new DefaultTableModel() {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false; // 🔒 ninguna celda editable
+   private void cargarEstudiantes() {
+        // Modelo no editable
+        DefaultTableModel modelo = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // 🔒 ninguna celda editable
+            }
+        };
+
+        // Definir columnas
+        modelo.addColumn("CC");
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Apellido");
+        modelo.addColumn("Edad");
+        modelo.addColumn("Teléfono");
+        modelo.addColumn("Correo");
+
+        // Asignar modelo a la tabla
+        tablaEstudiantes.setModel(modelo);
+
+        // 🔹 Usamos el procedimiento almacenado
+    String sql = "CALL listar_estudiantes_por_docente_materia(?, ?)"; 
+
+try (Connection conn = baseDatos.getConnection();
+     PreparedStatement ps = conn.prepareStatement(sql)) {
+
+    ps.setString(1, profesor);
+    ps.setString(2, materia);
+    ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Object[] fila = {
+                    rs.getString("cc"),
+                    rs.getString("nombre"),
+                    rs.getString("apellido"),
+                    rs.getString("edad"),
+                    rs.getString("telefono"),
+                    rs.getString("correo")
+                };
+                modelo.addRow(fila);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                "Error cargando estudiantes: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
         }
-    };
-
-    // Definir columnas
-    modelo.addColumn("CC");
-    modelo.addColumn("Nombre");
-    modelo.addColumn("Apellido");
-    modelo.addColumn("Edad");
-    modelo.addColumn("Teléfono");
-    modelo.addColumn("Correo");
-
-    // Asignar modelo a la tabla
-    tablaEstudiantes.setModel(modelo);
-
-    String sql = "SELECT a.cc, a.nombre, a.apellido, a.edad, a.telefono, a.correo\n" +
-"        FROM Materias m\n" +
-"        INNER JOIN Alumnos a ON m.alumno_id = a.id\n" +
-"        INNER JOIN Docentes d ON m.docente_id = d.id\n" +
-"        WHERE d.nombre = ? AND m.estado = 'activa';";
-
-    try (Connection conn = baseDatos.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-
-        ps.setString(1, profesor); // 👈 profesor que viene del constructor
-        ResultSet rs = ps.executeQuery();
-
-        while (rs.next()) {
-            Object[] fila = {
-                rs.getString("cc"),
-                rs.getString("nombre"),
-                rs.getString("apellido"),
-                rs.getString("edad"),
-                rs.getString("telefono"),
-                rs.getString("correo"),
-            };
-            modelo.addRow(fila);
-        }
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this,
-            "Error cargando estudiantes: " + e.getMessage(),
-            "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
-
 
 
  
@@ -126,7 +125,7 @@ public class JiFrmListaestudiantes extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

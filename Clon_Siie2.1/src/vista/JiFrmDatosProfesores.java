@@ -38,17 +38,24 @@ public class JiFrmDatosProfesores extends javax.swing.JInternalFrame {
     
     private void cargarDocentes() {
         DefaultTableModel modelo = new DefaultTableModel(
-            new Object[]{ "CC", "Nombre", "Segundo Nombre", "Apellido", "Segundo Apellido", "Edad", "Teléfono", "Correo", "Dirección","Materia"}, 0
+            new Object[]{ 
+                "CC", "Nombre", "Segundo Nombre", "Apellido", "Segundo Apellido", 
+                "Edad", "Teléfono", "Correo", "Dirección", "Materia" 
+            }, 0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column != 0 &&column !=9 ; // NO permitir editar la columna "CC" (clave primaria)
+                // No se permite editar CC ni Materia
+                return column != 0 && column != 9;
             }
         };
 
+        // 🔹 Ahora usamos el procedimiento almacenado
+        String sql = "CALL listar_docentes()";
+
         try (Connection conn = baseDatos.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM Docentes")) {
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Object[] fila = {
@@ -61,22 +68,21 @@ public class JiFrmDatosProfesores extends javax.swing.JInternalFrame {
                     rs.getString("telefono"),
                     rs.getString("correo"),
                     rs.getString("direccion"),
-                    rs.getString("materia"),
+                    rs.getString("materia")
                 };
                 modelo.addRow(fila);
             }
 
             tablaDocentes.setModel(modelo);
 
-            // 🔥 Detectar cambios en las celdas y guardar en la BD
+            // 🔥 Detectar cambios en las celdas y guardar con el SP
             modelo.addTableModelListener(new TableModelListener() {
                 @Override
                 public void tableChanged(TableModelEvent e) {
                     if (e.getType() == TableModelEvent.UPDATE) {
                         int fila = e.getFirstRow();
-                        int columna = e.getColumn();
 
-                        String cc = (String) modelo.getValueAt(fila, 0); // CC como clave
+                        String cc = (String) modelo.getValueAt(fila, 0);
                         String nombre = (String) modelo.getValueAt(fila, 1);
                         String segundoNombre = (String) modelo.getValueAt(fila, 2);
                         String apellido = (String) modelo.getValueAt(fila, 3);
@@ -92,36 +98,44 @@ public class JiFrmDatosProfesores extends javax.swing.JInternalFrame {
             });
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error cargando docentes: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "Error cargando docentes: " + ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void actualizarDocente(String cc, String nombre, String segundoNombre, String apellido,
+
+  private void actualizarDocente(String cc, String nombre, String segundoNombre, String apellido,
                                    String segundoApellido, String edad, String telefono, String correo, String direccion) {
-        String sql = "UPDATE Docentes SET nombre=?, segundo_nombre=?, apellido=?, segundo_apellido=?, edad=?, telefono=?, correo=?, direccion=? WHERE cc=?";
+
+        String sql = "CALL actualizar_docente(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = baseDatos.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, nombre);
-            pstmt.setString(2, segundoNombre);
-            pstmt.setString(3, apellido);
-            pstmt.setString(4, segundoApellido);
-            pstmt.setString(5, edad);
-            pstmt.setString(6, telefono);
-            pstmt.setString(7, correo);
-            pstmt.setString(8, direccion);
-            pstmt.setString(9, cc);
+            ps.setInt(1, Integer.parseInt(cc));
+            ps.setString(2, nombre);
+            ps.setString(3, segundoNombre);
+            ps.setString(4, apellido);
+            ps.setString(5, segundoApellido);
+            ps.setInt(6, Integer.parseInt(edad));
+            ps.setString(7, telefono);
+            ps.setString(8, correo);
+            ps.setString(9, direccion);
 
-            int filas = pstmt.executeUpdate();
-            if (filas > 0) {
-                System.out.println("✅ Datos del docente con CC " + cc + " actualizados.");
-            }
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, 
+                "✅ Datos del docente " + nombre +" "+ apellido + " actualizados correctamente.");
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error actualizando docente: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "Error actualizando docente: " + ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, 
+                "Error en el formato numérico de CC o edad.",
+                "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

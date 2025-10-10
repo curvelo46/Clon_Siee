@@ -10,7 +10,7 @@ public class Base_De_Datos {
     
     private static final String URL = "jdbc:mysql://localhost:3306/CBN?useSSL=false&serverTimezone=UTC";
     private static final String USER = "root";   
-    private static final String PASS = "cbn2016"; 
+    private static final String PASS = "316484"; 
     private Integer corte = 1;
     
     public String login(String usuario, String contrasena) {

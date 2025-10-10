@@ -58,6 +58,7 @@ public class frmLogin extends javax.swing.JFrame {
         txtContraseña.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtContraseñaKeyPressed(evt);
+                txtContraseñaKeyPressed2(evt);
             }
         });
 
@@ -69,6 +70,7 @@ public class frmLogin extends javax.swing.JFrame {
         txtUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtUsuarioKeyPressed(evt);
+                txtUsuarioKeyPressed2(evt);
             }
         });
 
@@ -228,6 +230,20 @@ public class frmLogin extends javax.swing.JFrame {
             btnSecion.doClick();
         }
     }//GEN-LAST:event_txtUsuarioKeyPressed
+
+    private void txtUsuarioKeyPressed2(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUsuarioKeyPressed2
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            txtContraseña.requestFocus();
+        }
+    }//GEN-LAST:event_txtUsuarioKeyPressed2
+
+    private void txtContraseñaKeyPressed2(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContraseñaKeyPressed2
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            txtUsuario.requestFocus();
+        }
+    }//GEN-LAST:event_txtContraseñaKeyPressed2
 
     /**
      * @param args the command line arguments

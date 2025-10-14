@@ -14,7 +14,7 @@ public class Base_De_Datos {
     private Integer corte = 1;
     
     public String login(String usuario, String contrasena) {
-        String sql = "call Cargos (?,?)";
+        String sql = "call obtener_cargo_usuario(?,?)";
 
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -38,7 +38,7 @@ public class Base_De_Datos {
 
     public String obtenerSexoAlumno(String nombreUsuario) {
         String sexo = null;
-        String sql = "SELECT sexo FROM alumnos WHERE nombre = ?"; 
+        String sql = "SELECT sexo FROM usuarios WHERE user_ = ?"; 
         try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

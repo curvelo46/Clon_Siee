@@ -1,40 +1,81 @@
-
-INSERT INTO Alumnos (nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cc, sexo)
-VALUES 
-('Andres','camilo','curvelo','diaz',18,'3243582032','andrescurvelodiaz@gmail.com','calle29',1084451641,"hombre"),
-('jose','billero','granado','martines',20,'3243582032','','la libertador',900224,"hombre"),
-('hilary','fontalvo','ospina','ospina',18,'3243582032','andrescamilo@gmail.com','11000232',4234,"mujer"),
-('andrea','martines','curvelo','jose',10,'3243582032','andrescamilo@gmail.com','11000232',434,"mujer"),
-('milagro','la doña','peleona','de la esquina',70,'3243582032','andrescamilo@gmail.com','11000232',4,"mujer"),
-('to','la doña','peleona','de la esquina',7,'1232323','andrescamilo@gmail.com','11000232',008,"hombre");
-
-
 -- =============================
--- INSERTAR DOCENTES
--- (Todos empiezan con 'sin asignatura')
--- =============================
-INSERT INTO Docentes (nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cc)
-VALUES
-('luiz','','carlos','',40,'123456789','andres@gmail.com','direccion',12123),
-('doctora','','tatiana','',48,'987654321','camila@gmail.com','direccion',121231),
-('profesora','','maria','',28,'456789123','camila@gmail.com','direccion',12131);
-
-
--- =============================
--- INSERTAR ADMINISTRADORES
--- =============================
-INSERT INTO Administradores (nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cc)
-VALUES
-('jose','','curvelo','',18,'12321323','andrescamilo@gmail.com','direccion',34),
-('fernanda','','fernanda','',18,'123223','camila@gmail.com','direccion',4545);
-
-
--- =============================
--- INSERTAR MATERIAS
+-- USUARIOS
 -- =============================
 
-insert into materias (id_asignatura,nombre_materia,docente_id,alumno_id)values('a','matematica',7,1);
-insert into materias (id_asignatura,nombre_materia,docente_id,alumno_id)values('a','ingles',7,2);
+-- Alumno
+INSERT INTO Usuarios (nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cc, sexo, user_, contrasena_hash, cargo)
+VALUES ('Carlos', 'Andrés', 'Ramírez', 'Pérez', 20, '3001234567', 'carlos@email.com', 'Cra 10 #20-30', 123456789, 'masculino', 'carlosr', 'hashed_pass_1', 'alumno');
+
+-- Docente
+INSERT INTO Usuarios (nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cc, sexo, user_, contrasena_hash, cargo)
+VALUES ('Laura', 'María', 'Gómez', 'Lozano', 35, '3012345678', 'laura@email.com', 'Calle 45 #12-34', 987654321, 'femenino', 'laurag', 'hashed_pass_2', 'docente');
+
+-- Administrador
+INSERT INTO Usuarios (nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cc, sexo, user_, contrasena_hash, cargo)
+VALUES ('Mario', NULL, 'Sánchez', 'Torres', 40, '3023456789', 'mario@email.com', 'Av 6 #15-89', 112233445, 'masculino', 'marios', 'hashed_pass_3', 'administrador');
+
+-- =============================
+-- ROLES
+-- =============================
+
+-- Vincular usuario como alumno (id = 1)
+INSERT INTO Alumnos (id) VALUES (1);
+
+-- Vincular usuario como docente (id = 2)
+INSERT INTO Docentes (id) VALUES (2);
+
+-- Vincular usuario como administrador (id = 3)
+INSERT INTO Administradores (id) VALUES (3);
+
+-- =============================
+-- CARRERAS
+-- =============================
+
+INSERT INTO Carreras (nombre) VALUES 
+('Ingeniería de Sistemas'),
+('Administración de Empresas');
+
+-- =============================
+-- MATERIAS
+-- =============================
+
+INSERT INTO Materias (nombre) VALUES 
+('Programación I'),
+('Bases de Datos'),
+('Contabilidad'),
+('Economía');
+
+-- =============================
+-- CARRERA - MATERIAS
+-- =============================
+
+-- Ingeniería de Sistemas: Programación I y Bases de Datos
+INSERT INTO Carrera_Materias (carrera_id, materia_id) VALUES 
+(1, 1),
+(1, 2);
+
+-- Administración de Empresas: Contabilidad y Economía
+INSERT INTO Carrera_Materias (carrera_id, materia_id) VALUES 
+(2, 3),
+(2, 4);
+
+-- =============================
+-- DOCENTE - MATERIAS
+-- =============================
+
+-- La docente da Programación I y Bases de Datos
+INSERT INTO Docente_Materias (docente_id, materia_id) VALUES 
+(2, 1),
+(2, 2);
+
+-- =============================
+-- ALUMNO - MATERIAS (Con notas)
+-- =============================
+
+-- Carlos está inscrito en Programación I y Bases de Datos
+INSERT INTO Alumno_Materias (alumno_id, materia_id, corte1, corte2, corte3) VALUES 
+(1, 1, 4.5, 4.0, 3.8),
+(1, 2, 4.2, 3.9, 4.0);
 
 
-select*from materias
+select*from usuarios

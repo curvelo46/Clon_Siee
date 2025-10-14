@@ -3,85 +3,105 @@ CREATE DATABASE CBN;
 USE CBN;
 
 -- =============================
--- TABLA USUARIOS
+-- USUARIOS (Base de todo)
 -- =============================
 CREATE TABLE Usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_ VARCHAR(50) NOT NULL,
-    contrasena VARCHAR(50) NOT NULL,
-    cargo ENUM('alumno','docente','administrador','master') NOT NULL,
-    UNIQUE KEY unq_user_pass (user_, contrasena)  
-);
-
--- =============================
--- TABLA ALUMNOS
--- =============================
-CREATE TABLE Alumnos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(125) NOT NULL,
     segundo_nombre VARCHAR(125),
     apellido VARCHAR(125) NOT NULL,
     segundo_apellido VARCHAR(125),
-    edad int not null,
-    telefono varchar(125) not null,
+    edad INT NOT NULL,
+    telefono VARCHAR(50),
     correo VARCHAR(125),
     direccion VARCHAR(150),
-    cc int NOT NULL UNIQUE,
+    cc BIGINT NOT NULL UNIQUE,
     sexo VARCHAR(25),
-    CONSTRAINT fk_alumno_usuario FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
+    user_ VARCHAR(50) NOT NULL UNIQUE,
+    contrasena_hash VARCHAR(255) NOT NULL, -- Aquí debe ir el hash
+    cargo ENUM('alumno','docente','administrador','master') NOT NULL
 );
 
 -- =============================
--- TABLA DOCENTES
+-- ALUMNOS
+-- =============================
+CREATE TABLE Alumnos (
+    id INT PRIMARY KEY,
+    FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
+);
+
+-- =============================
+-- DOCENTES
 -- =============================
 CREATE TABLE Docentes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(125) NOT NULL,
-    segundo_nombre VARCHAR(125),
-    apellido VARCHAR(125) NOT NULL,
-    segundo_apellido VARCHAR(125),
-    edad int NOT NULL,
-    telefono varchar(125) not null,
-    correo VARCHAR(100),
-    direccion VARCHAR(150),
-    cc int NOT NULL UNIQUE,
-    materia VARCHAR(125) DEFAULT 'sin asignatura',
-    id_materia varchar(1) default 'x',
-    CONSTRAINT fk_docente_usuario FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
+    id INT PRIMARY KEY,
+    FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
 );
 
 -- =============================
--- TABLA ADMINISTRADORES
+-- ADMINISTRADORES
 -- =============================
 CREATE TABLE Administradores (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(125) NOT NULL,
-    segundo_nombre VARCHAR(125),
-    apellido VARCHAR(125) NOT NULL,
-    segundo_apellido VARCHAR(125),
-    edad int NOT NULL,
-    telefono varchar(125),
-    correo VARCHAR(100),
-    direccion VARCHAR(150),
-    cc int NOT NULL UNIQUE,
-    CONSTRAINT fk_admin_usuario FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
+    id INT PRIMARY KEY,
+    FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
 );
 
 -- =============================
--- TABLA MATERIAS
+-- CARRERAS
 -- =============================
+CREATE TABLE Carreras (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(125) NOT NULL UNIQUE
+);
 
+-- =============================
+-- MATERIAS
+-- =============================
 CREATE TABLE Materias (
-	id_asignatura varchar(1) default'x',
-    nombre_materia VARCHAR(125) NOT NULL,
-    docente_id INT NULL,
-    alumno_id INT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(125) NOT NULL
+);
+
+-- =============================
+-- RELACIÓN CARRERA-MATERIAS
+-- =============================
+CREATE TABLE Carrera_Materias (
+    carrera_id INT,
+    materia_id INT,
+    PRIMARY KEY (carrera_id, materia_id),
+    FOREIGN KEY (carrera_id) REFERENCES Carreras(id) ON DELETE CASCADE,
+    FOREIGN KEY (materia_id) REFERENCES Materias(id) ON DELETE CASCADE
+);
+
+-- =============================
+-- RELACIÓN DOCENTES-MATERIAS
+-- =============================
+CREATE TABLE Docente_Materias (
+    docente_id INT,
+    materia_id INT,
+    PRIMARY KEY (docente_id, materia_id),
+    FOREIGN KEY (docente_id) REFERENCES Docentes(id) ON DELETE CASCADE,
+    FOREIGN KEY (materia_id) REFERENCES Materias(id) ON DELETE CASCADE
+);
+
+-- =============================
+-- RELACIÓN ALUMNOS-MATERIAS (con calificaciones)
+-- =============================
+CREATE TABLE Alumno_Materias (
+    alumno_id INT,
+    materia_id INT,
     corte1 DECIMAL(5,2) DEFAULT 0,
     corte2 DECIMAL(5,2) DEFAULT 0,
     corte3 DECIMAL(5,2) DEFAULT 0,
-    CONSTRAINT fk_materia_docente FOREIGN KEY (docente_id) REFERENCES Docentes(id) ON DELETE SET NULL,
-    CONSTRAINT fk_materia_alumno FOREIGN KEY (alumno_id) REFERENCES Alumnos(id) ON DELETE CASCADE
+    PRIMARY KEY (alumno_id, materia_id),
+    FOREIGN KEY (alumno_id) REFERENCES Alumnos(id) ON DELETE CASCADE,
+    FOREIGN KEY (materia_id) REFERENCES Materias(id) ON DELETE CASCADE
 );
 
+SELECT m.nombre AS Materia, c.nombre AS Carrera
+FROM Carrera_Materias cm
+JOIN Materias m ON cm.materia_id = m.id
+JOIN Carreras c ON cm.carrera_id = c.id
+WHERE c.nombre = 'Ingeniería de Sistemas';
 
-select*from docentes
+select*from carrera_materias

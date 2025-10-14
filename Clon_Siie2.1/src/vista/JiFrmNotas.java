@@ -26,26 +26,27 @@ public class JiFrmNotas extends javax.swing.JInternalFrame {
         cargarNotas();    
     }
 
-    // OBTENER ID DEL ALUMNO LOGUEADO
-   private void cargarIdAlumno() {
-        String sql = "call id_alumno(?)";
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+   // OBTENER ID DEL ALUMNO LOGUEADO POR SU user_
+private void cargarIdAlumno() {
+    String sql = "CALL obtener_id_alumno_por_user(?)";
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, alumno); // aquí 'alumno' es el username (user_)
+        ResultSet rs = stmt.executeQuery();
 
-            stmt.setString(1, alumno);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                alumnoId = rs.getInt("id");
-            } else {
-                alumnoId = -1;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (rs.next()) {
+            alumnoId = rs.getInt("id");
+        } else {
             alumnoId = -1;
         }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        alumnoId = -1;
     }
+}
+
 
     // CARGAR NOTAS DEL ALUMNO
    private void cargarNotas() {

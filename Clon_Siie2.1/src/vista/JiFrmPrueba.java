@@ -14,16 +14,12 @@ import javax.swing.Box;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author cymaniatico
- */
 public class JiFrmPrueba extends javax.swing.JInternalFrame {
     private final Base_De_Datos baseDatos;
     private final String profesor;
-    private int corteSeleccionado; 
-    private String tablaNotasMateria; 
     private final String materia;
+    private int corteSeleccionado;
+    private int materiaId; 
 
     public JiFrmPrueba(Base_De_Datos basedatos, String profesor, String materia) {
         initComponents();
@@ -33,55 +29,74 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
         this.getContentPane().setBackground(new Color(255, 254, 214));
         this.corteSeleccionado = basedatos.corte();
 
-        cargarTabla();
+        this.materiaId = obtenerIdMateria(); // Obtener el ID de la materia
 
-            this.tablaNotasMateria = obtenerTablaNotasMateria();
-
-            if (this.tablaNotasMateria != null) {
-                cargarTabla();
-            } else {
-                jScrollPane1.setVisible(false);
-                btnGuardar.setVisible(false);
-                lbMateria.setText("Materia: No asignada");
-            }
+        if (this.materiaId != -1) {
+            cargarTabla();
+        } else {
+            jScrollPane1.setVisible(false);
+            btnGuardar.setVisible(false);
+            lbMateria.setText("Materia: No asignada");
+        }
     }
 
-    
+    private int obtenerIdMateria() {
+        int id = -1;
+        String sql = "SELECT m.id FROM Materias m WHERE m.nombre = ?";
+
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, materia);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                id = rs.getInt("id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return id;
+    }
+
     private void cargarTabla() {
-        if (tablaNotasMateria == null) return;
-
         txtCorte.setText("Corte actual: " + corteSeleccionado);
-
         jMenuBar1.add(Box.createHorizontalGlue());
         jMenuBar1.add(btnGuardar);
 
         DefaultTableModel modelo = new DefaultTableModel(
-                new Object[]{"Estudiante", "Corte 1", "Corte 2", "Corte 3"}, 0
+                new Object[]{"ID", "Estudiante", "Corte 1", "Corte 2", "Corte 3"}, 0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == corteSeleccionado;
+                return column == corteSeleccionado + 1; // columna editable según corte
             }
         };
 
-        String sql = "CALL listar_notas_docente_materia(?, ?)"; // debes tener este SP en MySQL
-try (Connection conn = ConexionBD.getConnection();
-     PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "CALL listar_notas_docente_materia(?, ?)";
 
-    stmt.setString(1, profesor);
-    stmt.setString(2, materia);
-    ResultSet rs = stmt.executeQuery();
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, profesor);
+            stmt.setString(2, materia);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                String estudiante = rs.getString("estudiante");
+                int idAlumno = rs.getInt("alumno_id"); // Asegúrate de que el SP lo retorne
+                String estudiante = rs.getString("estudiante") + " " + rs.getString("apellido");
                 double c1 = rs.getDouble("corte1");
                 double c2 = rs.getDouble("corte2");
                 double c3 = rs.getDouble("corte3");
-                modelo.addRow(new Object[]{estudiante, c1, c2, c3});
+
+                modelo.addRow(new Object[]{idAlumno, estudiante, c1, c2, c3});
             }
 
             tablaNotas.setModel(modelo);
-            lbMateria.setText("Materia: " + tablaNotasMateria);
+            tablaNotas.getColumnModel().getColumn(0).setMinWidth(0); // Oculta columna ID
+            tablaNotas.getColumnModel().getColumn(0).setMaxWidth(0);
+            tablaNotas.getColumnModel().getColumn(0).setWidth(0);
+
+            lbMateria.setText("Materia: " + materia);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "❌ Error al cargar alumnos/notas: " + e.getMessage());
@@ -89,57 +104,26 @@ try (Connection conn = ConexionBD.getConnection();
         }
     }
 
-    /**
-     * Obtiene la materia asignada al docente.
-     * Si no tiene, muestra alerta y retorna null.
-     */
- private String obtenerTablaNotasMateria() {
-        String materia = null;
-        String sql = "CALL obtener_materia_docente(?)";
-
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, profesor);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                materia = rs.getString("nombre_materia");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (materia == null || materia.equalsIgnoreCase("sin asignatura")) {
-            JOptionPane.showMessageDialog(this, "❌ El docente no tiene materia asignada.");
-            return null;
-        }
-
-        return materia;
-    }
-
-    // 🔹 Guardar notas usando procedimiento almacenado
     private void guardarNotas() {
-        if (tablaNotasMateria == null) return;
+        if (materiaId == -1) return;
 
         DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
 
         try (Connection conn = ConexionBD.getConnection()) {
             String sql = "CALL actualizar_nota_alumno(?, ?, ?, ?)";
-
             PreparedStatement stmt = conn.prepareStatement(sql);
 
             for (int i = 0; i < modelo.getRowCount(); i++) {
-                int colIndex = corteSeleccionado;
+                int alumnoId = Integer.parseInt(modelo.getValueAt(i, 0).toString());
                 double nota;
                 try {
-                    nota = Double.parseDouble(modelo.getValueAt(i, colIndex).toString());
+                    nota = Double.parseDouble(modelo.getValueAt(i, corteSeleccionado + 1).toString());
                 } catch (NumberFormatException e) {
                     nota = 0.0;
                 }
 
-                String estudiante = modelo.getValueAt(i, 0).toString();
-
-                stmt.setString(1, profesor);
-                stmt.setString(2, estudiante);
+                stmt.setInt(1, alumnoId);
+                stmt.setInt(2, materiaId);
                 stmt.setInt(3, corteSeleccionado);
                 stmt.setDouble(4, nota);
                 stmt.addBatch();

@@ -16,7 +16,7 @@ import java.sql.ResultSet;
  *
  * @author cymaniatico
  */
-public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
+public class JiFrmRegistro extends javax.swing.JInternalFrame {
  
      
         
@@ -24,7 +24,7 @@ public class JiFrmRegistrarDocente extends javax.swing.JInternalFrame {
      * Creates new form JiFrmPrueba
      */
 
-    public JiFrmRegistrarDocente() {
+    public JiFrmRegistro() {
         initComponents();
         this.getContentPane().setBackground(new Color(214, 245, 255));
     }

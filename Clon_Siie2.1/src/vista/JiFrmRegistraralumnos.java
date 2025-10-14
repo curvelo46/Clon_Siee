@@ -11,14 +11,13 @@ import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author cymaniatico
  */
 public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
- 
-     
         
     /**
      * Creates new form JiFrmPrueba
@@ -27,11 +26,93 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
     public JiFrmRegistraralumnos() {
         initComponents();
         this.getContentPane().setBackground(new Color(214, 245, 255));
+        cargarcargos();
+        cargarCarrerasDesdeBD();
+        carrera.setVisible(false);
+        Cargo.addActionListener(e -> {
+        String seleccion = (String) Cargo.getSelectedItem();
+        if ("alumno".equalsIgnoreCase(seleccion)) {
+            carrera.setVisible(true);
+            cargarCarrerasDesdeBD(); // Solo cuando es alumno
+        } else {
+            carrera.setVisible(false);
+        }
+    });
+        
     }
     
+    private void cargarcargos() {
+        Cargo.removeAllItems();
+        Cargo.addItem("administrador");
+        Cargo.addItem("docente");
+        Cargo.addItem("alumno");
+  
+    }
+
+    private void cargarCarrerasDesdeBD() {
+    carrera.removeAllItems(); // Limpiar primero
+
+    String sql = "SELECT nombre FROM Carreras"; // Asegúrate de que esta tabla y columna existan
+
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+
+        while (rs.next()) {
+            carrera.addItem(rs.getString("nombre"));
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error al cargar carreras: " + e.getMessage());
+    }
+}
     
+    private void MatricularAlumnos(){
+        
+        String nombre = txtNombre.getText();
+        String segundoNombre = txtSegundoNombr.getText();
+        String apellido = txtApellido.getText();
+        String segundoApellido = txtSegundoApellido.getText();
+        String edad = txtEdad.getText();
+        String telefono = txtTelefono.getText();
+        String correo = txtCorreo.getText();
+        String direccion = txtDireccion.getText();
+        String cedula = txtCedula.getText();
+        String genero = txtGenero.getText(); 
+        String cargo = (String) Cargo.getSelectedItem();
+        
+        
+        if ("alumno".equalsIgnoreCase(cargo) && carrera.isVisible()) {
+            String carreraSeleccionada = (String) carrera.getSelectedItem();
 
+            String sql = "CALL registrar_alumno_con_materias(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+            try (Connection conn = ConexionBD.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, nombre);
+                stmt.setString(2, segundoNombre);
+                stmt.setString(3, apellido);
+                stmt.setString(4, segundoApellido);
+                stmt.setInt(5, Integer.parseInt(edad));
+                stmt.setString(6, telefono);
+                stmt.setString(7, correo);
+                stmt.setString(8, direccion);
+                stmt.setLong(9, Long.parseLong(cedula));
+                stmt.setString(10, genero);
+                stmt.setString(11, carreraSeleccionada);
+
+                stmt.executeUpdate();
+
+                JOptionPane.showMessageDialog(this, "✅ Alumno registrado correctamente con materias.");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "❌ Error al registrar alumno: " + e.getMessage());
+            }
+        }
+
+    
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -64,6 +145,8 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
         jLabel11 = new javax.swing.JLabel();
         txtGenero = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        Cargo = new javax.swing.JComboBox<>();
+        carrera = new javax.swing.JComboBox<>();
 
         setClosable(true);
         setMaximizable(true);
@@ -102,6 +185,10 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+
+        Cargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        carrera.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -153,32 +240,41 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
                                     .addGap(21, 21, 21)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel9)
-                                        .addComponent(txtSegundoApellido, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                        .addComponent(txtSegundoApellido, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(32, 32, 32)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(Cargo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(carrera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jLabel11)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnGuerdarAlumno)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton1)))
-                .addGap(59, 59, 59))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtSegundoNombr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtSegundoApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtSegundoNombr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtSegundoApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addComponent(Cargo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
@@ -190,7 +286,8 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
                     .addComponent(txtEdad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(carrera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
@@ -219,8 +316,11 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
         String direccion = txtDireccion.getText();
         String cedula = txtCedula.getText();
         String genero = txtGenero.getText(); 
-
-        String sql = "CALL mi_procedimiento_ejemplo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String cargo = (String) Cargo.getSelectedItem();
+        
+        MatricularAlumnos();
+        
+        String sql = "CALL ingresar_usuario(?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 
 
         try (Connection conn = ConexionBD.getConnection();
@@ -236,6 +336,7 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
             stmt.setString(8, direccion);
             stmt.setString(9, cedula);
             stmt.setString(10, genero);
+            stmt.setString(11, cargo);
 
             stmt.executeUpdate();
             javax.swing.JOptionPane.showMessageDialog(this, "✅ Estudiante registrado con éxito");
@@ -273,7 +374,9 @@ public class JiFrmRegistraralumnos extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> Cargo;
     private javax.swing.JButton btnGuerdarAlumno;
+    private javax.swing.JComboBox<String> carrera;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

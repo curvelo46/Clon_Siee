@@ -11,6 +11,7 @@ import clases.ConexionBD;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
@@ -32,7 +33,10 @@ public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
         initComponents();
         this.alumno = alumno;
         this.getContentPane().setBackground(new Color(214, 245, 255));
+
     }
+    
+    
     
     
 
@@ -49,6 +53,8 @@ public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
         jLabel1 = new javax.swing.JLabel();
         txtNombreMateria = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        txtmateriaid = new javax.swing.JTextField();
 
         setClosable(true);
         setMaximizable(true);
@@ -63,6 +69,8 @@ public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel3.setText("bloque de la materia");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -72,19 +80,26 @@ public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtNombreMateria))
-                .addGap(30, 30, 30)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtmateriaid)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                 .addComponent(jButton1)
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addGap(40, 40, 40))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtNombreMateria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(txtmateriaid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
@@ -94,6 +109,7 @@ public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
   
         String nombreMateria = txtNombreMateria.getText().trim();
+        String materiaid = txtmateriaid.getText().trim();
 
         if (nombreMateria.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -103,9 +119,10 @@ public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
         }
 
         try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("CALL quitar_materia(?)")) {
+             PreparedStatement stmt = conn.prepareStatement("CALL quitar_materia(?,?)")) {
 
             stmt.setString(1, nombreMateria);
+            stmt.setString(2, materiaid);
             stmt.execute();
 
             JOptionPane.showMessageDialog(this,
@@ -113,6 +130,7 @@ public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
             txtNombreMateria.setText("");
+            txtmateriaid.setText("");
 
         } catch (SQLException ex) {
             String mensaje = ex.getMessage();
@@ -132,6 +150,8 @@ public class JiFrmQuitarMateria extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JTextField txtNombreMateria;
+    private javax.swing.JTextField txtmateriaid;
     // End of variables declaration//GEN-END:variables
 }

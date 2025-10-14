@@ -34,10 +34,12 @@ public class frmEstudiante extends javax.swing.JFrame {
 
    public void setUsuario(String Usuario) {
     this.usuario = Usuario;  
+       System.out.println(Usuario);
     jMenuBar1.add(Box.createHorizontalGlue()); 
     jMenuBar1.add(btnVolver);
 
     String sexo = baseDatos.obtenerSexoAlumno(this.usuario);
+       System.out.println(sexo);
     boolean fotoAleatoria = random.nextBoolean();
 
     if (sexo != null) {
@@ -45,22 +47,19 @@ public class frmEstudiante extends javax.swing.JFrame {
     }
 
     try {
-        if ("hombre".equalsIgnoreCase(sexo)) {
+        if ("masculino".equalsIgnoreCase(sexo)) {
             if (fotoAleatoria) {
                 jMenu1.setIcon(new ImageIcon(getClass().getResource("/imagenes/hombres/d1e3d2a12bc3d0221898c4391dffcfff.jpg")));
             } else {
                 jMenu1.setIcon(new ImageIcon(getClass().getResource("/imagenes/hombres/hombre.jpg")));
             }
-        } else if ("mujer".equalsIgnoreCase(sexo)) {
+        } else if ("femenino".equalsIgnoreCase(sexo)) {
             if (fotoAleatoria) {
                 jMenu1.setIcon(new ImageIcon(getClass().getResource("/imagenes/mujeres/mujer (2).jpg")));
             } else {
                 jMenu1.setIcon(new ImageIcon(getClass().getResource("/imagenes/mujeres/mujerqwe.jpg")));
             }
-        } else {
-            System.out.println("⚠ Sexo no reconocido o nulo, se asignará imagen por defecto");
-            jMenu1.setIcon(new ImageIcon(getClass().getResource("/imagenes/default.png")));
-        }
+        } 
     } catch (Exception e) {
         System.out.println("❌ No se pudo cargar la imagen: " + e.getMessage());
     }

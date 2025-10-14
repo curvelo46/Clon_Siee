@@ -3,6 +3,7 @@ package vista;
 import clases.Base_De_Datos;
 import clases.ConexionBD;
 import java.awt.Color;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,43 +16,45 @@ public class frmDocente extends javax.swing.JFrame {
         private String Nombre;
 
    public frmDocente(Base_De_Datos basedato,String nombre){
-    this.baseDatos = basedato;
-    this.Nombre = nombre;
+     this.baseDatos = basedato;
+        this.Nombre = nombre;
 
-    initComponents(); 
+        initComponents();
 
-    
-    ajustarImagenBoton();
-    cargarAsignaturasDocente();
-    
-    this.addComponentListener(new java.awt.event.ComponentAdapter() {
-        @Override
-        public void componentResized(java.awt.event.ComponentEvent e) {
-            ajustarImagenBoton();
-            jButton1.setSize(jdescritorio.getSize());
-        }
-    });
+        ajustarImagenBoton();
+        cargarAsignaturasDocente();
 
-    setLocationRelativeTo(null); // Centrar ventana
-    this.getContentPane().setBackground(new Color(255, 254, 214));
+        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                ajustarImagenBoton();
+                jButton1.setSize(jdescritorio.getSize());
+            }
+        });
+
+        setLocationRelativeTo(null); // Centrar ventana
+        this.getContentPane().setBackground(new Color(255, 254, 214));
 }
 
     
    
-     private void cargarAsignaturasDocente() {
-        comboAsignaturas.removeAllItems(); 
+private void cargarAsignaturasDocente() {
+        comboAsignaturas.removeAllItems();
 
-        String sql = "SELECT m.nombre_materia FROM Materias m INNER JOIN Docentes d ON m.docente_id = d.id WHERE d.nombre = ?";
+        // Llamar al procedimiento almacenado en vez de consulta directa
+        String sql = "{ CALL obtener_materia_docente(?) }";
 
         try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement cstmt = conn.prepareCall(sql)) {
 
-            stmt.setString(1, Nombre);
-            ResultSet rs = stmt.executeQuery();
+            cstmt.setString(1, Nombre);
+            ResultSet rs = cstmt.executeQuery();
 
             boolean tieneMaterias = false;
             while (rs.next()) {
-                comboAsignaturas.addItem(rs.getString("nombre_materia"));
+                // Supongo que el procedimiento devuelve columna llamada "nombre" (o como lo hayas definido)
+                String mat = rs.getString(1);
+                comboAsignaturas.addItem(mat);
                 tieneMaterias = true;
             }
 
@@ -66,24 +69,22 @@ public class frmDocente extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-   
-    
+
     private void ajustarImagenBoton() {
         java.awt.Image img = new javax.swing.ImageIcon(getClass().getResource("/vista/hq720.jpg")).getImage();
         java.awt.Image imgEscalada = img.getScaledInstance(jButton1.getWidth(), jButton1.getHeight(), java.awt.Image.SCALE_SMOOTH);
         jButton1.setIcon(new javax.swing.ImageIcon(imgEscalada));
     }
 
-    
-    
-    public void setUsuario(String usuario){
-            this.Nombre = usuario;
-            jMenu1.setText("Bienvenido profesor " + usuario);
-            jMenuBar1.add(comboAsignaturas);
-             jMenuBar1.add(Box.createHorizontalGlue()); 
-             jMenuBar1.add(btnsalir);
+    public void setUsuario(String usuario) {
+        this.Nombre = usuario;
+        jMenu1.setText("Bienvenido profesor " + usuario);
+        jMenuBar1.add(comboAsignaturas);
+        jMenuBar1.add(Box.createHorizontalGlue());
+        jMenuBar1.add(btnsalir);
     }
-
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -198,61 +199,53 @@ public class frmDocente extends javax.swing.JFrame {
 
     private void btnNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotasActionPerformed
         // TODO add your handling code here:
-       String materiaSeleccionada = (String) comboAsignaturas.getSelectedItem();
-    if (materiaSeleccionada == null || materiaSeleccionada.equals("Sin materias asignadas")) {
-        JOptionPane.showMessageDialog(this, "⚠️ Seleccione una materia válida antes de continuar.");
-        return;
-    }
+        String materiaSeleccionada = (String) comboAsignaturas.getSelectedItem();
+        if (materiaSeleccionada == null || materiaSeleccionada.equals("Sin materias asignadas")) {
+            JOptionPane.showMessageDialog(this, "⚠️ Seleccione una materia válida antes de continuar.");
+            return;
+        }
 
-    JiFrmPrueba prueba = new JiFrmPrueba(baseDatos, Nombre, materiaSeleccionada);
-    jdescritorio.add(prueba);
-    prueba.show();
+        JiFrmPrueba prueba = new JiFrmPrueba(baseDatos, Nombre, materiaSeleccionada);
+        jdescritorio.add(prueba);
+        prueba.show();
     }//GEN-LAST:event_btnNotasActionPerformed
 
     private void btnListaEstudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListaEstudiantesActionPerformed
         // TODO add your handling code here:
          String materiaSeleccionada = (String) comboAsignaturas.getSelectedItem();
-    if (materiaSeleccionada == null || materiaSeleccionada.equals("Sin materias asignadas")) {
-        JOptionPane.showMessageDialog(this, "⚠️ Seleccione una materia válida antes de continuar.");
-        return;
-    }
+        if (materiaSeleccionada == null || materiaSeleccionada.equals("Sin materias asignadas")) {
+            JOptionPane.showMessageDialog(this, "⚠️ Seleccione una materia válida antes de continuar.");
+            return;
+        }
 
-    JiFrmListaestudiantes lista = new JiFrmListaestudiantes(baseDatos, Nombre, materiaSeleccionada);
-    jdescritorio.add(lista);
-    lista.show();
+        JiFrmListaestudiantes lista = new JiFrmListaestudiantes(baseDatos, Nombre, materiaSeleccionada);
+        jdescritorio.add(lista);
+        lista.show();
     }//GEN-LAST:event_btnListaEstudiantesActionPerformed
 
     private void btnsalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsalirActionPerformed
         // TODO add your handling code here:
-         this.dispose();
-        new frmLogin(baseDatos).setVisible(true); 
+        this.dispose();
+        new frmLogin(baseDatos).setVisible(true);
     }//GEN-LAST:event_btnsalirActionPerformed
 
     private void btnPromedioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPromedioActionPerformed
         // TODO add your handling code here:
-         String materiaSeleccionada = (String) comboAsignaturas.getSelectedItem();
-    if (materiaSeleccionada == null || materiaSeleccionada.equals("Sin materias asignadas")) {
-        JOptionPane.showMessageDialog(this, "⚠️ Seleccione una materia válida antes de continuar.");
-        return;
-    }
+  String materiaSeleccionada = (String) comboAsignaturas.getSelectedItem();
+        if (materiaSeleccionada == null || materiaSeleccionada.equals("Sin materias asignadas")) {
+            JOptionPane.showMessageDialog(this, "⚠️ Seleccione una materia válida antes de continuar.");
+            return;
+        }
 
-    JiFrmPromedioGrupo promedio = new JiFrmPromedioGrupo(Nombre, materiaSeleccionada);
-    jdescritorio.add(promedio);
-    promedio.show();
+        JiFrmPromedioGrupo promedio = new JiFrmPromedioGrupo(Nombre, materiaSeleccionada);
+        jdescritorio.add(promedio);
+        promedio.show();
     }//GEN-LAST:event_btnPromedioActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
-  
-
-    
-    
-        
-    
-
-  
     /**
      * @param args the command line arguments
      */

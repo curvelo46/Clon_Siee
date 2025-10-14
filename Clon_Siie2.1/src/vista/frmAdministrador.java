@@ -231,7 +231,7 @@ public class frmAdministrador extends javax.swing.JFrame {
 
     private void btnRegistrarDocentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarDocentesActionPerformed
         // TODO add your handling code here:
-        JiFrmRegistrarDocente Docente=new JiFrmRegistrarDocente();
+        JiFrmRegistro Docente=new JiFrmRegistro();
         jPanel.add(Docente);
         Docente.show();
         

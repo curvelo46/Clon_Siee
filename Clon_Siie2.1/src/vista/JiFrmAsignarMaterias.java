@@ -222,13 +222,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
         }
 
         
-        String sqlUpdateMateria = "call asignar_p_a_m (?,?,?)";
-        try (PreparedStatement stmt = conn.prepareStatement(sqlUpdateMateria)) {
-            stmt.setInt(1, idDocente);
-            stmt.setString(2, idAsignatura);
-            stmt.setString(3, materiaSeleccionada);
-            stmt.executeUpdate();
-        }
+      
 
         
         String sqlUpdateDocente = "call asignar_m_a_p(?,?,?)";

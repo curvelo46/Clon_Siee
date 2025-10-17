@@ -5,6 +5,9 @@
 package vista;
 
 import clases.Base_De_Datos;
+import clases.ConexionBD;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import javax.swing.Box;
 import javax.swing.JOptionPane;
 
@@ -45,9 +48,7 @@ public class frmAdministrador extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         btnnombre = new javax.swing.JMenu();
         btngestionp = new javax.swing.JMenu();
-        menuMatriculas = new javax.swing.JMenu();
-        btnRegistrarDocentes = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         btncrearMateria = new javax.swing.JMenuItem();
         btnAsignarMateria = new javax.swing.JMenuItem();
@@ -95,25 +96,13 @@ public class frmAdministrador extends javax.swing.JFrame {
         btngestionp.setText("gestionar ");
         btngestionp.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        menuMatriculas.setText("registro");
-
-        btnRegistrarDocentes.setText("registrar docente");
-        btnRegistrarDocentes.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem3.setText("registrar");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRegistrarDocentesActionPerformed(evt);
+                jMenuItem3ActionPerformed(evt);
             }
         });
-        menuMatriculas.add(btnRegistrarDocentes);
-
-        jMenuItem2.setText("matricular Alumno");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
-            }
-        });
-        menuMatriculas.add(jMenuItem2);
-
-        btngestionp.add(menuMatriculas);
+        btngestionp.add(jMenuItem3);
 
         jMenu1.setText("Asignaturas");
 
@@ -198,6 +187,17 @@ public class frmAdministrador extends javax.swing.JFrame {
     private void btnReinicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReinicioActionPerformed
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "✅ semestre reiniciado");
+        String sql = "call reiniciar_notas()";
+
+
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                      stmt.executeUpdate();
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "❌ Error al registrar estudiante: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnReinicioActionPerformed
 
     private void btncrearMateriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncrearMateriaActionPerformed
@@ -229,21 +229,6 @@ public class frmAdministrador extends javax.swing.JFrame {
                 
     }//GEN-LAST:event_btnDocentesDatosActionPerformed
 
-    private void btnRegistrarDocentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarDocentesActionPerformed
-        // TODO add your handling code here:
-        JiFrmRegistro Docente=new JiFrmRegistro();
-        jPanel.add(Docente);
-        Docente.show();
-        
-    }//GEN-LAST:event_btnRegistrarDocentesActionPerformed
-
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        // TODO add your handling code here:
-        JiFrmRegistraralumnos Estudiantes=new JiFrmRegistraralumnos();
-        jPanel.add(Estudiantes);
-        Estudiantes.show();
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
         JiFrmQuitarMateria DELETE=new JiFrmQuitarMateria(nombre);
@@ -255,6 +240,13 @@ public class frmAdministrador extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // TODO add your handling code here:
+        JiFrmRegistrar registro=new JiFrmRegistrar();
+        jPanel.add(registro);
+        registro.show();
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -264,7 +256,6 @@ public class frmAdministrador extends javax.swing.JFrame {
     private javax.swing.JMenuItem btnAlumnosDatos;
     private javax.swing.JMenuItem btnAsignarMateria;
     private javax.swing.JMenuItem btnDocentesDatos;
-    private javax.swing.JMenuItem btnRegistrarDocentes;
     private javax.swing.JMenuItem btnReinicio;
     private javax.swing.JButton btnVolver;
     private javax.swing.JMenuItem btncrearMateria;
@@ -275,9 +266,8 @@ public class frmAdministrador extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JDesktopPane jPanel;
-    private javax.swing.JMenu menuMatriculas;
     // End of variables declaration//GEN-END:variables
 
    

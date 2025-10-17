@@ -78,4 +78,4 @@ INSERT INTO Alumno_Materias (alumno_id, materia_id, corte1, corte2, corte3) VALU
 (1, 2, 4.2, 3.9, 4.0);
 
 
-select*from  usuarios
+select*from usuarios

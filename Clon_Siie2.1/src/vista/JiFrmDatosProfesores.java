@@ -37,108 +37,110 @@ public class JiFrmDatosProfesores extends javax.swing.JInternalFrame {
     }
     
     private void cargarDocentes() {
-        DefaultTableModel modelo = new DefaultTableModel(
-            new Object[]{ 
-                "CC", "Nombre", "Segundo Nombre", "Apellido", "Segundo Apellido", 
-                "Edad", "Teléfono", "Correo", "Dirección", "Materia" 
-            }, 0
-        ) {
+    DefaultTableModel modelo = new DefaultTableModel(
+        new Object[]{ 
+            "ID", "CC", "Nombre", "Segundo Nombre", "Apellido", "Segundo Apellido", 
+            "Edad", "Teléfono", "Correo", "Dirección"
+        }, 0
+    ) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            // No se permite editar ID ni CC (columnas 0 y 1)
+            return column != 0 && column != 1;
+        }
+    };
+
+    String sql = "CALL listar_docentes()";
+
+    try (Connection conn = baseDatos.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            Object[] fila = {
+                rs.getInt("id"),  // Guardamos el ID aquí
+                rs.getString("cc"),
+                rs.getString("nombre"),
+                rs.getString("segundo_nombre"),
+                rs.getString("apellido"),
+                rs.getString("segundo_apellido"),
+                rs.getString("edad"),
+                rs.getString("telefono"),
+                rs.getString("correo"),
+                rs.getString("direccion"),
+            };
+            modelo.addRow(fila);
+        }
+
+        tablaDocentes.setModel(modelo);
+
+        // Ocultamos la columna ID para que no se vea
+        tablaDocentes.removeColumn(tablaDocentes.getColumnModel().getColumn(0));
+
+        modelo.addTableModelListener(new TableModelListener() {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                // No se permite editar CC ni Materia
-                return column != 0 && column != 9;
-            }
-        };
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    int fila = e.getFirstRow();
 
-        // 🔹 Ahora usamos el procedimiento almacenado
-        String sql = "CALL listar_docentes()";
+                    // Obtenemos el ID desde el modelo (aunque la columna esté oculta)
+                    int id = (int) modelo.getValueAt(fila, 0);
+                    String cc = (String) modelo.getValueAt(fila, 1);
+                    String nombre = (String) modelo.getValueAt(fila, 2);
+                    String segundoNombre = (String) modelo.getValueAt(fila, 3);
+                    String apellido = (String) modelo.getValueAt(fila, 4);
+                    String segundoApellido = (String) modelo.getValueAt(fila, 5);
+                    String edad = (String) modelo.getValueAt(fila, 6);
+                    String telefono = (String) modelo.getValueAt(fila, 7);
+                    String correo = (String) modelo.getValueAt(fila, 8);
+                    String direccion = (String) modelo.getValueAt(fila, 9);
 
-        try (Connection conn = baseDatos.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Object[] fila = {
-                    rs.getString("cc"),
-                    rs.getString("nombre"),
-                    rs.getString("segundo_nombre"),
-                    rs.getString("apellido"),
-                    rs.getString("segundo_apellido"),
-                    rs.getString("edad"),
-                    rs.getString("telefono"),
-                    rs.getString("correo"),
-                    rs.getString("direccion"),
-                    rs.getString("materia")
-                };
-                modelo.addRow(fila);
-            }
-
-            tablaDocentes.setModel(modelo);
-
-            // 🔥 Detectar cambios en las celdas y guardar con el SP
-            modelo.addTableModelListener(new TableModelListener() {
-                @Override
-                public void tableChanged(TableModelEvent e) {
-                    if (e.getType() == TableModelEvent.UPDATE) {
-                        int fila = e.getFirstRow();
-
-                        String cc = (String) modelo.getValueAt(fila, 0);
-                        String nombre = (String) modelo.getValueAt(fila, 1);
-                        String segundoNombre = (String) modelo.getValueAt(fila, 2);
-                        String apellido = (String) modelo.getValueAt(fila, 3);
-                        String segundoApellido = (String) modelo.getValueAt(fila, 4);
-                        String edad = (String) modelo.getValueAt(fila, 5);
-                        String telefono = (String) modelo.getValueAt(fila, 6);
-                        String correo = (String) modelo.getValueAt(fila, 7);
-                        String direccion = (String) modelo.getValueAt(fila, 8);
-
-                        actualizarDocente(cc, nombre, segundoNombre, apellido, segundoApellido, edad, telefono, correo, direccion);
-                    }
+                    actualizarDocente(id, cc, nombre, segundoNombre, apellido, segundoApellido, edad, telefono, correo, direccion);
                 }
-            });
+            }
+        });
 
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, 
-                "Error cargando docentes: " + ex.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, 
+            "Error cargando docentes: " + ex.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
 
+private void actualizarDocente(int id, String cc, String nombre, String segundoNombre, String apellido,
+                               String segundoApellido, String edad, String telefono, String correo, String direccion) {
 
-  private void actualizarDocente(String cc, String nombre, String segundoNombre, String apellido,
-                                   String segundoApellido, String edad, String telefono, String correo, String direccion) {
+    String sql = "CALL actualizar_docente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        String sql = "CALL actualizar_docente(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    try (Connection conn = baseDatos.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        try (Connection conn = baseDatos.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, id);
+        ps.setString(2, cc);
+        ps.setString(3, nombre);
+        ps.setString(4, segundoNombre);
+        ps.setString(5, apellido);
+        ps.setString(6, segundoApellido);
+        ps.setInt(7, Integer.parseInt(edad));
+        ps.setString(8, telefono);
+        ps.setString(9, correo);
+        ps.setString(10, direccion);
 
-            ps.setInt(1, Integer.parseInt(cc));
-            ps.setString(2, nombre);
-            ps.setString(3, segundoNombre);
-            ps.setString(4, apellido);
-            ps.setString(5, segundoApellido);
-            ps.setInt(6, Integer.parseInt(edad));
-            ps.setString(7, telefono);
-            ps.setString(8, correo);
-            ps.setString(9, direccion);
+        ps.executeUpdate();
 
-            ps.executeUpdate();
+        JOptionPane.showMessageDialog(this, 
+            "✅ Datos del docente " + nombre + " " + apellido + " actualizados correctamente.");
 
-            JOptionPane.showMessageDialog(this, 
-                "✅ Datos del docente " + nombre +" "+ apellido + " actualizados correctamente.");
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, 
-                "Error actualizando docente: " + ex.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, 
-                "Error en el formato numérico de CC o edad.",
-                "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, 
+            "Error actualizando docente: " + ex.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, 
+            "Error en el formato numérico de edad.",
+            "Error", JOptionPane.ERROR_MESSAGE);
     }
-
+}
 
  
 

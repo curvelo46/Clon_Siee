@@ -48,7 +48,7 @@ public class JiFrmDatosEstudiandres extends javax.swing.JInternalFrame {
         tablaEstudiantes.setModel(modelo);
 
 
-        String sql = "CALL listar_estudiantes()";
+        String sql = "CALL listar_alumnos()";
 
         try (Connection conn = baseDatos.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);

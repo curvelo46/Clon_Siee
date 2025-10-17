@@ -28,6 +28,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
         this.getContentPane().setBackground(new Color(214, 245, 255));
         cargarDocentesDisponibles();  
         cargarMateriasDisponibles();
+        
     }
     
     private void cargarDocentesDisponibles() {
@@ -103,8 +104,6 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
         comboDocentes = new javax.swing.JComboBox<>();
         btnAsignar = new javax.swing.JButton();
         comboMaterias = new javax.swing.JComboBox<>();
-        jLabel3 = new javax.swing.JLabel();
-        txtID = new javax.swing.JTextField();
 
         setClosable(true);
         setMaximizable(true);
@@ -125,8 +124,6 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
 
         comboMaterias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jLabel3.setText("id de la signatura");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -138,15 +135,10 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
                     .addComponent(comboMaterias, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel3))
+                    .addComponent(jLabel2)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGap(128, 128, 128)
                         .addComponent(btnAsignar)))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
@@ -156,14 +148,12 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
                 .addGap(14, 14, 14)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAsignar)
-                    .addComponent(comboMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
@@ -171,11 +161,11 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAsignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarActionPerformed
-        String materiaSeleccionada = (String) comboMaterias.getSelectedItem();
+            String materiaSeleccionada = (String) comboMaterias.getSelectedItem();
     String docenteSeleccionado = (String) comboDocentes.getSelectedItem();
-    String idAsignatura = txtID.getText().trim();
+    int idAsignaturaTexto=0;
 
-    
+
     if (materiaSeleccionada == null || materiaSeleccionada.startsWith("⚠")) {
         JOptionPane.showMessageDialog(this,
                 "⚠ Debes seleccionar una materia válida.",
@@ -190,46 +180,34 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
         return;
     }
 
-    if (idAsignatura.isEmpty()) {
-        JOptionPane.showMessageDialog(this,
-                "⚠ Debes ingresar un ID de asignatura (campo vacío).",
-                "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+   
 
-    
-    if (!idAsignatura.matches("[a-zA-Z]")) {
-        JOptionPane.showMessageDialog(this,
-                "⚠ El ID de asignatura debe ser una sola letra (ejemplo: A, B, C...).",
-                "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+
 
     try (Connection conn = ConexionBD.getConnection()) {
         conn.setAutoCommit(false);
 
-    
         int idDocente = Integer.parseInt(docenteSeleccionado.split(" - ")[0]);
 
-    
         String sqlGetMateria = "call id_materia (?)";
-        try (PreparedStatement stmt = conn.prepareStatement(sqlGetMateria)) {
-            stmt.setString(1, materiaSeleccionada);
-            ResultSet rs = stmt.executeQuery();
-            if (!rs.next()) {
-                throw new Exception("La materia seleccionada ya fue asignada o no existe.");
-            }
-        }
+try (PreparedStatement stmt = conn.prepareStatement(sqlGetMateria)) {
+    stmt.setString(1, materiaSeleccionada);
+    ResultSet rs = stmt.executeQuery();
 
-        
-      
+    if (!rs.next()) {
+        throw new Exception("La materia seleccionada ya fue asignada o no existe.");
+    }
 
-        
-        String sqlUpdateDocente = "call asignar_m_a_p(?,?,?)";
+    int idMateria = rs.getInt("id");
+    idAsignaturaTexto = idMateria;
+}
+
+        String sqlUpdateDocente = "call asignar_m_a_p(?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sqlUpdateDocente)) {
-            stmt.setString(1, materiaSeleccionada);
-            stmt.setString(2, idAsignatura);
-            stmt.setInt(3, idDocente);
+            System.out.println(idDocente);
+            System.out.println(idAsignaturaTexto);
+            stmt.setInt(1, idDocente);
+            stmt.setInt(2, idAsignaturaTexto);
             stmt.executeUpdate();
         }
 
@@ -239,10 +217,10 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
                 "✅ Materia '" + materiaSeleccionada + "' asignada correctamente al docente.",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
-        // Limpiar campos y recargar combos
+        // Limpiar y recargar
         cargarDocentesDisponibles();
         cargarMateriasDisponibles();
-        txtID.setText("");
+        
 
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this,
@@ -258,7 +236,5 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> comboMaterias;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JTextField txtID;
     // End of variables declaration//GEN-END:variables
 }

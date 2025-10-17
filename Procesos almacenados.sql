@@ -228,6 +228,15 @@ END //
 	END //
 
 
+CREATE PROCEDURE docentes_no_asignados()
+BEGIN
+    SELECT u.id, u.nombre
+    FROM Usuarios u
+    JOIN Docentes d ON u.id = d.id
+    WHERE d.id NOT IN (
+        SELECT DISTINCT docente_id FROM Docente_Materias
+    );
+END //    
 	CREATE PROCEDURE id_materia(
 		IN p_nombre_materia VARCHAR(125)
 	)

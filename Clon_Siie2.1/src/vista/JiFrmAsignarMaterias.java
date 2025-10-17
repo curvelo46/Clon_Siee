@@ -34,7 +34,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     private void cargarDocentesDisponibles() {
         comboDocentes.removeAllItems();
         
-        String sql = "call listado_docentes_disponibles";
+        String sql = "call docentes_no_asignados()";
 
         try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -44,8 +44,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
             while (rs.next()) {
                 
                 String docente = rs.getInt("id") + " - " +
-                                 rs.getString("nombre") + " " +
-                                 rs.getString("apellido");
+                                 rs.getString("nombre");
                 comboDocentes.addItem(docente);
                 hayDocentes = true;
             }

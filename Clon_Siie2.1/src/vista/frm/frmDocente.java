@@ -1,5 +1,9 @@
-package vista;
+package vista.frm;
 
+import vista.frm.frmLogin;
+import vista.jifrm.JiFrmPromedioGrupo;
+import vista.jifrm.JiFrmNotasCurso;
+import vista.jifrm.JiFrmListaestudiantes;
 import clases.Base_De_Datos;
 import clases.ConexionBD;
 import java.awt.Color;
@@ -205,7 +209,7 @@ private void cargarAsignaturasDocente() {
             return;
         }
 
-        JiFrmPrueba prueba = new JiFrmPrueba(baseDatos, Nombre, materiaSeleccionada);
+        JiFrmNotasCurso prueba = new JiFrmNotasCurso(baseDatos, Nombre, materiaSeleccionada);
         jdescritorio.add(prueba);
         prueba.show();
     }//GEN-LAST:event_btnNotasActionPerformed

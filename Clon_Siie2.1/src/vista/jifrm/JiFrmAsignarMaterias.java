@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
-package vista;
+package vista.jifrm;
 
 import clases.ConexionBD;
 
@@ -34,7 +34,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     private void cargarDocentesDisponibles() {
         comboDocentes.removeAllItems();
         
-        String sql = "call docentes_no_asignados()";
+        String sql = "call listado_docentes()";
 
         try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -44,7 +44,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
             while (rs.next()) {
                 
                 String docente = rs.getInt("id") + " - " +
-                                 rs.getString("nombre");
+                                 rs.getString("nombre")+ " " + rs.getString("apellido");
                 comboDocentes.addItem(docente);
                 hayDocentes = true;
             }
@@ -130,15 +130,15 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE)
                     .addComponent(comboMaterias, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(128, 128, 128)
-                        .addComponent(btnAsignar)))
+                        .addComponent(comboDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(89, 89, 89)
+                        .addComponent(btnAsignar))
+                    .addComponent(jLabel2))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -162,8 +162,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
     private void btnAsignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarActionPerformed
             String materiaSeleccionada = (String) comboMaterias.getSelectedItem();
     String docenteSeleccionado = (String) comboDocentes.getSelectedItem();
-    int idAsignaturaTexto=0;
-
+    int idAsignaturaTexto = 0;
 
     if (materiaSeleccionada == null || materiaSeleccionada.startsWith("⚠")) {
         JOptionPane.showMessageDialog(this,
@@ -179,32 +178,41 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
         return;
     }
 
-   
-
-
-
     try (Connection conn = ConexionBD.getConnection()) {
         conn.setAutoCommit(false);
 
         int idDocente = Integer.parseInt(docenteSeleccionado.split(" - ")[0]);
 
+        // Obtener ID de la materia
         String sqlGetMateria = "call id_materia (?)";
-try (PreparedStatement stmt = conn.prepareStatement(sqlGetMateria)) {
-    stmt.setString(1, materiaSeleccionada);
-    ResultSet rs = stmt.executeQuery();
+        try (PreparedStatement stmt = conn.prepareStatement(sqlGetMateria)) {
+            stmt.setString(1, materiaSeleccionada);
+            ResultSet rs = stmt.executeQuery();
 
-    if (!rs.next()) {
-        throw new Exception("La materia seleccionada ya fue asignada o no existe.");
-    }
+            if (!rs.next()) {
+                throw new Exception("La materia seleccionada ya fue asignada o no existe.");
+            }
 
-    int idMateria = rs.getInt("id");
-    idAsignaturaTexto = idMateria;
-}
+            idAsignaturaTexto = rs.getInt("id");
+        }
 
+        // Validar si la asignación ya existe usando la función
+        String sqlValidar = "SELECT existe_asignacion(?, ?) AS yaExiste";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlValidar)) {
+            stmt.setInt(1, idDocente);
+            stmt.setInt(2, idAsignaturaTexto);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt("yaExiste") == 1) {
+                JOptionPane.showMessageDialog(this,
+                        "⚠ Este docente ya tiene asignada la materia seleccionada.",
+                        "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return; // Sale sin insertar
+            }
+        }
+
+        // Asignar la materia al docente
         String sqlUpdateDocente = "call asignar_m_a_p(?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sqlUpdateDocente)) {
-            System.out.println(idDocente);
-            System.out.println(idAsignaturaTexto);
             stmt.setInt(1, idDocente);
             stmt.setInt(2, idAsignaturaTexto);
             stmt.executeUpdate();
@@ -219,7 +227,6 @@ try (PreparedStatement stmt = conn.prepareStatement(sqlGetMateria)) {
         // Limpiar y recargar
         cargarDocentesDisponibles();
         cargarMateriasDisponibles();
-        
 
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this,

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
-package vista;
+package vista.jifrm;
 
 import clases.Base_De_Datos;
 import clases.ConexionBD;
@@ -14,14 +14,14 @@ import javax.swing.Box;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class JiFrmPrueba extends javax.swing.JInternalFrame {
+public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
     private final Base_De_Datos baseDatos;
     private final String profesor;
     private final String materia;
     private int corteSeleccionado;
     private int materiaId; 
 
-    public JiFrmPrueba(Base_De_Datos basedatos, String profesor, String materia) {
+    public JiFrmNotasCurso(Base_De_Datos basedatos, String profesor, String materia) {
         initComponents();
         this.baseDatos = basedatos;
         this.profesor = profesor;
@@ -29,7 +29,7 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
         this.getContentPane().setBackground(new Color(255, 254, 214));
         this.corteSeleccionado = basedatos.corte();
 
-        this.materiaId = obtenerIdMateria(); // Obtener el ID de la materia
+        this.materiaId = obtenerIdMateria(); 
 
         if (this.materiaId != -1) {
             cargarTabla();
@@ -68,7 +68,7 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == corteSeleccionado + 1; // columna editable según corte
+                return column == corteSeleccionado + 1; 
             }
         };
 
@@ -82,7 +82,7 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int idAlumno = rs.getInt("alumno_id"); // Asegúrate de que el SP lo retorne
+                int idAlumno = rs.getInt("alumno_id"); 
                 String estudiante = rs.getString("estudiante") + " " + rs.getString("apellido");
                 double c1 = rs.getDouble("corte1");
                 double c2 = rs.getDouble("corte2");
@@ -92,7 +92,7 @@ public class JiFrmPrueba extends javax.swing.JInternalFrame {
             }
 
             tablaNotas.setModel(modelo);
-            tablaNotas.getColumnModel().getColumn(0).setMinWidth(0); // Oculta columna ID
+            tablaNotas.getColumnModel().getColumn(0).setMinWidth(0); 
             tablaNotas.getColumnModel().getColumn(0).setMaxWidth(0);
             tablaNotas.getColumnModel().getColumn(0).setWidth(0);
 

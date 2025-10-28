@@ -1,28 +1,13 @@
 package clon_siie;
 
 import clases.Base_De_Datos;
-import clases.ConexionBD;
-import vista.frmLogin;
+import vista.frm.frmAdmin;
+import vista.frm.frmLogin;
 
 public class Clon_Siie {
-    
     public static void main(String[] args) {
 
-        Base_De_Datos baseDatos = new Base_De_Datos();
-        String teta = baseDatos.ViajarAlFuturo(2);
-        
-        System.out.println(teta);
-       
-        
-        frmLogin Login=new frmLogin(baseDatos);
-        Login.setVisible(true);
-        
-          if (ConexionBD.getConnection() != null) {
-            System.out.println(" Conexión exitosa a la BD");
-        } else {
-            System.out.println(" Error en la conexión");
-        }
-            
+        // ====== Aplicar diseño Nimbus desde el main ======
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -30,9 +15,20 @@ public class Clon_Siie {
                     break;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }  
-          
+        } catch (Exception ex) {
+            System.err.println("No se pudo aplicar el estilo Nimbus: " + ex);
+        }
+
+        // ====== Iniciar base de datos ======
+        Base_De_Datos baseDatos = new Base_De_Datos();
+        String teta = baseDatos.ViajarAlFuturo(2);
+        System.out.println(teta);
+
+        // ====== Crear y mostrar ventana principal ======
+            frmAdmin admin = new frmAdmin();
+            admin.setVisible(true);
+            frmLogin jose=new frmLogin(baseDatos);
+            jose.setVisible(true);
+        
     }
 }

@@ -2,12 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
-package vista;
+package vista.jifrm;
 
 import clases.ConexionBD;
 
 import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -67,51 +68,88 @@ public class JiFrmRegistrar extends javax.swing.JInternalFrame {
     }
 }
     
-    private void MatricularAlumnos(){
-        
-        String nombre = txtNombre.getText();
-        String segundoNombre = txtSegundoNombr.getText();
-        String apellido = txtApellido.getText();
-        String segundoApellido = txtSegundoApellido.getText();
-        String edad = txtEdad.getText();
-        String telefono = txtTelefono.getText();
-        String correo = txtCorreo.getText();
-        String direccion = txtDireccion.getText();
-        String cedula = txtCedula.getText();
-        String genero = txtGenero.getText(); 
-        String cargo = (String) Cargo.getSelectedItem();
-        
-        
-        if ("alumno".equalsIgnoreCase(cargo) && carrera.isVisible()) {
-            String carreraSeleccionada = (String) carrera.getSelectedItem();
+private void MatricularAlumnos() {
+    // 1️⃣ Recoger datos del formulario
+    String nombre = txtNombre.getText();
+    String segundoNombre = txtSegundoNombr.getText();
+    String apellido = txtApellido.getText();
+    String segundoApellido = txtSegundoApellido.getText();
+    String edadStr = txtEdad.getText();
+    String telefono = txtTelefono.getText();
+    String correo = txtCorreo.getText();
+    String direccion = txtDireccion.getText();
+    String cedula = txtCedula.getText();
+    String genero = txtGenero.getText();
+    String cargo = (String) Cargo.getSelectedItem();
+    String carreraSeleccionada = (String) carrera.getSelectedItem();
 
-            String sql = "CALL registrar_alumno_con_materias(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    // Validar edad
+    int edad = 0;
+    try {
+        edad = Integer.parseInt(edadStr);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Edad inválida. Debe ser un número.");
+        return;
+    }
 
-            try (Connection conn = ConexionBD.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+    String sqlRegistrarUsuario = "{CALL registrar_usuario(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
-                stmt.setString(1, nombre);
-                stmt.setString(2, segundoNombre);
-                stmt.setString(3, apellido);
-                stmt.setString(4, segundoApellido);
-                stmt.setInt(5, Integer.parseInt(edad));
-                stmt.setString(6, telefono);
-                stmt.setString(7, correo);
-                stmt.setString(8, direccion);
-                stmt.setLong(9, Long.parseLong(cedula));
-                stmt.setString(10, genero);
-                stmt.setString(11, carreraSeleccionada);
+    try (Connection conn = ConexionBD.getConnection()) {
+        conn.setAutoCommit(false); // Inicio de transacción
 
-                stmt.executeUpdate();
+        // 2️⃣ Registrar usuario
+        try (CallableStatement stmt = conn.prepareCall(sqlRegistrarUsuario)) {
+            stmt.setString(1, nombre);
+            stmt.setString(2, segundoNombre);
+            stmt.setString(3, apellido);
+            stmt.setString(4, segundoApellido);
+            stmt.setInt(5, edad);
+            stmt.setString(6, telefono);
+            stmt.setString(7, correo);
+            stmt.setString(8, direccion);
+            stmt.setString(9, cedula); // <- Cédula como String
+            stmt.setString(10, genero);
+            stmt.setString(11, cargo);
 
-                JOptionPane.showMessageDialog(this, "✅ Alumno registrado correctamente con materias.");
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "❌ Error al registrar alumno: " + e.getMessage());
+            // Carrera solo si es alumno
+            if ("alumno".equalsIgnoreCase(cargo)) {
+                stmt.setString(12, carreraSeleccionada);
+            } else {
+                stmt.setNull(12, java.sql.Types.VARCHAR);
+            }
+
+            stmt.execute();
+        }
+
+        // 3️⃣ Matricular en materias si es alumno
+        if ("alumno".equalsIgnoreCase(cargo)) {
+            String sqlMaterias = "SELECT idMateria FROM Materias WHERE carrera = ?";
+            try (PreparedStatement psMaterias = conn.prepareStatement(sqlMaterias)) {
+                psMaterias.setString(1, carreraSeleccionada);
+                try (ResultSet rs = psMaterias.executeQuery()) {
+                    String sqlMatricular = "{CALL matricular_alumno_en_materia(?, ?)}";
+                    while (rs.next()) {
+                        int idMateria = rs.getInt("idMateria");
+                        try (CallableStatement csMatricula = conn.prepareCall(sqlMatricular)) {
+                            csMatricula.setString(1, cedula); // id o cedula del alumno
+                            csMatricula.setInt(2, idMateria);
+                            csMatricula.execute();
+                        }
+                    }
+                }
             }
         }
 
-    
+        conn.commit(); // Confirmar transacción
+        JOptionPane.showMessageDialog(this, "✅ Usuario registrado correctamente.");
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "❌ Error al registrar usuario: " + e.getMessage());
+        e.printStackTrace();
     }
+}
+
+
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -306,56 +344,8 @@ public class JiFrmRegistrar extends javax.swing.JInternalFrame {
 
     private void btnGuerdarAlumnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuerdarAlumnoActionPerformed
         // TODO add your handling code here:
-        String nombre = txtNombre.getText();
-        String segundoNombre = txtSegundoNombr.getText();
-        String apellido = txtApellido.getText();
-        String segundoApellido = txtSegundoApellido.getText();
-        String edad = txtEdad.getText();
-        String telefono = txtTelefono.getText();
-        String correo = txtCorreo.getText();
-        String direccion = txtDireccion.getText();
-        String cedula = txtCedula.getText();
-        String genero = txtGenero.getText(); 
-        String cargo = (String) Cargo.getSelectedItem();
         
         MatricularAlumnos();
-        
-        String sql = "CALL ingresar_usuario(?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
-
-
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, nombre);
-            stmt.setString(2, segundoNombre);
-            stmt.setString(3, apellido);
-            stmt.setString(4, segundoApellido);
-            stmt.setString(5, edad);
-            stmt.setString(6, telefono);
-            stmt.setString(7, correo);
-            stmt.setString(8, direccion);
-            stmt.setString(9, cedula);
-            stmt.setString(10, genero);
-            stmt.setString(11, cargo);
-
-            stmt.executeUpdate();
-            javax.swing.JOptionPane.showMessageDialog(this, "✅ Estudiante registrado con éxito");
-
-            // limpiar campos
-            txtNombre.setText("");
-            txtSegundoNombr.setText("");
-            txtApellido.setText("");
-            txtSegundoApellido.setText("");
-            txtEdad.setText("");
-            txtTelefono.setText("");
-            txtCorreo.setText("");
-            txtDireccion.setText("");
-            txtCedula.setText("");
-            txtGenero.setText("");
-
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "❌ Error al registrar estudiante: " + e.getMessage());
-        }
 
     }//GEN-LAST:event_btnGuerdarAlumnoActionPerformed
 

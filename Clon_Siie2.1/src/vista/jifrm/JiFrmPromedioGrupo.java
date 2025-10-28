@@ -1,4 +1,4 @@
-package vista;
+package vista.jifrm;
 
 import clases.ConexionBD;
 import java.awt.Color;

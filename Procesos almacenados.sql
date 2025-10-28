@@ -54,69 +54,45 @@ BEGIN
     WHERE id = p_id AND cargo = 'docente';
 END //
 
-	CREATE PROCEDURE actualizar_nota_alumno(
-		IN p_alumno_id INT,
-		IN p_materia_id INT,
-		IN p_corte INT,
-		IN p_nota DECIMAL(5,2)
-	)
-	BEGIN
-		IF p_corte = 1 THEN
-			UPDATE Alumno_Materias SET corte1 = p_nota
-			WHERE alumno_id = p_alumno_id AND materia_id = p_materia_id;
-		ELSEIF p_corte = 2 THEN
-			UPDATE Alumno_Materias SET corte2 = p_nota
-			WHERE alumno_id = p_alumno_id AND materia_id = p_materia_id;
-		ELSEIF p_corte = 3 THEN
-			UPDATE Alumno_Materias SET corte3 = p_nota
-			WHERE alumno_id = p_alumno_id AND materia_id = p_materia_id;
-		END IF;
-	END//
 
-	CREATE PROCEDURE ingresar_usuario(
-		IN p_nombre VARCHAR(125),
-		IN p_segundo_nombre VARCHAR(125),
-		IN p_apellido VARCHAR(125),
-		IN p_segundo_apellido VARCHAR(125),
-		IN p_edad INT,
-		IN p_telefono VARCHAR(50),
-		IN p_correo VARCHAR(125),
-		IN p_direccion VARCHAR(150),
-		IN p_cc BIGINT,
-		IN p_sexo VARCHAR(25),
-		IN p_cargo VARCHAR(50) -- 'alumno', 'docente', 'administrador'
-	)
-	BEGIN
-		DECLARE v_user VARCHAR(50);
-		DECLARE v_contrasena VARCHAR(255);
-		DECLARE v_id_usuario INT;
+CREATE PROCEDURE actualizar_nota_alumno(
+    IN alumno_id INT,
+    IN materia_id INT,
+    IN corte INT,
+    IN nota DECIMAL(4,2)
+)
+BEGIN
+    DECLARE id_docente_materia INT;
 
-		-- Crear valores automáticos para user y contraseña
-		SET v_user = CONCAT(p_nombre, LEFT(p_apellido, 2));
-		SET v_contrasena = CONCAT(p_cc, LEFT(p_nombre, 2)); -- puedes luego hashearla en Java
+    SELECT id INTO id_docente_materia
+    FROM Docente_Materias
+    WHERE materia_id = materia_id
+    LIMIT 1;
 
-		-- Insertar en la tabla Usuarios
-		INSERT INTO Usuarios (
-			nombre, segundo_nombre, apellido, segundo_apellido,
-			edad, telefono, correo, direccion, cc, sexo, cargo,
-			user_, contrasena_hash
-		) VALUES (
-			p_nombre, p_segundo_nombre, p_apellido, p_segundo_apellido,
-			p_edad, p_telefono, p_correo, p_direccion, p_cc, p_sexo, p_cargo,
-			v_user, v_contrasena
-		);
+    IF id_docente_materia IS NOT NULL THEN
+        CASE corte
+            WHEN 1 THEN
+                UPDATE Alumno_Materias 
+                SET corte1 = nota
+                WHERE alumno_id = alumno_id 
+                AND docente_materia_id = id_docente_materia;
+            WHEN 2 THEN
+                UPDATE Alumno_Materias 
+                SET corte2 = nota
+                WHERE alumno_id = alumno_id 
+                AND docente_materia_id = id_docente_materia;
+            WHEN 3 THEN
+                UPDATE Alumno_Materias 
+                SET corte3 = nota
+                WHERE alumno_id = alumno_id 
+                AND docente_materia_id = id_docente_materia;
+        END CASE;
+    END IF;
+END //
 
-		-- Obtener el ID generado
-		SET v_id_usuario = LAST_INSERT_ID();
 
-		-- Insertar en la tabla correspondiente al cargo
-		IF p_cargo = 'docente' THEN
-			INSERT INTO Docentes (id) VALUES (v_id_usuario);
-		ELSEIF p_cargo = 'administrador' THEN
-			INSERT INTO Administradores (id) VALUES (v_id_usuario);
-		END IF;
 
-	END //
+
 
 	CREATE PROCEDURE listar_alumnos()
 BEGIN
@@ -196,47 +172,82 @@ END //
 		WHERE am.alumno_id = p_alumno_id;
 	END //
 
-	CREATE PROCEDURE obtener_materia_docente(
-		IN p_user VARCHAR(50)
-	)
-	BEGIN
-		SELECT m.nombre
-		FROM Usuarios u
-		JOIN Docentes d ON u.id = d.id
-		JOIN Docente_Materias dm ON d.id = dm.docente_id
-		JOIN Materias m ON dm.materia_id = m.id
-		WHERE u.user_ = p_user;
-	END //
+
+
+CREATE PROCEDURE obtener_materia_docente(IN nombre_docente VARCHAR(100))
+BEGIN
+    SELECT m.nombre AS materia
+    FROM Usuarios u
+    JOIN Docentes d ON d.id = u.id
+    JOIN Docente_Materias dm ON dm.docente_id = d.id
+    JOIN Materias m ON m.id = dm.materia_id
+    WHERE u.user_ = nombre_docente;
+END //
+
+
+
+CREATE PROCEDURE listar_estudiantes_por_docente_materia(
+    IN p_docente_user VARCHAR(100),
+    IN p_materia_nombre VARCHAR(100)
+)
+BEGIN
+    SELECT 
+        u.cc,
+        u.nombre,
+        u.apellido,
+        u.edad,
+        u.telefono,
+        u.correo
+    FROM Alumno_Materias am
+    JOIN Alumnos a ON am.alumno_id = a.id
+    JOIN Usuarios u ON a.id = u.id
+    JOIN Docente_Materias dm ON am.docente_materia_id = dm.id
+    JOIN Materias m ON dm.materia_id = m.id
+    JOIN Docentes d ON dm.docente_id = d.id
+    JOIN Usuarios ud ON d.id = ud.id
+    WHERE m.nombre = p_materia_nombre
+      AND ud.user_ = p_docente_user;
+END //
+
+    
+CREATE PROCEDURE listar_notas_docente_materia(
+    IN p_docente_user VARCHAR(100),
+    IN p_materia_nombre VARCHAR(100)
+)
+BEGIN
+    SELECT 
+        a.id AS alumno_id,
+        u.nombre AS estudiante,
+        u.apellido,
+        am.corte1,
+        am.corte2,
+        am.corte3
+    FROM Alumno_Materias am
+    JOIN Alumnos a ON am.alumno_id = a.id
+    JOIN Usuarios u ON a.id = u.id
+    JOIN Docente_Materias dm ON am.docente_materia_id = dm.id
+    JOIN Materias m ON dm.materia_id = m.id
+    JOIN Docentes d ON dm.docente_id = d.id
+    JOIN Usuarios ud ON d.id = ud.id
+    WHERE m.nombre = p_materia_nombre
+      AND ud.user_ = p_docente_user;
+END //
+
 
 	CREATE PROCEDURE listado_docentes()
 	BEGIN
 		SELECT u.id, u.nombre, u.apellido
 		FROM Usuarios u
-		JOIN Docentes d ON u.id = d.id
-		WHERE d.id NOT IN (
-			SELECT dm.docente_id FROM Docente_Materias dm
-		);
+		JOIN Docentes d ON u.id = d.id;
 	END //
 
 	CREATE PROCEDURE Materias_disponibles()
 	BEGIN
 		SELECT m.id, m.nombre AS nombre_materia
-		FROM Materias m
-		WHERE m.id NOT IN (
-			SELECT dm.materia_id FROM Docente_Materias dm
-		);
+		FROM Materias m;
 	END //
 
 
-CREATE PROCEDURE docentes_no_asignados()
-BEGIN
-    SELECT u.id, u.nombre
-    FROM Usuarios u
-    JOIN Docentes d ON u.id = d.id
-    WHERE d.id NOT IN (
-        SELECT DISTINCT docente_id FROM Docente_Materias
-    );
-END //    
 	CREATE PROCEDURE id_materia(
 		IN p_nombre_materia VARCHAR(125)
 	)
@@ -247,137 +258,117 @@ END //
 	END //
 
 
-	CREATE PROCEDURE asignar_m_a_p(
-		IN p_materia_id INT,
-		IN p_docente_id INT
-	)
-	BEGIN
-		INSERT INTO Docente_Materias (docente_id, materia_id)
-		VALUES (p_docente_id, p_materia_id);
-	END //
+
+
+CREATE FUNCTION existe_asignacion(docenteId INT, materiaId INT)
+RETURNS TINYINT
+DETERMINISTIC
+BEGIN
+    DECLARE totalAsignaciones INT;
+
+    SELECT COUNT(*) INTO totalAsignaciones
+    FROM Docente_Materias
+    WHERE docente_id = docenteId
+      AND materia_id = materiaId;
+
+    IF totalAsignaciones > 0 THEN
+        RETURN 1;  -- Ya existe
+    ELSE
+        RETURN 0;  -- No existe
+    END IF;
+END //
 
 
 
-	CREATE PROCEDURE listar_promedios_por_docente_materia(
-		IN p_docente_nombre VARCHAR(100),
-		IN p_materia_nombre VARCHAR(100)
-	)
-	BEGIN
-		SELECT 
-			u.nombre,
-			u.apellido,
-			am.corte1,
-			am.corte2,
-			am.corte3
-		FROM Alumno_Materias am
-		JOIN Alumnos a ON am.alumno_id = a.id
-		JOIN Usuarios u ON a.id = u.id
-		JOIN Materias m ON am.materia_id = m.id
-		JOIN Docente_Materias dm ON dm.materia_id = m.id
-		JOIN Docentes d ON dm.docente_id = d.id
-		JOIN Usuarios du ON d.id = du.id
-		WHERE m.nombre = p_materia_nombre
-		  AND du.user_ = p_docente_nombre;
-	END //
-
-	CREATE PROCEDURE listar_estudiantes_por_docente_materia(
-		IN p_nombre_docente VARCHAR(100),
-		IN p_nombre_materia VARCHAR(100)
-	)
-	BEGIN
-		SELECT 
-			u.cc,
-			u.nombre,
-			u.apellido,
-			u.edad,
-			u.telefono,
-			u.correo
-		FROM Alumno_Materias am
-		JOIN Alumnos a ON am.alumno_id = a.id
-		JOIN Usuarios u ON a.id = u.id
-		JOIN Materias m ON am.materia_id = m.id
-		JOIN Docente_Materias dm ON dm.materia_id = m.id
-		JOIN Docentes d ON dm.docente_id = d.id
-		JOIN Usuarios ud ON d.id = ud.id
-		WHERE m.nombre = p_nombre_materia
-		  AND ud.user_ = p_nombre_docente;
-	END //
-
-	CREATE PROCEDURE listar_notas_docente_materia(
-		IN p_docente_nombre VARCHAR(100),
-		IN p_materia_nombre VARCHAR(100)
-	)
-	BEGIN
-		SELECT 
-			a.id AS alumno_id,
-			u.nombre AS estudiante,
-			u.apellido,
-			n.corte1,
-			n.corte2,
-			n.corte3
-		FROM alumno_materias n
-		JOIN Alumnos a ON n.alumno_id = a.id
-		JOIN Usuarios u ON a.id = u.id
-		JOIN Materias m ON n.materia_id = m.id
-		JOIN Docente_Materias dm ON m.id = dm.materia_id
-		JOIN Docentes d ON dm.docente_id = d.id
-		JOIN Usuarios ud ON d.id = ud.id
-		WHERE m.nombre = p_materia_nombre
-		  AND ud.user_ = p_docente_nombre;
-	END //
 
 
 
-	CREATE PROCEDURE registrar_alumno_con_materias(
-		IN p_nombre VARCHAR(125),
-		IN p_segundo_nombre VARCHAR(125),
-		IN p_apellido VARCHAR(125),
-		IN p_segundo_apellido VARCHAR(125),
-		IN p_edad INT,
-		IN p_telefono VARCHAR(50),
-		IN p_correo VARCHAR(125),
-		IN p_direccion VARCHAR(150),
-		IN p_cc BIGINT,
-		IN p_sexo VARCHAR(25),
-		IN p_nombre_carrera VARCHAR(125)
-	)
-	BEGIN
-		DECLARE v_user VARCHAR(50);
-		DECLARE v_contrasena VARCHAR(255);
-		DECLARE v_user_id INT;
-		DECLARE v_carrera_id INT;
 
-		-- Generar user y contraseña
-		SET v_user = CONCAT(p_nombre, LEFT(p_apellido, 2));
-		SET v_contrasena = CONCAT(p_cc, LEFT(p_nombre, 2)); -- Puedes luego aplicar hash en Java si prefieres
 
-		-- Insertar usuario
-		INSERT INTO Usuarios (
-			nombre, segundo_nombre, apellido, segundo_apellido,
-			edad, telefono, correo, direccion, cc, sexo, cargo,
-			user_, contrasena_hash
-		) VALUES (
-			p_nombre, p_segundo_nombre, p_apellido, p_segundo_apellido,
-			p_edad, p_telefono, p_correo, p_direccion, p_cc, p_sexo, 'alumno',
-			v_user, v_contrasena
-		);
 
-		-- Obtener ID recién insertado
-		SET v_user_id = LAST_INSERT_ID();
 
-		-- Insertar en tabla Alumnos
-		INSERT INTO Alumnos(id) VALUES (v_user_id);
+CREATE PROCEDURE asignar_m_a_p(
+    IN p_docente_id INT,
+    IN p_materia_id INT
+)
+BEGIN
+    DECLARE ya_asignada INT;
 
-		-- Obtener ID de la carrera
-		SELECT id INTO v_carrera_id FROM Carreras WHERE nombre = p_nombre_carrera;
+    -- Verificar si ya existe la asignación
+    SELECT COUNT(*) INTO ya_asignada
+    FROM Docente_Materias
+    WHERE docente_id = p_docente_id
+      AND materia_id = p_materia_id;
 
-		-- Insertar materias correspondientes
-		INSERT INTO Alumno_Materias (alumno_id, materia_id, corte1, corte2, corte3)
-		SELECT v_user_id, materia_id, 0, 0, 0
-		FROM Carrera_Materias
-		WHERE carrera_id = v_carrera_id;
+    IF ya_asignada > 0 THEN
+        SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'El docente ya tiene asignada esta materia';
+    ELSE
+        -- Insertar la asignación
+        INSERT INTO Docente_Materias (docente_id, materia_id)
+        VALUES (p_docente_id, p_materia_id);
+    END IF;
+END //
 
-	END //
+
+
+
+
+
+CREATE PROCEDURE listar_promedios_por_docente_materia(
+    IN p_docente_user VARCHAR(100),
+    IN p_materia_nombre VARCHAR(100)
+)
+BEGIN
+    SELECT 
+        u.nombre,
+        u.apellido,
+        am.corte1,
+        am.corte2,
+        am.corte3
+    FROM Alumno_Materias am
+    JOIN Alumnos a ON a.id = am.alumno_id
+    JOIN Usuarios u ON u.id = a.id
+    JOIN Docente_Materias dm ON dm.id = am.docente_materia_id
+    JOIN Materias m ON m.id = dm.materia_id
+    JOIN Docentes d ON d.id = dm.docente_id
+    JOIN Usuarios ud ON ud.id = d.id
+    WHERE ud.user_ = p_docente_user
+      AND m.nombre = p_materia_nombre;
+END //
+
+
+CREATE PROCEDURE registrar_usuario(
+    IN p_nombre VARCHAR(50),
+    IN p_segundoNombre VARCHAR(50),
+    IN p_apellido VARCHAR(50),
+    IN p_segundoApellido VARCHAR(50),
+    IN p_edad INT,
+    IN p_telefono VARCHAR(15),
+    IN p_correo VARCHAR (50),
+    IN p_direccion VARCHAR(100),
+    IN p_cedula VARCHAR(20),
+    IN p_genero VARCHAR(10),
+    IN p_cargo VARCHAR(20),
+    IN p_carrera VARCHAR(50)
+)
+BEGIN
+    INSERT INTO usuarios
+    (nombre, segundo_Nombre, apellido, segundo_Apellido, edad, telefono, correo, direccion, cc, sexo, cargo, carrera)
+    VALUES
+    (p_nombre, p_segundoNombre, p_apellido, p_segundoApellido, p_edad, p_telefono, p_correo, p_direccion, p_cedula, p_genero, p_cargo, p_carrera);
+END//
+
+
+
+
+
+	
+
+
+
+
+
     
    CREATE PROCEDURE reiniciar_notas()
 BEGIN

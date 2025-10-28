@@ -4,6 +4,8 @@
  */
 package vista;
 
+import vista.frm.frmLogin;
+import vista.jifrm.JiFrmNotas;
 import java.util.Random;
 import clases.Base_De_Datos;
 import java.awt.Color;

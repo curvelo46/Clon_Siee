@@ -1,9 +1,12 @@
-package vista;
+package vista.frm;
 
+import clases.AjustesObjetos;
 import clases.Base_De_Datos;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
+import vista.frmAdministrador;
+import vista.frmEstudiante;
 
 
 public class frmLogin extends javax.swing.JFrame {
@@ -16,7 +19,10 @@ public class frmLogin extends javax.swing.JFrame {
         initComponents();
         this.baseDatos =dato;
         this.getContentPane().setBackground(new Color(255, 254, 214));
+        setSize(840,365);
+        setResizable(false);
         setLocationRelativeTo(null);
+        AjustesObjetos.ajustarImagen(lbLogo,"C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg" );
        
     }
 
@@ -36,19 +42,27 @@ public class frmLogin extends javax.swing.JFrame {
         txtUsuario = new javax.swing.JTextField();
         txtRespuestas = new javax.swing.JLabel();
         btnSecion = new javax.swing.JButton();
-        btnLimpiar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
+        lbLogo = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(null);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("Login");
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel1.setText("CBN");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(570, 20, 77, 44);
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI Historic", 1, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
         jLabel2.setText("usuario:");
+        getContentPane().add(jLabel2);
+        jLabel2.setBounds(400, 140, 103, 32);
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI Historic", 1, 14)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
         jLabel3.setText("contraseña:");
+        getContentPane().add(jLabel3);
+        jLabel3.setBounds(400, 200, 140, 32);
 
         txtContraseña.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -61,6 +75,8 @@ public class frmLogin extends javax.swing.JFrame {
                 txtContraseñaKeyPressed2(evt);
             }
         });
+        getContentPane().add(txtContraseña);
+        txtContraseña.setBounds(550, 200, 240, 30);
 
         txtUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -73,7 +89,12 @@ public class frmLogin extends javax.swing.JFrame {
                 txtUsuarioKeyPressed2(evt);
             }
         });
+        getContentPane().add(txtUsuario);
+        txtUsuario.setBounds(550, 140, 240, 30);
+        getContentPane().add(txtRespuestas);
+        txtRespuestas.setBounds(737, 108, 143, 0);
 
+        btnSecion.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnSecion.setText("iniciar secion");
         btnSecion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnSecion.addActionListener(new java.awt.event.ActionListener() {
@@ -81,70 +102,19 @@ public class frmLogin extends javax.swing.JFrame {
                 btnSecionActionPerformed(evt);
             }
         });
+        getContentPane().add(btnSecion);
+        btnSecion.setBounds(540, 280, 160, 36);
+        getContentPane().add(jSeparator1);
+        jSeparator1.setBounds(390, 260, 430, 11);
 
-        btnLimpiar.setText("limpiar");
-        btnLimpiar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLimpiarActionPerformed(evt);
-            }
-        });
+        lbLogo.setText("jLabel4");
+        getContentPane().add(lbLogo);
+        lbLogo.setBounds(0, 0, 370, 330);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(btnSecion)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnLimpiar)
-                .addGap(44, 44, 44))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jSeparator1)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(txtContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(7, 7, 7)))
-                        .addGap(40, 40, 40)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtRespuestas, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtRespuestas))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(txtContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnSecion)
-                    .addComponent(btnLimpiar))
-                .addContainerGap(16, Short.MAX_VALUE))
-        );
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel4.setText("Lideres en educacion");
+        getContentPane().add(jLabel4);
+        jLabel4.setBounds(480, 70, 260, 29);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -152,13 +122,6 @@ public class frmLogin extends javax.swing.JFrame {
     private void txtContraseñaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContraseñaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtContraseñaActionPerformed
-
-    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
-        // TODO add your handling code here:
-        txtContraseña.setText("");
-        txtRespuestas.setText("");
-        txtUsuario.setText("");
-    }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void txtUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuarioActionPerformed
         // TODO add your handling code here:
@@ -251,12 +214,13 @@ public class frmLogin extends javax.swing.JFrame {
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnSecion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel lbLogo;
     private javax.swing.JPasswordField txtContraseña;
     private javax.swing.JLabel txtRespuestas;
     private javax.swing.JTextField txtUsuario;

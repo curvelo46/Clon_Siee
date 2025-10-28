@@ -4,6 +4,13 @@
  */
 package vista;
 
+import vista.frm.frmLogin;
+import vista.jifrm.JiFrmAsignarMaterias;
+import vista.jifrm.JiFrmQuitarMateria;
+import vista.jifrm.JiFrmCrearMateria;
+import vista.jifrm.JiFrmRegistrar;
+import vista.jifrm.JiFrmDatosEstudiandres;
+import vista.jifrm.JiFrmDatosProfesores;
 import clases.Base_De_Datos;
 import clases.ConexionBD;
 import java.sql.Connection;

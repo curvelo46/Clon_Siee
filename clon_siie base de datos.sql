@@ -2,6 +2,14 @@ DROP DATABASE IF EXISTS CBN;
 CREATE DATABASE CBN CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE CBN;
 
+
+
+
+
+
+
+
+
 /* =========================================================
    TABLAS
    ========================================================= */

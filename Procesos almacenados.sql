@@ -24,7 +24,7 @@ BEGIN
         telefono = p_telefono,
         correo = p_correo,
         direccion = p_direccion
-    WHERE id = p_id AND cargo = 'docente';
+    WHERE id = p_id AND cargo = 'alumnos';
 END //
 
 CREATE PROCEDURE actualizar_docente(
@@ -349,27 +349,17 @@ CREATE PROCEDURE registrar_usuario(
     IN p_direccion VARCHAR(100),
     IN p_cedula VARCHAR(20),
     IN p_genero VARCHAR(10),
-    IN p_cargo VARCHAR(20),
-    IN p_carrera VARCHAR(50)
+    IN p_cargo VARCHAR(20)
 )
 BEGIN
+	
     INSERT INTO usuarios
-    (nombre, segundo_Nombre, apellido, segundo_Apellido, edad, telefono, correo, direccion, cc, sexo, cargo, carrera)
+    (nombre, segundo_Nombre, apellido, segundo_Apellido, edad, telefono, correo, direccion, cc, sexo, cargo)
     VALUES
-    (p_nombre, p_segundoNombre, p_apellido, p_segundoApellido, p_edad, p_telefono, p_correo, p_direccion, p_cedula, p_genero, p_cargo, p_carrera);
+    (p_nombre, p_segundoNombre, p_apellido, p_segundoApellido, p_edad, p_telefono, p_correo, p_direccion, p_cedula, p_genero, p_cargo );
 END//
 
 
-
-
-
-	
-
-
-
-
-
-    
    CREATE PROCEDURE reiniciar_notas()
 BEGIN
     UPDATE Alumno_Materias
@@ -383,3 +373,97 @@ END //
 			INSERT INTO Materias (nombre) VALUES (nombre);
             
 	end//
+
+
+
+
+
+CREATE PROCEDURE matricular_alumno_en_carrera(
+    IN p_user VARCHAR(50),
+    IN p_carrera_nombre VARCHAR(125)
+)
+BEGIN
+    DECLARE v_alumno_id INT;
+    DECLARE v_carrera_id INT;
+    DECLARE v_docente_materia_id INT;
+    DECLARE done INT DEFAULT 0;
+
+    -- Cursor para recorrer todas las materias de la carrera
+    DECLARE curMaterias CURSOR FOR
+        SELECT dm.id
+        FROM Carrera_Materias cm
+        JOIN Materias m ON cm.materia_id = m.id
+        JOIN Docente_Materias dm ON dm.materia_id = m.id
+        WHERE cm.carrera_id = v_carrera_id;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- 1️⃣ Obtener el ID del alumno
+    SELECT u.id INTO v_alumno_id
+    FROM Usuarios u
+    WHERE u.user_ = p_user AND u.cargo = 'alumno';
+
+    -- 2️⃣ Obtener el ID de la carrera
+    SELECT id INTO v_carrera_id
+    FROM Carreras
+    WHERE nombre = p_carrera_nombre;
+
+    -- 3️⃣ Verificar que ambos existan
+    IF v_alumno_id IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El usuario no existe o no es un alumno';
+    END IF;
+
+    IF v_carrera_id IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La carrera especificada no existe';
+    END IF;
+
+    -- 4️⃣ Recorrer las materias de la carrera y matricular al alumno
+    OPEN curMaterias;
+
+    loop_materias: LOOP
+        FETCH curMaterias INTO v_docente_materia_id;
+        IF done THEN
+            LEAVE loop_materias;
+        END IF;
+
+        -- Insertar la relación alumno - materia
+        INSERT INTO Alumno_Materias (alumno_id, docente_materia_id, corte1, corte2, corte3)
+        VALUES (v_alumno_id, v_docente_materia_id, 0, 0, 0);
+    END LOOP;
+
+    CLOSE curMaterias;
+END //
+
+
+
+
+
+CREATE PROCEDURE registrar_docente_por_cedula(IN p_cc BIGINT)
+BEGIN
+    DECLARE v_id INT;
+
+    /* 1. Obtener el id del usuario con esa cédula y que sea docente */
+    SELECT id
+      INTO v_id
+      FROM Usuarios
+     WHERE cc = p_cc
+       AND cargo = 'docente';
+
+    /* 2. Si no existe => error */
+    IF v_id IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'No existe un usuario docente con esa cédula';
+    ELSE
+        /* 3. Insertar en la tabla Docentes (si ya existe no hará nada por la PK) */
+        INSERT IGNORE INTO Docentes (id) VALUES (v_id);
+    END IF;
+END //
+
+
+
+
+
+
+

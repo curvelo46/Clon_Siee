@@ -19,10 +19,10 @@ public class frmLogin extends javax.swing.JFrame {
         initComponents();
         this.baseDatos =dato;
         this.getContentPane().setBackground(new Color(255, 254, 214));
-        setSize(840,365);
+        setSize(820,365);
         setResizable(false);
         setLocationRelativeTo(null);
-        AjustesObjetos.ajustarImagen(lbLogo,"C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg" );
+        AjustesObjetos.ajustarImagen(lbLogo,"C:\\Users\\CBN\\Desktop\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg");
        
     }
 
@@ -47,22 +47,23 @@ public class frmLogin extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(820, 365));
         getContentPane().setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel1.setText("CBN");
         getContentPane().add(jLabel1);
-        jLabel1.setBounds(570, 20, 77, 44);
+        jLabel1.setBounds(530, 20, 77, 44);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
         jLabel2.setText("usuario:");
         getContentPane().add(jLabel2);
-        jLabel2.setBounds(400, 140, 103, 32);
+        jLabel2.setBounds(380, 140, 103, 32);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI Historic", 1, 24)); // NOI18N
         jLabel3.setText("contraseña:");
         getContentPane().add(jLabel3);
-        jLabel3.setBounds(400, 200, 140, 32);
+        jLabel3.setBounds(380, 200, 140, 32);
 
         txtContraseña.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -76,8 +77,9 @@ public class frmLogin extends javax.swing.JFrame {
             }
         });
         getContentPane().add(txtContraseña);
-        txtContraseña.setBounds(550, 200, 240, 30);
+        txtContraseña.setBounds(530, 200, 240, 30);
 
+        txtUsuario.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
         txtUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtUsuarioActionPerformed(evt);
@@ -90,7 +92,7 @@ public class frmLogin extends javax.swing.JFrame {
             }
         });
         getContentPane().add(txtUsuario);
-        txtUsuario.setBounds(550, 140, 240, 30);
+        txtUsuario.setBounds(530, 140, 240, 30);
         getContentPane().add(txtRespuestas);
         txtRespuestas.setBounds(737, 108, 143, 0);
 
@@ -103,18 +105,18 @@ public class frmLogin extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnSecion);
-        btnSecion.setBounds(540, 280, 160, 36);
+        btnSecion.setBounds(510, 280, 160, 31);
         getContentPane().add(jSeparator1);
-        jSeparator1.setBounds(390, 260, 430, 11);
+        jSeparator1.setBounds(370, 260, 430, 10);
 
         lbLogo.setText("jLabel4");
         getContentPane().add(lbLogo);
-        lbLogo.setBounds(0, 0, 370, 330);
+        lbLogo.setBounds(-20, 0, 370, 330);
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel4.setText("Lideres en educacion");
         getContentPane().add(jLabel4);
-        jLabel4.setBounds(480, 70, 260, 29);
+        jLabel4.setBounds(440, 70, 260, 29);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

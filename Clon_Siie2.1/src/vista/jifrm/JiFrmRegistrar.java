@@ -92,7 +92,7 @@ private void MatricularAlumnos() {
         return;
     }
 
-    String sqlRegistrarUsuario = "{CALL registrar_usuario(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+    String sqlRegistrarUsuario = "{CALL registrar_usuario(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
     try (Connection conn = ConexionBD.getConnection()) {
         conn.setAutoCommit(false); // Inicio de transacción
@@ -110,43 +110,38 @@ private void MatricularAlumnos() {
             stmt.setString(9, cedula); // <- Cédula como String
             stmt.setString(10, genero);
             stmt.setString(11, cargo);
-
-            // Carrera solo si es alumno
-            if ("alumno".equalsIgnoreCase(cargo)) {
-                stmt.setString(12, carreraSeleccionada);
-            } else {
-                stmt.setNull(12, java.sql.Types.VARCHAR);
-            }
-
             stmt.execute();
         }
 
-        // 3️⃣ Matricular en materias si es alumno
-        if ("alumno".equalsIgnoreCase(cargo)) {
-            String sqlMaterias = "SELECT idMateria FROM Materias WHERE carrera = ?";
-            try (PreparedStatement psMaterias = conn.prepareStatement(sqlMaterias)) {
-                psMaterias.setString(1, carreraSeleccionada);
-                try (ResultSet rs = psMaterias.executeQuery()) {
-                    String sqlMatricular = "{CALL matricular_alumno_en_materia(?, ?)}";
-                    while (rs.next()) {
-                        int idMateria = rs.getInt("idMateria");
-                        try (CallableStatement csMatricula = conn.prepareCall(sqlMatricular)) {
-                            csMatricula.setString(1, cedula); // id o cedula del alumno
-                            csMatricula.setInt(2, idMateria);
-                            csMatricula.execute();
-                        }
-                    }
-                }
+        
+   
+
+        
+        
+        
+
+        conn.commit(); 
+        JOptionPane.showMessageDialog(this, "✅ Usuario registrado correctamente.");
+        
+        
+             if ("alumno".equalsIgnoreCase(cargo)) {
+            String sqlMatricular = "{CALL matricular_alumno_en_carrera(?, ?)}";
+            try (CallableStatement stmt2 = conn.prepareCall(sqlMatricular)) {
+                stmt2.setString(1, nombre.toLowerCase() + apellido.toLowerCase().charAt(0)); // o si ya tienes el user_
+                stmt2.setString(2, carreraSeleccionada);
+                stmt2.execute();
             }
         }
-
-        conn.commit(); // Confirmar transacción
-        JOptionPane.showMessageDialog(this, "✅ Usuario registrado correctamente.");
-
+        
+        
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "❌ Error al registrar usuario: " + e.getMessage());
         e.printStackTrace();
     }
+    
+    
+    
+    
 }
 
 

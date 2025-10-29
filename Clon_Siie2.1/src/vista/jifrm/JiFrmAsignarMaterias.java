@@ -196,7 +196,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
             idAsignaturaTexto = rs.getInt("id");
         }
 
-        // Validar si la asignación ya existe usando la función
+        // __________________________________________________________________
         String sqlValidar = "SELECT existe_asignacion(?, ?) AS yaExiste";
         try (PreparedStatement stmt = conn.prepareStatement(sqlValidar)) {
             stmt.setInt(1, idDocente);
@@ -209,6 +209,7 @@ public class JiFrmAsignarMaterias extends javax.swing.JInternalFrame {
                 return; // Sale sin insertar
             }
         }
+        // __________________________________________________________________
 
         // Asignar la materia al docente
         String sqlUpdateDocente = "call asignar_m_a_p(?, ?)";

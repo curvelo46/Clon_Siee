@@ -42,7 +42,7 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
 
     private int obtenerIdMateria() {
         int id = -1;
-        String sql = "SELECT m.id FROM Materias m WHERE m.nombre = ?";
+        String sql = "call id_materia(?)";
 
         try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -105,40 +105,59 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
     }
 
     private void guardarNotas() {
-        if (materiaId == -1) return;
+    if (materiaId == -1) return;
 
-        DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
+    // Obtener docente_materia_id
+    int docenteMateriaId = -1;
+    String sqlGetDmId = "CALL get_docente_materia_id(?, ?)";
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement psDm = conn.prepareStatement(sqlGetDmId)) {
+        psDm.setString(1, profesor);
+        psDm.setString(2, materia);
+        ResultSet rsDm = psDm.executeQuery();
+        if (rsDm.next()) {
+            docenteMateriaId = rsDm.getInt("id");
+        } else {
+            JOptionPane.showMessageDialog(this, "❌ No se encontró la materia asignada a este docente.");
+            return;
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "❌ Error al obtener docente_materia_id: " + e.getMessage());
+        e.printStackTrace();
+        return;
+    }
 
-        try (Connection conn = ConexionBD.getConnection()) {
-            String sql = "CALL actualizar_nota_alumno(?, ?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+    DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
 
-            for (int i = 0; i < modelo.getRowCount(); i++) {
-                int alumnoId = Integer.parseInt(modelo.getValueAt(i, 0).toString());
-                double nota;
-                try {
-                    nota = Double.parseDouble(modelo.getValueAt(i, corteSeleccionado + 1).toString());
-                } catch (NumberFormatException e) {
-                    nota = 0.0;
-                }
+    String sql = "CALL actualizar_nota(?, ?, ?, ?)";
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                stmt.setInt(1, alumnoId);
-                stmt.setInt(2, materiaId);
-                stmt.setInt(3, corteSeleccionado);
-                stmt.setDouble(4, nota);
-                stmt.addBatch();
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            int alumnoId = Integer.parseInt(modelo.getValueAt(i, 0).toString());
+            double nota;
+            try {
+                nota = Double.parseDouble(modelo.getValueAt(i, corteSeleccionado + 1).toString());
+            } catch (NumberFormatException e) {
+                nota = 0.0;
             }
 
-            stmt.executeBatch();
-
-            JOptionPane.showMessageDialog(this, "✅ Notas guardadas correctamente (Corte " + corteSeleccionado + ")");
-            cargarTabla();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "❌ Error al guardar notas: " + e.getMessage());
-            e.printStackTrace();
+            stmt.setInt(1, alumnoId);
+            stmt.setInt(2, corteSeleccionado);
+            stmt.setInt(3, docenteMateriaId);
+            stmt.setDouble(4, nota);
+            stmt.addBatch();
         }
+
+        stmt.executeBatch();
+        JOptionPane.showMessageDialog(this, "✅ Notas guardadas correctamente (Corte " + corteSeleccionado + ")");
+        cargarTabla();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "❌ Error al guardar notas: " + e.getMessage());
+        e.printStackTrace();
     }
+}
 
 
     /**

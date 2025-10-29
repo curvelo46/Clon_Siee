@@ -60,6 +60,10 @@ INSERT INTO Docente_Materias (docente_id, materia_id) VALUES
 (3,1),   -- Laura -> Programación I
 (3,2);   -- Laura -> Bases de Datos
 
+INSERT INTO Docente_Materias (docente_id, materia_id) VALUES
+(3,3),   -- Laura -> Programación I
+(3,4);   -- Laura -> Bases de Datos
+
 INSERT INTO Alumno_Materias (alumno_id, docente_materia_id, corte1) VALUES
 (1, 1, 4.5),
 (2, 1, 3.8);
@@ -67,14 +71,24 @@ INSERT INTO Alumno_Materias (alumno_id, docente_materia_id, corte1) VALUES
 
 
 
-SELECT id FROM Usuarios WHERE cc = 987654321;
 
-insert into docentes(id) values(6);
+
+
 
 select*from docente_materias;
 select*from materias;
+select*from carrera_materias;
 select*from alumno_materias;
+update alumno_materias set corte1=1.0 
+where alumno_id=1;
 select*from docentes;
 select*from alumnos;
 select*from usuarios;
 
+
+call id_materia("contabilidad");
+
+
+
+
+call actualizar_nota(1,1,1,3.0);

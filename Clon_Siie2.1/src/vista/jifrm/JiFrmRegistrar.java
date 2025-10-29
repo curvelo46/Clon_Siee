@@ -53,7 +53,7 @@ public class JiFrmRegistrar extends javax.swing.JInternalFrame {
     private void cargarCarrerasDesdeBD() {
     carrera.removeAllItems(); // Limpiar primero
 
-    String sql = "SELECT nombre FROM Carreras"; // Asegúrate de que esta tabla y columna existan
+    String sql = "call carreras()"; // Asegúrate de que esta tabla y columna existan
 
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql);
@@ -116,10 +116,10 @@ private void MatricularAlumnos() {
     // 2️⃣ Si es alumno, obtener user_ real y continuar
     if ("alumno".equalsIgnoreCase(cargo)) {
         // Obtener user_ real
-        String sqlGetUser = "SELECT user_ FROM Usuarios WHERE cc = ?";
+        String sqlGetUser = "{CALL obtener_user_por_cc(?)}";
         String userReal;
         try (PreparedStatement ps = conn.prepareStatement(sqlGetUser)) {
-            ps.setString(1, cedula);
+           ps.setString(1, cedula);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     userReal = rs.getString("user_");
@@ -130,7 +130,7 @@ private void MatricularAlumnos() {
         }
 
         // Obtener id del usuario
-        String sqlGetId = "SELECT id FROM Usuarios WHERE cc = ?";
+        String sqlGetId = "{call obtener_id_por_cc(?)}";
         int idUsuario = 0;
         try (PreparedStatement ps = conn.prepareStatement(sqlGetId)) {
             ps.setString(1, cedula);
@@ -142,7 +142,7 @@ private void MatricularAlumnos() {
         }
 
         // Insertar en Alumnos
-        String sqlAlumno = "INSERT INTO Alumnos (id) VALUES (?)";
+        String sqlAlumno = "{call insertar_alumno(?)}";
         try (PreparedStatement ps = conn.prepareStatement(sqlAlumno)) {
             ps.setInt(1, idUsuario);
             ps.executeUpdate();

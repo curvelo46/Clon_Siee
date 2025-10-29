@@ -5,8 +5,8 @@ import clases.Base_De_Datos;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
-import vista.frmAdministrador;
-import vista.frmEstudiante;
+import vista.frm.frmAdministrador;
+import vista.frm.frmEstudiante;
 
 
 public class frmLogin extends javax.swing.JFrame {
@@ -22,7 +22,7 @@ public class frmLogin extends javax.swing.JFrame {
         setSize(820,365);
         setResizable(false);
         setLocationRelativeTo(null);
-        AjustesObjetos.ajustarImagen(lbLogo,"C:\\Users\\CBN\\Desktop\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg");
+        AjustesObjetos.ajustarImagen(lbLogo,"src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg");
        
     }
 
@@ -105,7 +105,7 @@ public class frmLogin extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnSecion);
-        btnSecion.setBounds(510, 280, 160, 31);
+        btnSecion.setBounds(510, 280, 160, 36);
         getContentPane().add(jSeparator1);
         jSeparator1.setBounds(370, 260, 430, 10);
 

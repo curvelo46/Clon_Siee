@@ -24,7 +24,7 @@ BEGIN
         telefono = p_telefono,
         correo = p_correo,
         direccion = p_direccion
-    WHERE id = p_id AND cargo = 'alumnos';
+    WHERE id = p_id AND cargo = 'alumno';
 END //
 
 CREATE PROCEDURE actualizar_docente(
@@ -55,39 +55,59 @@ BEGIN
 END //
 
 
+
+
+
+
+
+
 CREATE PROCEDURE actualizar_nota_alumno(
-    IN alumno_id INT,
-    IN materia_id INT,
-    IN corte INT,
-    IN nota DECIMAL(4,2)
+    IN p_alumno_id INT,
+    IN p_docente_user VARCHAR(100),
+    IN p_materia_nombre VARCHAR(100),
+    IN p_corte INT,
+    IN p_nota DECIMAL(4,2)
 )
 BEGIN
-    DECLARE id_docente_materia INT;
+    DECLARE v_docente_materia_id INT;
 
-    SELECT id INTO id_docente_materia
-    FROM Docente_Materias
-    WHERE materia_id = materia_id
+    -- Obtener el docente_materia_id correcto
+    SELECT dm.id INTO v_docente_materia_id
+    FROM Docente_Materias dm
+    JOIN Materias m ON dm.materia_id = m.id
+    JOIN Docentes d ON dm.docente_id = d.id
+    JOIN Usuarios u ON u.id = d.id
+    WHERE u.user_ = p_docente_user
+      AND m.nombre = p_materia_nombre
     LIMIT 1;
 
-    IF id_docente_materia IS NOT NULL THEN
-        CASE corte
-            WHEN 1 THEN
-                UPDATE Alumno_Materias 
-                SET corte1 = nota
-                WHERE alumno_id = alumno_id 
-                AND docente_materia_id = id_docente_materia;
-            WHEN 2 THEN
-                UPDATE Alumno_Materias 
-                SET corte2 = nota
-                WHERE alumno_id = alumno_id 
-                AND docente_materia_id = id_docente_materia;
-            WHEN 3 THEN
-                UPDATE Alumno_Materias 
-                SET corte3 = nota
-                WHERE alumno_id = alumno_id 
-                AND docente_materia_id = id_docente_materia;
-        END CASE;
+    IF v_docente_materia_id IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No se encontró la materia asignada a este docente';
     END IF;
+
+    -- Actualizar solo si el alumno ya está matriculado
+    CASE p_corte
+        WHEN 1 THEN
+            UPDATE Alumno_Materias
+            SET corte1 = p_nota
+            WHERE alumno_id = p_alumno_id
+              AND docente_materia_id = v_docente_materia_id;
+        WHEN 2 THEN
+            UPDATE Alumno_Materias
+            SET corte2 = p_nota
+            WHERE alumno_id = p_alumno_id
+              AND docente_materia_id = v_docente_materia_id;
+        WHEN 3 THEN
+            UPDATE Alumno_Materias
+            SET corte3 = p_nota
+            WHERE alumno_id = p_alumno_id
+              AND docente_materia_id = v_docente_materia_id;
+        ELSE
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Corte inválido: debe ser 1, 2 o 3';
+    END CASE;
+
 END //
 
 
@@ -145,33 +165,54 @@ END //
 		SELECT sexo 
 		FROM Usuarios 
 		WHERE user_ = p_nombre_usuario;
-	END //
+	END //	
+    
+
+CREATE PROCEDURE obtener_user_por_cc(IN p_cc VARCHAR(100))
+BEGIN
+    SELECT user_ FROM Usuarios WHERE cc = p_cc;
+END //
 
 
-	CREATE PROCEDURE obtener_id_alumno_por_user(
-		IN p_user VARCHAR(50)
+
+	CREATE PROCEDURE obtener_id_por_cc(
+		IN cedula VARCHAR(100)
 	)
 	BEGIN
-		SELECT u.id
-		FROM Usuarios u
-		JOIN Alumnos a ON u.id = a.id
-		WHERE u.user_ = p_user;
+		SELECT id FROM Usuarios WHERE cc = cedula;
 	END //
 
-	CREATE PROCEDURE listar_notas_por_alumno(
-		IN p_alumno_id INT
-	)
-	BEGIN
-		SELECT 
-			m.nombre AS nombre_materia,
-			am.corte1,
-			am.corte2,
-			am.corte3
-		FROM Alumno_Materias am
-		JOIN Materias m ON am.materia_id = m.id
-		WHERE am.alumno_id = p_alumno_id;
-	END //
+	
+CREATE PROCEDURE obtener_id_alumno_por_user(IN p_user VARCHAR(50))
+BEGIN
+    SELECT u.id
+    FROM Usuarios u
+    JOIN Alumnos a ON u.id = a.id
+    WHERE u.user_ = p_user;
+END //
 
+CREATE PROCEDURE listar_notas_docente_materia(
+    IN p_docente_user VARCHAR(100),
+    IN p_materia_nombre VARCHAR(100)
+)
+BEGIN
+    SELECT 
+        a.id AS alumno_id,
+        u.nombre AS estudiante,
+        u.apellido,
+        am.corte1,
+        am.corte2,
+        am.corte3
+    FROM Alumno_Materias am
+    JOIN Alumnos a ON am.alumno_id = a.id
+    JOIN Usuarios u ON a.id = u.id
+    JOIN Docente_Materias dm ON am.docente_materia_id = dm.id
+    JOIN Materias m ON dm.materia_id = m.id
+    JOIN Docentes d ON dm.docente_id = d.id
+    JOIN Usuarios ud ON d.id = ud.id
+    WHERE m.nombre = p_materia_nombre
+      AND ud.user_ = p_docente_user;
+END //
 
 
 CREATE PROCEDURE obtener_materia_docente(IN nombre_docente VARCHAR(100))
@@ -210,28 +251,56 @@ BEGIN
 END //
 
     
-CREATE PROCEDURE listar_notas_docente_materia(
-    IN p_docente_user VARCHAR(100),
-    IN p_materia_nombre VARCHAR(100)
+CREATE PROCEDURE listar_notas_por_alumno(
+    IN p_alumno_id INT
 )
 BEGIN
     SELECT 
-        a.id AS alumno_id,
-        u.nombre AS estudiante,
-        u.apellido,
+        m.nombre AS nombre_materia,
         am.corte1,
         am.corte2,
         am.corte3
     FROM Alumno_Materias am
-    JOIN Alumnos a ON am.alumno_id = a.id
-    JOIN Usuarios u ON a.id = u.id
     JOIN Docente_Materias dm ON am.docente_materia_id = dm.id
     JOIN Materias m ON dm.materia_id = m.id
-    JOIN Docentes d ON dm.docente_id = d.id
-    JOIN Usuarios ud ON d.id = ud.id
-    WHERE m.nombre = p_materia_nombre
-      AND ud.user_ = p_docente_user;
+    WHERE am.alumno_id = p_alumno_id;
 END //
+
+
+
+CREATE PROCEDURE actualizar_nota
+(
+    IN p_alumno_id        INT,
+    IN p_corte            TINYINT,   -- 1, 2 o 3
+    IN p_docente_materia_id INT,
+    IN p_nota             DECIMAL(5,2)
+)
+BEGIN
+    /* validamos el número de corte */
+    IF p_corte NOT IN (1,2,3) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El corte debe ser 1, 2 o 3';
+    END IF;
+
+    /* construimos dinámicamente la asignación al campo correcto */
+    CASE p_corte
+        WHEN 1 THEN
+            UPDATE Alumno_Materias
+               SET corte1 = p_nota
+             WHERE alumno_id = p_alumno_id
+               AND docente_materia_id = p_docente_materia_id;
+        WHEN 2 THEN
+            UPDATE Alumno_Materias
+               SET corte2 = p_nota
+             WHERE alumno_id = p_alumno_id
+               AND docente_materia_id = p_docente_materia_id;
+        WHEN 3 THEN
+            UPDATE Alumno_Materias
+               SET corte3 = p_nota
+             WHERE alumno_id = p_alumno_id
+               AND docente_materia_id = p_docente_materia_id;
+    END CASE;
+END//
 
 
 	CREATE PROCEDURE listado_docentes()
@@ -375,7 +444,10 @@ END //
 	end//
 
 
-
+create procedure insertar_alumno(in ida int)
+begin
+	INSERT INTO Alumnos (id) VALUES (ida);
+end//
 
 
 CREATE PROCEDURE matricular_alumno_en_carrera(
@@ -437,7 +509,11 @@ BEGIN
 END //
 
 
+create procedure carreras()
+begin
+	SELECT nombre FROM Carreras;
 
+end//
 
 
 CREATE PROCEDURE registrar_docente_por_cedula(IN p_cc BIGINT)
@@ -465,5 +541,18 @@ END //
 
 
 
-
+CREATE PROCEDURE get_docente_materia_id(
+    IN p_user_docente VARCHAR(100),
+    IN p_materia_nombre VARCHAR(100)
+)
+BEGIN
+    SELECT dm.id
+    FROM Docente_Materias dm
+    JOIN Docentes d ON d.id = dm.docente_id
+    JOIN Usuarios u ON u.id = d.id
+    JOIN Materias m ON m.id = dm.materia_id
+    WHERE u.user_ = p_user_docente
+      AND m.nombre = p_materia_nombre
+    LIMIT 1;
+END//
 

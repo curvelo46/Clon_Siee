@@ -29,13 +29,13 @@ public class frmAdmin extends javax.swing.JFrame {
     new EfectoHoverPanel(new Color(155, 134, 120)).aplicarEfecto(Ddesempeño);
         
 
-    AjustesObjetos.ajustarImagen(lbicono, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\foto.png");
-    AjustesObjetos.ajustarImagen(lbFOTO,"C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\Listados.png" );
-    AjustesObjetos.ajustarImagen(lbCbn, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\Corporacion-Bolivariana-del-Norte-CBN.png");
-    AjustesObjetos.ajustarImagen(lbNotas, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\Notas.png");
-    AjustesObjetos.ajustarImagen(lbPromedio, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\Promedio.png");
-    AjustesObjetos.ajustarImagen(lbReportes, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\Reportes.png");
-    AjustesObjetos.ajustarImagen(lbDesempeño, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\desempeño.png");
+    AjustesObjetos.ajustarImagen(lbicono, "src\\imagenes\\foto.png");
+    AjustesObjetos.ajustarImagen(lbFOTO,"src\\imagenes\\Listados.png" );
+    AjustesObjetos.ajustarImagen(lbCbn, "src\\imagenes\\Corporacion-Bolivariana-del-Norte-CBN.png");
+    AjustesObjetos.ajustarImagen(lbNotas, "src\\imagenes\\Notas.png");
+    AjustesObjetos.ajustarImagen(lbPromedio, "src\\imagenes\\Promedio.png");
+    AjustesObjetos.ajustarImagen(lbReportes, "src\\imagenes\\Reportes.png");
+    AjustesObjetos.ajustarImagen(lbDesempeño, "src\\imagenes\\desempeño.png");
   
     // ===== Separadores para menuDocente =====
     JPanel sepDoc1 = crearSeparador(new Color(255, 255, 0), 40);

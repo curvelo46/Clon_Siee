@@ -26,15 +26,22 @@ public class JiFrmDatosEstudiandres extends javax.swing.JInternalFrame {
         cargarEstudiantes();
     }
     
-    private void cargarEstudiantes() {
-        DefaultTableModel modelo = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column != 9; 
-            }
-        };
+      private String getValorCelda(DefaultTableModel modelo, int fila, int columna) {
+        Object val = modelo.getValueAt(fila, columna);
+        return (val == null) ? "" : val.toString().trim();
+    }
+    
+    
 
-        modelo.addColumn("CC");
+    private void cargarEstudiantes() {
+      DefaultTableModel modelo = new DefaultTableModel() {
+      @Override
+      public boolean isCellEditable(int row, int column) {
+          return column != 9;
+      }
+    };
+      
+      modelo.addColumn("CC");
         modelo.addColumn("Nombre");
         modelo.addColumn("Segundo Nombre");
         modelo.addColumn("Apellido");
@@ -46,7 +53,6 @@ public class JiFrmDatosEstudiandres extends javax.swing.JInternalFrame {
         modelo.addColumn("ID");
 
         tablaEstudiantes.setModel(modelo);
-
 
         String sql = "CALL listar_alumnos()";
 
@@ -75,25 +81,37 @@ public class JiFrmDatosEstudiandres extends javax.swing.JInternalFrame {
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
 
-
-        tablaEstudiantes.getColumnModel().removeColumn(tablaEstudiantes.getColumnModel().getColumn(9));
+        // Ocultar columna ID
+        tablaEstudiantes.getColumnModel().getColumn(9).setMinWidth(0);
+        tablaEstudiantes.getColumnModel().getColumn(9).setMaxWidth(0);
+        tablaEstudiantes.getColumnModel().getColumn(9).setPreferredWidth(0);
 
         modelo.addTableModelListener(e -> {
             if (e.getType() == javax.swing.event.TableModelEvent.UPDATE) {
                 int fila = e.getFirstRow();
                 if (fila >= 0) {
                     try {
-                        int id = Integer.parseInt(modelo.getValueAt(fila, 9).toString());
-                        String nuevaCc = modelo.getValueAt(fila, 0).toString();
-                        String nombre = modelo.getValueAt(fila, 1).toString();
-                        String segundoNombre = modelo.getValueAt(fila, 2).toString();
-                        String apellido = modelo.getValueAt(fila, 3).toString();
-                        String segundoApellido = modelo.getValueAt(fila, 4).toString();
-                        int edad = Integer.parseInt(modelo.getValueAt(fila, 5).toString());
-                        String telefono = modelo.getValueAt(fila, 6).toString();
-                        String correo = modelo.getValueAt(fila, 7).toString();
-                        String direccion = modelo.getValueAt(fila, 8).toString();
+                        Object idObj = modelo.getValueAt(fila, 9);
+                        if (idObj == null) return;
 
+                        int id = Integer.parseInt(idObj.toString());
+
+                        String nuevaCc = getValorCelda(modelo, fila, 0);
+                        String nombre = getValorCelda(modelo, fila, 1);
+                        String segundoNombre = getValorCelda(modelo, fila, 2);
+                        String apellido = getValorCelda(modelo, fila, 3);
+                        String segundoApellido = getValorCelda(modelo, fila, 4);
+
+                        String edadStr = getValorCelda(modelo, fila, 5);
+                        if (edadStr.isBlank()) {
+                            JOptionPane.showMessageDialog(this, "La edad no puede estar vacía.", "Error", JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        int edad = Integer.parseInt(edadStr);
+
+                        String telefono = getValorCelda(modelo, fila, 6);
+                        String correo = getValorCelda(modelo, fila, 7);
+                        String direccion = getValorCelda(modelo, fila, 8);
 
                         String updateSQL = "CALL actualizar_estudiante(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -112,19 +130,36 @@ public class JiFrmDatosEstudiandres extends javax.swing.JInternalFrame {
                             ps.setString(10, direccion);
 
                             ps.executeUpdate();
-
                             JOptionPane.showMessageDialog(this, "✅ Estudiante actualizado correctamente");
 
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(this, "Error actualizando estudiante: " + ex.getMessage(),
+                                    "Error", JOptionPane.ERROR_MESSAGE);
                         }
 
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(this, "Error actualizando estudiante: " + ex.getMessage(),
-                                "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(this, "Edad inválida. Debe ser un número.", "Error", JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
         });
     }
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
     
 
 

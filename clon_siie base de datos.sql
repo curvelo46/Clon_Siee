@@ -21,7 +21,7 @@ CREATE TABLE Usuarios (
     sexo              VARCHAR(25),
     user_             VARCHAR(50) UNIQUE,
     contrasena_hash   VARCHAR(255),
-    cargo             ENUM('alumno','docente','administrador','master') NOT NULL
+    cargo             ENUM('alumno','docente','administrador','registro y control') NOT NULL
 );
 
 -- Roles
@@ -80,3 +80,6 @@ CREATE TABLE Alumno_Materias (
     FOREIGN KEY (alumno_id)       REFERENCES Alumnos(id)          ON DELETE CASCADE,
     FOREIGN KEY (docente_materia_id) REFERENCES Docente_Materias(id) ON DELETE CASCADE
 );
+
+
+create table Reportes(id_alumno int,reporte text);

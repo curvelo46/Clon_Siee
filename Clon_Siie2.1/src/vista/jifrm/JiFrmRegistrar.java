@@ -47,6 +47,7 @@ public class JiFrmRegistrar extends javax.swing.JInternalFrame {
         Cargo.addItem("administrador");
         Cargo.addItem("docente");
         Cargo.addItem("alumno");
+        Cargo.addItem("Registro y Control");
   
     }
 

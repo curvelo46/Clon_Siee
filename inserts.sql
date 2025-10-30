@@ -69,12 +69,6 @@ INSERT INTO Alumno_Materias (alumno_id, docente_materia_id, corte1) VALUES
 (2, 1, 3.8);
 
 
-
-
-
-
-
-
 select*from docente_materias;
 select*from materias;
 select*from carrera_materias;
@@ -84,9 +78,3 @@ where alumno_id=1;
 select*from docentes;
 select*from alumnos;
 select*from usuarios;
-
-
-call id_materia("contabilidad");
-
-
-

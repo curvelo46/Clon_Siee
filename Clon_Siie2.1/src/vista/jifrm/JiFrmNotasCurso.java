@@ -30,7 +30,7 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
         
         this.getContentPane().setBackground(new Color(255, 254, 214));
         DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
-        nota2 = Double.parseDouble(modelo.getValueAt(i, corteSeleccionado + 1).toString());
+        
 
         this.materiaId = obtenerIdMateria(); 
 
@@ -65,7 +65,7 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
 
     private void cargarTabla() {
 
-    txtCorte.setText("Corte actual: " + corteSeleccionado+1);
+
 
     jMenuBar1.add(Box.createHorizontalGlue());
     jMenuBar1.add(btnGuardar);
@@ -210,7 +210,6 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
         tablaNotas = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         lbMateria = new javax.swing.JMenu();
-        txtCorte = new javax.swing.JMenu();
 
         btnGuardar.setText("guardar");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -239,9 +238,6 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
         lbMateria.setText("File");
         jMenuBar1.add(lbMateria);
 
-        txtCorte.setText("jMenu1");
-        jMenuBar1.add(txtCorte);
-
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -264,7 +260,7 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
         this.corteSeleccionado = baseDatos.cortenuevo();
 
         // ✅ Actualizamos inmediatamente el menú del corte
-        txtCorte.setText("Corte actual: " + corteSeleccionado);
+
 
     // Recargar la tabla para reflejar los cambios
     cargarTabla();
@@ -277,6 +273,5 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenu lbMateria;
     private javax.swing.JTable tablaNotas;
-    private javax.swing.JMenu txtCorte;
     // End of variables declaration//GEN-END:variables
 }

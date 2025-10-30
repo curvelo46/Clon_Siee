@@ -510,3 +510,18 @@ BEGIN
     LIMIT 1;
 END//
 
+
+CREATE PROCEDURE insert_reportes(
+    IN id_alumno int,
+    IN reporte text
+)
+BEGIN
+    insert into reportes values(id_alumno,reporte);
+END//
+
+CREATE PROCEDURE get_reportes(
+    IN id_a int
+)
+BEGIN
+    select reporte from reportes where id_alumno=id_a;
+END//

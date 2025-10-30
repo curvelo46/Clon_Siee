@@ -36,6 +36,10 @@ public class frmAdmin extends javax.swing.JFrame {
     AjustesObjetos.ajustarImagen(lbPromedio, "src\\imagenes\\Promedio.png");
     AjustesObjetos.ajustarImagen(lbReportes, "src\\imagenes\\Reportes.png");
     AjustesObjetos.ajustarImagen(lbDesempeño, "src\\imagenes\\desempeño.png");
+    AjustesObjetos.ajustarImagen(lbCrearMateriaf, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\56640216-college-education-outlined-and-colored-icons.png");
+    AjustesObjetos.ajustarImagen(lbCrearcarreraF, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\carrera.png");
+    AjustesObjetos.ajustarImagen(lbQuitarMateriaf, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\remover.png");
+    AjustesObjetos.ajustarImagen(lbReportesA, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\Dc.png");
   
     // ===== Separadores para menuDocente =====
     JPanel sepDoc1 = crearSeparador(new Color(255, 255, 0), 40);
@@ -119,7 +123,7 @@ public class frmAdmin extends javax.swing.JFrame {
     JpanelMenu.add(menuDocente, "DOCENTE");
 
     // Mostrar el menú según el rol
-    String jose = "akl";
+    String jose = "admin";
     CardLayout cl = (CardLayout) JpanelMenu.getLayout();
 
     if (jose.equals("admin")) {
@@ -162,24 +166,38 @@ public class frmAdmin extends javax.swing.JFrame {
         lbListado = new javax.swing.JLabel();
         lbFOTO = new javax.swing.JLabel();
         DNotasAlumnos = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        lbANotas = new javax.swing.JLabel();
         lbNotas = new javax.swing.JLabel();
         Dpromedio = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        lbPromedioG = new javax.swing.JLabel();
         lbPromedio = new javax.swing.JLabel();
         DReportes = new javax.swing.JPanel();
-        lbListado1 = new javax.swing.JLabel();
+        lbReporteAD = new javax.swing.JLabel();
         lbReportes = new javax.swing.JLabel();
         Ddesempeño = new javax.swing.JPanel();
         lbDesempeño = new javax.swing.JLabel();
         lbListado2 = new javax.swing.JLabel();
         ACrearMaterias = new javax.swing.JPanel();
+        lbCrearMateriaf = new javax.swing.JLabel();
+        lbCrearMateria = new javax.swing.JLabel();
         ACrearCarrera = new javax.swing.JPanel();
+        lbCrearCarrera = new javax.swing.JLabel();
+        lbCrearcarreraF = new javax.swing.JLabel();
         AReporteAcademico = new javax.swing.JPanel();
+        lbReporteAA = new javax.swing.JLabel();
+        lbReportesA = new javax.swing.JLabel();
         AAsignar_QuitarMateria = new javax.swing.JPanel();
+        lbQuitarMateria = new javax.swing.JLabel();
+        lbQuitarMateriaf = new javax.swing.JLabel();
         RCModificarDatos = new javax.swing.JPanel();
+        lbCrearMateria1 = new javax.swing.JLabel();
+        lbModificarDatosf = new javax.swing.JLabel();
         RCMatricular = new javax.swing.JPanel();
+        lbCrearMateria3 = new javax.swing.JLabel();
+        lbingresaruserf = new javax.swing.JLabel();
         RCListadoUsuarios = new javax.swing.JPanel();
+        lbListadoUsuarios = new javax.swing.JLabel();
+        lblistausuariosf = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         lbCbn = new javax.swing.JLabel();
 
@@ -247,11 +265,11 @@ public class frmAdmin extends javax.swing.JFrame {
         DNotasAlumnos.setBackground(new java.awt.Color(204, 204, 0));
         DNotasAlumnos.setLayout(null);
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel2.setText("Asignar Notas");
-        DNotasAlumnos.add(jLabel2);
-        jLabel2.setBounds(50, 20, 100, 20);
+        lbANotas.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbANotas.setForeground(new java.awt.Color(0, 0, 0));
+        lbANotas.setText("Asignar Notas");
+        DNotasAlumnos.add(lbANotas);
+        lbANotas.setBounds(50, 20, 100, 20);
 
         lbNotas.setText("jLabel3");
         DNotasAlumnos.add(lbNotas);
@@ -260,11 +278,11 @@ public class frmAdmin extends javax.swing.JFrame {
         Dpromedio.setBackground(new java.awt.Color(0, 255, 102));
         Dpromedio.setLayout(null);
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel3.setText("Promedios");
-        Dpromedio.add(jLabel3);
-        jLabel3.setBounds(50, 20, 80, 20);
+        lbPromedioG.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbPromedioG.setForeground(new java.awt.Color(0, 0, 0));
+        lbPromedioG.setText("Promedios");
+        Dpromedio.add(lbPromedioG);
+        lbPromedioG.setBounds(50, 20, 80, 20);
 
         lbPromedio.setText("jLabel4");
         Dpromedio.add(lbPromedio);
@@ -273,11 +291,11 @@ public class frmAdmin extends javax.swing.JFrame {
         DReportes.setBackground(new java.awt.Color(0, 51, 51));
         DReportes.setLayout(null);
 
-        lbListado1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbListado1.setForeground(new java.awt.Color(0, 0, 0));
-        lbListado1.setText("Reportes Academico");
-        DReportes.add(lbListado1);
-        lbListado1.setBounds(50, 20, 150, 20);
+        lbReporteAD.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbReporteAD.setForeground(new java.awt.Color(0, 0, 0));
+        lbReporteAD.setText("Reportes Academico");
+        DReportes.add(lbReporteAD);
+        lbReporteAD.setBounds(50, 20, 150, 20);
 
         lbReportes.setText("jLabel4");
         DReportes.add(lbReportes);
@@ -299,95 +317,153 @@ public class frmAdmin extends javax.swing.JFrame {
         ACrearMaterias.setBackground(new java.awt.Color(0, 204, 153));
         ACrearMaterias.setLayout(null);
 
+        lbCrearMateriaf.setText("jLabel4");
+        ACrearMaterias.add(lbCrearMateriaf);
+        lbCrearMateriaf.setBounds(0, 10, 50, 40);
+
+        lbCrearMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbCrearMateria.setForeground(new java.awt.Color(0, 0, 0));
+        lbCrearMateria.setText("Crear Materia");
+        ACrearMaterias.add(lbCrearMateria);
+        lbCrearMateria.setBounds(60, 20, 150, 20);
+
         ACrearCarrera.setBackground(new java.awt.Color(204, 0, 51));
         ACrearCarrera.setLayout(null);
 
+        lbCrearCarrera.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbCrearCarrera.setForeground(new java.awt.Color(0, 0, 0));
+        lbCrearCarrera.setText("Crear Carrera");
+        ACrearCarrera.add(lbCrearCarrera);
+        lbCrearCarrera.setBounds(60, 20, 150, 20);
+
+        lbCrearcarreraF.setText("jLabel4");
+        ACrearCarrera.add(lbCrearcarreraF);
+        lbCrearcarreraF.setBounds(0, 10, 50, 40);
+
         AReporteAcademico.setBackground(new java.awt.Color(102, 0, 102));
+        AReporteAcademico.setRequestFocusEnabled(false);
         AReporteAcademico.setLayout(null);
+
+        lbReporteAA.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbReporteAA.setForeground(new java.awt.Color(0, 0, 0));
+        lbReporteAA.setText("Reportes Academicos");
+        AReporteAcademico.add(lbReporteAA);
+        lbReporteAA.setBounds(50, 20, 150, 20);
+
+        lbReportesA.setText("jLabel4");
+        AReporteAcademico.add(lbReportesA);
+        lbReportesA.setBounds(0, 10, 50, 40);
 
         AAsignar_QuitarMateria.setBackground(new java.awt.Color(0, 255, 255));
         AAsignar_QuitarMateria.setLayout(null);
 
+        lbQuitarMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbQuitarMateria.setForeground(new java.awt.Color(0, 0, 0));
+        lbQuitarMateria.setText("Quitar Materia");
+        AAsignar_QuitarMateria.add(lbQuitarMateria);
+        lbQuitarMateria.setBounds(50, 10, 140, 30);
+
+        lbQuitarMateriaf.setText("jLabel4");
+        AAsignar_QuitarMateria.add(lbQuitarMateriaf);
+        lbQuitarMateriaf.setBounds(-10, 0, 60, 50);
+
         RCModificarDatos.setBackground(new java.awt.Color(0, 153, 153));
         RCModificarDatos.setLayout(null);
+
+        lbCrearMateria1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbCrearMateria1.setForeground(new java.awt.Color(0, 0, 0));
+        lbCrearMateria1.setText("Modificar Datos");
+        RCModificarDatos.add(lbCrearMateria1);
+        lbCrearMateria1.setBounds(50, 20, 150, 20);
+
+        lbModificarDatosf.setText("jLabel4");
+        RCModificarDatos.add(lbModificarDatosf);
+        lbModificarDatosf.setBounds(0, 10, 50, 40);
 
         RCMatricular.setBackground(new java.awt.Color(204, 0, 204));
         RCMatricular.setLayout(null);
 
+        lbCrearMateria3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbCrearMateria3.setForeground(new java.awt.Color(0, 0, 0));
+        lbCrearMateria3.setText("ingresar usuario");
+        RCMatricular.add(lbCrearMateria3);
+        lbCrearMateria3.setBounds(50, 20, 150, 20);
+        RCMatricular.add(lbingresaruserf);
+        lbingresaruserf.setBounds(0, 10, 50, 40);
+
         RCListadoUsuarios.setBackground(new java.awt.Color(0, 0, 0));
         RCListadoUsuarios.setLayout(null);
+
+        lbListadoUsuarios.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbListadoUsuarios.setForeground(new java.awt.Color(0, 0, 0));
+        lbListadoUsuarios.setText("Listado de Usuarios");
+        RCListadoUsuarios.add(lbListadoUsuarios);
+        lbListadoUsuarios.setBounds(50, 20, 150, 20);
+
+        lblistausuariosf.setText("jLabel4");
+        RCListadoUsuarios.add(lblistausuariosf);
+        lblistausuariosf.setBounds(0, 10, 50, 40);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(RCListadoUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(334, 334, 334))
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(15, 15, 15)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addGap(51, 51, 51)
-                                .addComponent(AReporteAcademico, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(Ddesempeño, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(67, 67, 67)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addGap(199, 199, 199)
-                                .addComponent(RCMatricular, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(ACrearMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(ACrearCarrera, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(AAsignar_QuitarMateria, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(60, 60, 60)
-                                .addComponent(RCModificarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(DReportes, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(AReporteAcademico, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(ACrearCarrera, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
+                        .addComponent(ACrearMaterias, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(AAsignar_QuitarMateria, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(DReportes, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
                             .addComponent(DNotasAlumnos, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
                             .addComponent(Dpromedio, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(DListadosAlumnos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(377, Short.MAX_VALUE))
+                            .addComponent(DListadosAlumnos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Ddesempeño, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE))
+                        .addGap(92, 92, 92)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(RCListadoUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(RCModificarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(RCMatricular, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(304, 511, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(DNotasAlumnos, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(Dpromedio, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(DListadosAlumnos, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(DReportes, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(DNotasAlumnos, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(RCModificarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(8, 8, 8)
+                        .addComponent(Dpromedio, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(RCListadoUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(DListadosAlumnos, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(Ddesempeño, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(127, 127, 127)
-                        .addComponent(AReporteAcademico, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                .addComponent(ACrearMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10)
-                                .addComponent(ACrearCarrera, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(AAsignar_QuitarMateria, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(55, 55, 55))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                .addComponent(RCModificarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(33, 33, 33)
-                                .addComponent(RCMatricular, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(27, 27, 27)))
-                        .addComponent(RCListadoUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(112, 112, 112))))
+                        .addComponent(DReportes, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(RCMatricular, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(Ddesempeño, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(79, 79, 79)
+                .addComponent(ACrearMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(ACrearCarrera, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(AAsignar_QuitarMateria, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(AReporteAcademico, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("tab2", jPanel5);
@@ -438,22 +514,36 @@ public class frmAdmin extends javax.swing.JFrame {
     private javax.swing.JPanel RCModificarDatos;
     private javax.swing.JButton btnSalir;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel lbANotas;
     private javax.swing.JLabel lbCbn;
+    private javax.swing.JLabel lbCrearCarrera;
+    private javax.swing.JLabel lbCrearMateria;
+    private javax.swing.JLabel lbCrearMateria1;
+    private javax.swing.JLabel lbCrearMateria3;
+    private javax.swing.JLabel lbCrearMateriaf;
+    private javax.swing.JLabel lbCrearcarreraF;
     private javax.swing.JLabel lbDesempeño;
     private javax.swing.JLabel lbFOTO;
     private javax.swing.JLabel lbListado;
-    private javax.swing.JLabel lbListado1;
     private javax.swing.JLabel lbListado2;
+    private javax.swing.JLabel lbListadoUsuarios;
+    private javax.swing.JLabel lbModificarDatosf;
     private javax.swing.JLabel lbNotas;
     private javax.swing.JLabel lbPromedio;
+    private javax.swing.JLabel lbPromedioG;
+    private javax.swing.JLabel lbQuitarMateria;
+    private javax.swing.JLabel lbQuitarMateriaf;
+    private javax.swing.JLabel lbReporteAA;
+    private javax.swing.JLabel lbReporteAD;
     private javax.swing.JLabel lbReportes;
+    private javax.swing.JLabel lbReportesA;
     private javax.swing.JLabel lbicono;
+    private javax.swing.JLabel lbingresaruserf;
+    private javax.swing.JLabel lblistausuariosf;
     // End of variables declaration//GEN-END:variables
 }

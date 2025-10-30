@@ -90,5 +90,3 @@ call id_materia("contabilidad");
 
 
 
-
-call actualizar_nota(1,1,1,3.0);

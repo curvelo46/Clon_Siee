@@ -20,19 +20,24 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
     private final String materia;
     private int corteSeleccionado;
     private int materiaId; 
-
+    private int nota2;
+    private int i=0;
     public JiFrmNotasCurso(Base_De_Datos basedatos, String profesor, String materia) {
         initComponents();
         this.baseDatos = basedatos;
         this.profesor = profesor;
         this.materia = materia;
+        
         this.getContentPane().setBackground(new Color(255, 254, 214));
-        this.corteSeleccionado = basedatos.corte();
+        DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
+        nota2 = Double.parseDouble(modelo.getValueAt(i, corteSeleccionado + 1).toString());
 
         this.materiaId = obtenerIdMateria(); 
 
         if (this.materiaId != -1) {
             cargarTabla();
+            this.corteSeleccionado = baseDatos.cortenuevo();
+            
         } else {
             jScrollPane1.setVisible(false);
             btnGuardar.setVisible(false);
@@ -59,50 +64,80 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
     }
 
     private void cargarTabla() {
-        txtCorte.setText("Corte actual: " + corteSeleccionado);
-        jMenuBar1.add(Box.createHorizontalGlue());
-        jMenuBar1.add(btnGuardar);
 
-        DefaultTableModel modelo = new DefaultTableModel(
-                new Object[]{"ID", "Estudiante", "Corte 1", "Corte 2", "Corte 3"}, 0
-        ) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column == corteSeleccionado + 1; 
+    txtCorte.setText("Corte actual: " + corteSeleccionado+1);
+
+    jMenuBar1.add(Box.createHorizontalGlue());
+    jMenuBar1.add(btnGuardar);
+
+    // Creamos modelo con control de edición según corteX_edit
+    DefaultTableModel modelo = new DefaultTableModel(
+            new Object[]{"ID", "Estudiante", "Corte 1", "Corte 2", "Corte 3", "Corte1_Edit", "Corte2_Edit", "Corte3_Edit"}, 0
+    ) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            if (column >= 2 && column <= 4) { // Corte 1,2,3
+                int editCol = column + 3; // columna respectiva de corteX_edit
+                Object valorEdit = getValueAt(row, editCol);
+                if (valorEdit != null && valorEdit.toString().equals("1")) {
+                    return false; // No editable si corteX_edit es 1
+                }    
             }
-        };
-
-        String sql = "CALL listar_notas_docente_materia(?, ?)";
-
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, profesor);
-            stmt.setString(2, materia);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                int idAlumno = rs.getInt("alumno_id"); 
-                String estudiante = rs.getString("estudiante") + " " + rs.getString("apellido");
-                double c1 = rs.getDouble("corte1");
-                double c2 = rs.getDouble("corte2");
-                double c3 = rs.getDouble("corte3");
-
-                modelo.addRow(new Object[]{idAlumno, estudiante, c1, c2, c3});
-            }
-
-            tablaNotas.setModel(modelo);
-            tablaNotas.getColumnModel().getColumn(0).setMinWidth(0); 
-            tablaNotas.getColumnModel().getColumn(0).setMaxWidth(0);
-            tablaNotas.getColumnModel().getColumn(0).setWidth(0);
-
-            lbMateria.setText("Materia: " + materia);
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "❌ Error al cargar alumnos/notas: " + e.getMessage());
-            e.printStackTrace();
+            return true; // resto de columnas no editable
         }
+
+    };
+
+    String sql = "CALL listar_notas_docente_materia(?, ?)";
+
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, profesor);
+        stmt.setString(2, materia);
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            int idAlumno = rs.getInt("alumno_id");
+            String estudiante = rs.getString("estudiante") + " " + rs.getString("apellido");
+            double c1 = rs.getDouble("corte1");
+            double c2 = rs.getDouble("corte2");
+            double c3 = rs.getDouble("corte3");
+            int c1Edit = rs.getInt("corte1_edit");
+            int c2Edit = rs.getInt("corte2_edit");
+            int c3Edit = rs.getInt("corte3_edit");
+
+            modelo.addRow(new Object[]{idAlumno, estudiante, c1, c2, c3, c1Edit, c2Edit, c3Edit});
+        }
+
+        tablaNotas.setModel(modelo);
+
+        // Ocultamos columnas edit
+        tablaNotas.getColumnModel().getColumn(5).setMinWidth(0);
+        tablaNotas.getColumnModel().getColumn(5).setMaxWidth(0);
+        tablaNotas.getColumnModel().getColumn(5).setWidth(0);
+
+        tablaNotas.getColumnModel().getColumn(6).setMinWidth(0);
+        tablaNotas.getColumnModel().getColumn(6).setMaxWidth(0);
+        tablaNotas.getColumnModel().getColumn(6).setWidth(0);
+
+        tablaNotas.getColumnModel().getColumn(7).setMinWidth(0);
+        tablaNotas.getColumnModel().getColumn(7).setMaxWidth(0);
+        tablaNotas.getColumnModel().getColumn(7).setWidth(0);
+
+        // Ocultamos columna ID
+        tablaNotas.getColumnModel().getColumn(0).setMinWidth(0);
+        tablaNotas.getColumnModel().getColumn(0).setMaxWidth(0);
+        tablaNotas.getColumnModel().getColumn(0).setWidth(0);
+
+        lbMateria.setText("Materia: " + materia);
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "❌ Error al cargar alumnos/notas: " + e.getMessage());
+        e.printStackTrace();
     }
+}
+
 
     private void guardarNotas() {
     if (materiaId == -1) return;
@@ -127,17 +162,18 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
         return;
     }
 
-    DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
+
 
     String sql = "CALL actualizar_nota(?, ?, ?, ?)";
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+                DefaultTableModel modelo = (DefaultTableModel) tablaNotas.getModel();
         for (int i = 0; i < modelo.getRowCount(); i++) {
             int alumnoId = Integer.parseInt(modelo.getValueAt(i, 0).toString());
             double nota;
             try {
                 nota = Double.parseDouble(modelo.getValueAt(i, corteSeleccionado + 1).toString());
+                
             } catch (NumberFormatException e) {
                 nota = 0.0;
             }
@@ -224,11 +260,11 @@ public class JiFrmNotasCurso extends javax.swing.JInternalFrame {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
-       guardarNotas();
-    this.corteSeleccionado = baseDatos.cortenuevo();
+        guardarNotas();
+        this.corteSeleccionado = baseDatos.cortenuevo();
 
-    // ✅ Actualizamos inmediatamente el menú del corte
-    txtCorte.setText("Corte actual: " + corteSeleccionado);
+        // ✅ Actualizamos inmediatamente el menú del corte
+        txtCorte.setText("Corte actual: " + corteSeleccionado);
 
     // Recargar la tabla para reflejar los cambios
     cargarTabla();

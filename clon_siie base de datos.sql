@@ -2,14 +2,6 @@ DROP DATABASE IF EXISTS CBN;
 CREATE DATABASE CBN CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE CBN;
 
-
-
-
-
-
-
-
-
 /* =========================================================
    TABLAS
    ========================================================= */
@@ -81,6 +73,9 @@ CREATE TABLE Alumno_Materias (
     corte1             DECIMAL(5,2) DEFAULT 0,
     corte2             DECIMAL(5,2) DEFAULT 0,
     corte3             DECIMAL(5,2) DEFAULT 0,
+    corte1_edit		   TINYINT DEFAULT 0,
+    corte2_edit		   TINYINT DEFAULT 0,
+    corte3_edit		   TINYINT DEFAULT 0,
     PRIMARY KEY (alumno_id, docente_materia_id),
     FOREIGN KEY (alumno_id)       REFERENCES Alumnos(id)          ON DELETE CASCADE,
     FOREIGN KEY (docente_materia_id) REFERENCES Docente_Materias(id) ON DELETE CASCADE

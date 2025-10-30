@@ -61,55 +61,6 @@ END //
 
 
 
-CREATE PROCEDURE actualizar_nota_alumno(
-    IN p_alumno_id INT,
-    IN p_docente_user VARCHAR(100),
-    IN p_materia_nombre VARCHAR(100),
-    IN p_corte INT,
-    IN p_nota DECIMAL(4,2)
-)
-BEGIN
-    DECLARE v_docente_materia_id INT;
-
-    -- Obtener el docente_materia_id correcto
-    SELECT dm.id INTO v_docente_materia_id
-    FROM Docente_Materias dm
-    JOIN Materias m ON dm.materia_id = m.id
-    JOIN Docentes d ON dm.docente_id = d.id
-    JOIN Usuarios u ON u.id = d.id
-    WHERE u.user_ = p_docente_user
-      AND m.nombre = p_materia_nombre
-    LIMIT 1;
-
-    IF v_docente_materia_id IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'No se encontró la materia asignada a este docente';
-    END IF;
-
-    -- Actualizar solo si el alumno ya está matriculado
-    CASE p_corte
-        WHEN 1 THEN
-            UPDATE Alumno_Materias
-            SET corte1 = p_nota
-            WHERE alumno_id = p_alumno_id
-              AND docente_materia_id = v_docente_materia_id;
-        WHEN 2 THEN
-            UPDATE Alumno_Materias
-            SET corte2 = p_nota
-            WHERE alumno_id = p_alumno_id
-              AND docente_materia_id = v_docente_materia_id;
-        WHEN 3 THEN
-            UPDATE Alumno_Materias
-            SET corte3 = p_nota
-            WHERE alumno_id = p_alumno_id
-              AND docente_materia_id = v_docente_materia_id;
-        ELSE
-            SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Corte inválido: debe ser 1, 2 o 3';
-    END CASE;
-
-END //
-
 
 
 
@@ -202,7 +153,10 @@ BEGIN
         u.apellido,
         am.corte1,
         am.corte2,
-        am.corte3
+        am.corte3,
+        am.corte1_edit,
+        am.corte2_edit,
+        am.corte3_edit
     FROM Alumno_Materias am
     JOIN Alumnos a ON am.alumno_id = a.id
     JOIN Usuarios u ON a.id = u.id
@@ -286,17 +240,17 @@ BEGIN
     CASE p_corte
         WHEN 1 THEN
             UPDATE Alumno_Materias
-               SET corte1 = p_nota
+               SET corte1 = p_nota, corte1_edit=1
              WHERE alumno_id = p_alumno_id
                AND docente_materia_id = p_docente_materia_id;
         WHEN 2 THEN
             UPDATE Alumno_Materias
-               SET corte2 = p_nota
+               SET corte2 = p_nota, corte2_edit=1
              WHERE alumno_id = p_alumno_id
                AND docente_materia_id = p_docente_materia_id;
         WHEN 3 THEN
             UPDATE Alumno_Materias
-               SET corte3 = p_nota
+               SET corte3 = p_nota,corte3_edit=1
              WHERE alumno_id = p_alumno_id
                AND docente_materia_id = p_docente_materia_id;
     END CASE;

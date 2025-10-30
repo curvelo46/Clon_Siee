@@ -21,8 +21,8 @@ public class Clon_Siie {
 
         // ====== Iniciar base de datos ======
         Base_De_Datos baseDatos = new Base_De_Datos();
-        String teta = baseDatos.ViajarAlFuturo(2);
-        System.out.println(teta);
+        
+       
 
         // ====== Crear y mostrar ventana principal ======
             frmAdmin admin = new frmAdmin();

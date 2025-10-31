@@ -1,7 +1,7 @@
 package clon_siie;
 
 import clases.Base_De_Datos;
-import vista.frm.frmAdmin;
+import vista.frm.frmPlataforma;
 import vista.frm.frmLogin;
 
 public class Clon_Siie {
@@ -25,8 +25,8 @@ public class Clon_Siie {
        
 
         // ====== Crear y mostrar ventana principal ======
-            frmAdmin admin = new frmAdmin();
-            admin.setVisible(true);
+            
+            
             frmLogin jose=new frmLogin(baseDatos);
             jose.setVisible(true);
         

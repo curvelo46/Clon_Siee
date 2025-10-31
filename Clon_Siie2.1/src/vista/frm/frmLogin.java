@@ -18,7 +18,7 @@ public class frmLogin extends javax.swing.JFrame {
     public frmLogin(Base_De_Datos dato) {
         initComponents();
         this.baseDatos =dato;
-        this.getContentPane().setBackground(new Color(255, 254, 214));
+        this.getContentPane().setBackground(new Color(221,205,192));
         setSize(820,365);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -105,7 +105,7 @@ public class frmLogin extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnSecion);
-        btnSecion.setBounds(510, 280, 160, 36);
+        btnSecion.setBounds(510, 280, 160, 31);
         getContentPane().add(jSeparator1);
         jSeparator1.setBounds(370, 260, 430, 10);
 
@@ -162,15 +162,14 @@ public class frmLogin extends javax.swing.JFrame {
             break;
 
         case "docente":
-            frmDocente frmDoc = new frmDocente(baseDatos, usuario);
-            frmDoc.setUsuario(usuario);
-            frmDoc.setVisible(true);
+            frmPlataforma panel=new frmPlataforma(rol);
+            panel.setVisible(true);
             this.dispose();
             break;
 
         case "administrador":
-            frmAdministrador frmAdm = new frmAdministrador(baseDatos,usuario);
-            frmAdm.setVisible(true);
+            panel=new frmPlataforma(rol);
+            panel.setVisible(true);
             this.dispose();
             break;
         

@@ -10,23 +10,35 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 
-public class frmAdmin extends javax.swing.JFrame {
+public class frmPlataforma extends javax.swing.JFrame {
+       
+    private String Cargos;
         
-        
-  public frmAdmin() {
+  public frmPlataforma(String Cargo) {
     initComponents();
     btnSalir.setVisible(false);
+    Cargos=Cargo;
     setTitle("Siie administrativo");
     setSize(1208, 680);
     setResizable(false);
     setLocationRelativeTo(null);
-    this.getContentPane().setBackground(new Color(155, 234, 234));
+    this.getContentPane().setBackground(new Color(240, 244, 248));
 
-    new EfectoHoverPanel(new Color(155, 134, 120)).aplicarEfecto(DListadosAlumnos);
-    new EfectoHoverPanel(new Color(155, 134, 120)).aplicarEfecto(DNotasAlumnos);
-    new EfectoHoverPanel(new Color(155, 134, 120)).aplicarEfecto(Dpromedio);
-    new EfectoHoverPanel(new Color(155, 134, 120)).aplicarEfecto(DReportes);
-    new EfectoHoverPanel(new Color(155, 134, 120)).aplicarEfecto(Ddesempeño);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DListadosAlumnos);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DNotasAlumnos);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(Dpromedio);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DReportes);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(Ddesempeño);
+    
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AAsignar_QuitarMateria);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(ACrearCarrera);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(ACrearMaterias);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AReporteAcademico);
+    
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCListadoUsuarios);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCMatricular);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCModificarDatos);
+    
         
 
     AjustesObjetos.ajustarImagen(lbicono, "src\\imagenes\\foto.png");
@@ -36,50 +48,60 @@ public class frmAdmin extends javax.swing.JFrame {
     AjustesObjetos.ajustarImagen(lbPromedio, "src\\imagenes\\Promedio.png");
     AjustesObjetos.ajustarImagen(lbReportes, "src\\imagenes\\Reportes.png");
     AjustesObjetos.ajustarImagen(lbDesempeño, "src\\imagenes\\desempeño.png");
-    AjustesObjetos.ajustarImagen(lbCrearMateriaf, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\56640216-college-education-outlined-and-colored-icons.png");
-    AjustesObjetos.ajustarImagen(lbCrearcarreraF, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\carrera.png");
-    AjustesObjetos.ajustarImagen(lbQuitarMateriaf, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\remover.png");
-    AjustesObjetos.ajustarImagen(lbReportesA, "C:\\Users\\PC\\OneDrive\\Escritorio\\tareas\\git\\Clon_Siee\\Clon_Siie2.1\\src\\imagenes\\Dc.png");
+    AjustesObjetos.ajustarImagen(lbCrearMateriaf, "src\\imagenes\\56640216-college-education-outlined-and-colored-icons.png");
+    AjustesObjetos.ajustarImagen(lbCrearcarreraF, "src\\imagenes\\carrera.png");
+    AjustesObjetos.ajustarImagen(lbQuitarMateriaf, "src\\imagenes\\remover.png");
+    AjustesObjetos.ajustarImagen(lbReportesA, "src\\imagenes\\Dc.png");
+    AjustesObjetos.ajustarImagen(lbModificarDatosf, "src\\imagenes\\system-user-administrator-icon-set-600nw-376451899.png");
+    AjustesObjetos.ajustarImagen(lbingresaruserf, "src\\imagenes\\funcion 2.png");
+    AjustesObjetos.ajustarImagen(lblistausuariosf, "src\\imagenes\\icono-funciones-utiles-conjunto-rueda-dentada-simbolo-logotipo-vector-investigacion-util-estilo-negro-lleno-delineado-signo-negocio-multiples-ruedas-dentadas_268104-6873.png");
+    
   
     // ===== Separadores para menuDocente =====
-    JPanel sepDoc1 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepDoc2 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepDoc3 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepDoc4 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepDoc5 = crearSeparador(new Color(255, 255, 0), 40);
+    JPanel sepDoc1 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepDoc2 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepDoc3 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepDoc4 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepDoc5 = crearSeparador(new Color(192,4,29), 40);
 
     // ===== Separadores para menuDocente =====
-    JPanel sepReg1 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepReg2 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepReg3 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepReg4 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepReg5 = crearSeparador(new Color(255, 255, 0), 40);
+    JPanel sepReg1 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepReg2 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepReg3 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepReg5 = crearSeparador(new Color(192,4,29), 40);
     
     // ===== Separadores para menuAdmin =====
-    JPanel sepAdm1 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepAdm2 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepAdm3 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepAdm4 = crearSeparador(new Color(255, 255, 0), 40);
-    JPanel sepAdm5 = crearSeparador(new Color(255, 255, 0), 40);
+    JPanel sepAdm1 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepAdm2 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepAdm3 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepAdm4 = crearSeparador(new Color(192,4,29), 40);
+    JPanel sepAdm5 = crearSeparador(new Color(192,4,29), 40);
 
         
     // Usar CardLayout
     JpanelMenu.setLayout(new java.awt.CardLayout());
 
+    
     DListadosAlumnos.setMaximumSize(new Dimension(379, 55));    
     Ddesempeño.setMaximumSize(new Dimension(379, 55));
     DNotasAlumnos.setMaximumSize(new Dimension(379, 55));
     DReportes.setMaximumSize(new Dimension(379, 55));
     Dpromedio.setMaximumSize(new Dimension(379, 55));
+    
     AAsignar_QuitarMateria.setMaximumSize(new Dimension(379, 55));
     ACrearCarrera.setMaximumSize(new Dimension(379, 55));
     ACrearMaterias.setMaximumSize(new Dimension(379, 55));
     AReporteAcademico.setMaximumSize(new Dimension(379, 55));
+    
+    RCListadoUsuarios.setMaximumSize(new Dimension(379, 55));
+    RCMatricular.setMaximumSize(new Dimension(379, 55));
+    RCModificarDatos.setMaximumSize(new Dimension(379, 55));
+    
 
     // Panel de menú ADMIN
     JPanel menuAdmin = new JPanel();
     
-    menuAdmin.setBackground(new Color(255, 255, 0));
+    menuAdmin.setBackground(new Color	(192,4,29));
     menuAdmin.setLayout(new BoxLayout(menuAdmin, BoxLayout.Y_AXIS));
     
     menuAdmin.add(sepAdm1); 
@@ -95,12 +117,30 @@ public class frmAdmin extends javax.swing.JFrame {
     menuAdmin.add(AAsignar_QuitarMateria);
     menuAdmin.add(sepAdm5); 
     
+    // Panel de menú ADMIN
+    JPanel menuRegistroC = new JPanel();
+    
+    menuRegistroC.setBackground(new Color	(192,4,29));
+    menuRegistroC.setLayout(new BoxLayout(menuRegistroC, BoxLayout.Y_AXIS));
+    
+    menuRegistroC.add(sepReg1); 
+    menuRegistroC.add(RCListadoUsuarios);
+    
+    menuRegistroC.add(sepReg2); 
+    menuRegistroC.add(RCMatricular);
+    
+    menuRegistroC.add(sepReg3); 
+    menuRegistroC.add(RCModificarDatos);
+    
+    menuRegistroC.add(sepReg5); 
+  
+    
     
     // Panel de menú DOCENTE
     JPanel menuDocente = new JPanel();
     menuDocente.setLayout(new BoxLayout(menuDocente, BoxLayout.Y_AXIS));
 
-    menuDocente.setBackground(new Color(255, 255, 0));
+    menuDocente.setBackground(new Color(192,4,29));
     menuDocente.add(sepDoc1);
     menuDocente.add(DListadosAlumnos);
 
@@ -121,15 +161,19 @@ public class frmAdmin extends javax.swing.JFrame {
     JpanelMenu.setLayout(new CardLayout());
     JpanelMenu.add(menuAdmin, "ADMIN");
     JpanelMenu.add(menuDocente, "DOCENTE");
+    JpanelMenu.add(menuRegistroC, "registroc");
 
     // Mostrar el menú según el rol
-    String jose = "admin";
+    
     CardLayout cl = (CardLayout) JpanelMenu.getLayout();
 
-    if (jose.equals("admin")) {
+    if (Cargos.equals("administrador")) {
         cl.show(JpanelMenu, "ADMIN");
-    } else {
+    } else if(Cargos.equals("docente")){
         cl.show(JpanelMenu, "DOCENTE");
+    }else if(Cargos.equals("Registro Control")){
+        cl.show(JpanelMenu, "registroc");
+        
     }
   }
     
@@ -205,12 +249,12 @@ public class frmAdmin extends javax.swing.JFrame {
         setPreferredSize(new java.awt.Dimension(1000, 600));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        JpanelMenu.setBackground(new java.awt.Color(255, 255, 0));
+        JpanelMenu.setBackground(new java.awt.Color(192, 4, 29));
         JpanelMenu.setMinimumSize(new java.awt.Dimension(200, 465));
         JpanelMenu.setLayout(null);
         getContentPane().add(JpanelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 190, 580));
 
-        jPanel3.setBackground(new java.awt.Color(0, 255, 153));
+        jPanel3.setBackground(new java.awt.Color(192, 4, 29));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lbicono.setText("jose");
@@ -222,7 +266,7 @@ public class frmAdmin extends javax.swing.JFrame {
         jPanel3.add(lbicono, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 0, 110, 100));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Corporacion Bolibariana del Norte");
         jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
 
@@ -250,10 +294,11 @@ public class frmAdmin extends javax.swing.JFrame {
 
         jPanel5.setPreferredSize(new java.awt.Dimension(1000, 600));
 
+        DListadosAlumnos.setBackground(new java.awt.Color(192, 4, 29));
         DListadosAlumnos.setLayout(null);
 
         lbListado.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbListado.setForeground(new java.awt.Color(0, 0, 0));
+        lbListado.setForeground(new java.awt.Color(255, 255, 255));
         lbListado.setText("Listado de alumnos");
         DListadosAlumnos.add(lbListado);
         lbListado.setBounds(50, 20, 140, 20);
@@ -262,11 +307,12 @@ public class frmAdmin extends javax.swing.JFrame {
         DListadosAlumnos.add(lbFOTO);
         lbFOTO.setBounds(0, 10, 50, 40);
 
-        DNotasAlumnos.setBackground(new java.awt.Color(204, 204, 0));
+        DNotasAlumnos.setBackground(new java.awt.Color(192, 4, 29));
         DNotasAlumnos.setLayout(null);
 
+        lbANotas.setBackground(new java.awt.Color(192, 4, 29));
         lbANotas.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbANotas.setForeground(new java.awt.Color(0, 0, 0));
+        lbANotas.setForeground(new java.awt.Color(255, 255, 255));
         lbANotas.setText("Asignar Notas");
         DNotasAlumnos.add(lbANotas);
         lbANotas.setBounds(50, 20, 100, 20);
@@ -275,11 +321,11 @@ public class frmAdmin extends javax.swing.JFrame {
         DNotasAlumnos.add(lbNotas);
         lbNotas.setBounds(0, 10, 50, 40);
 
-        Dpromedio.setBackground(new java.awt.Color(0, 255, 102));
+        Dpromedio.setBackground(new java.awt.Color(192, 4, 29));
         Dpromedio.setLayout(null);
 
         lbPromedioG.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbPromedioG.setForeground(new java.awt.Color(0, 0, 0));
+        lbPromedioG.setForeground(new java.awt.Color(255, 255, 255));
         lbPromedioG.setText("Promedios");
         Dpromedio.add(lbPromedioG);
         lbPromedioG.setBounds(50, 20, 80, 20);
@@ -288,11 +334,11 @@ public class frmAdmin extends javax.swing.JFrame {
         Dpromedio.add(lbPromedio);
         lbPromedio.setBounds(0, 10, 48, 40);
 
-        DReportes.setBackground(new java.awt.Color(0, 51, 51));
+        DReportes.setBackground(new java.awt.Color(192, 4, 29));
         DReportes.setLayout(null);
 
         lbReporteAD.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbReporteAD.setForeground(new java.awt.Color(0, 0, 0));
+        lbReporteAD.setForeground(new java.awt.Color(255, 255, 255));
         lbReporteAD.setText("Reportes Academico");
         DReportes.add(lbReporteAD);
         lbReporteAD.setBounds(50, 20, 150, 20);
@@ -301,7 +347,7 @@ public class frmAdmin extends javax.swing.JFrame {
         DReportes.add(lbReportes);
         lbReportes.setBounds(0, 10, 50, 40);
 
-        Ddesempeño.setBackground(new java.awt.Color(255, 204, 51));
+        Ddesempeño.setBackground(new java.awt.Color(192, 4, 29));
         Ddesempeño.setLayout(null);
 
         lbDesempeño.setText("jLabel4");
@@ -309,12 +355,12 @@ public class frmAdmin extends javax.swing.JFrame {
         lbDesempeño.setBounds(0, 10, 50, 40);
 
         lbListado2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbListado2.setForeground(new java.awt.Color(0, 0, 0));
+        lbListado2.setForeground(new java.awt.Color(255, 255, 255));
         lbListado2.setText("Desempeño");
         Ddesempeño.add(lbListado2);
         lbListado2.setBounds(50, 20, 150, 20);
 
-        ACrearMaterias.setBackground(new java.awt.Color(0, 204, 153));
+        ACrearMaterias.setBackground(new java.awt.Color(192, 4, 29));
         ACrearMaterias.setLayout(null);
 
         lbCrearMateriaf.setText("jLabel4");
@@ -322,16 +368,16 @@ public class frmAdmin extends javax.swing.JFrame {
         lbCrearMateriaf.setBounds(0, 10, 50, 40);
 
         lbCrearMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbCrearMateria.setForeground(new java.awt.Color(0, 0, 0));
+        lbCrearMateria.setForeground(new java.awt.Color(255, 255, 255));
         lbCrearMateria.setText("Crear Materia");
         ACrearMaterias.add(lbCrearMateria);
         lbCrearMateria.setBounds(60, 20, 150, 20);
 
-        ACrearCarrera.setBackground(new java.awt.Color(204, 0, 51));
+        ACrearCarrera.setBackground(new java.awt.Color(192, 4, 29));
         ACrearCarrera.setLayout(null);
 
         lbCrearCarrera.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbCrearCarrera.setForeground(new java.awt.Color(0, 0, 0));
+        lbCrearCarrera.setForeground(new java.awt.Color(255, 255, 255));
         lbCrearCarrera.setText("Crear Carrera");
         ACrearCarrera.add(lbCrearCarrera);
         lbCrearCarrera.setBounds(60, 20, 150, 20);
@@ -340,12 +386,12 @@ public class frmAdmin extends javax.swing.JFrame {
         ACrearCarrera.add(lbCrearcarreraF);
         lbCrearcarreraF.setBounds(0, 10, 50, 40);
 
-        AReporteAcademico.setBackground(new java.awt.Color(102, 0, 102));
+        AReporteAcademico.setBackground(new java.awt.Color(192, 4, 29));
         AReporteAcademico.setRequestFocusEnabled(false);
         AReporteAcademico.setLayout(null);
 
         lbReporteAA.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbReporteAA.setForeground(new java.awt.Color(0, 0, 0));
+        lbReporteAA.setForeground(new java.awt.Color(255, 255, 255));
         lbReporteAA.setText("Reportes Academicos");
         AReporteAcademico.add(lbReporteAA);
         lbReporteAA.setBounds(50, 20, 150, 20);
@@ -354,11 +400,11 @@ public class frmAdmin extends javax.swing.JFrame {
         AReporteAcademico.add(lbReportesA);
         lbReportesA.setBounds(0, 10, 50, 40);
 
-        AAsignar_QuitarMateria.setBackground(new java.awt.Color(0, 255, 255));
+        AAsignar_QuitarMateria.setBackground(new java.awt.Color(192, 4, 29));
         AAsignar_QuitarMateria.setLayout(null);
 
         lbQuitarMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbQuitarMateria.setForeground(new java.awt.Color(0, 0, 0));
+        lbQuitarMateria.setForeground(new java.awt.Color(255, 255, 255));
         lbQuitarMateria.setText("Quitar Materia");
         AAsignar_QuitarMateria.add(lbQuitarMateria);
         lbQuitarMateria.setBounds(50, 10, 140, 30);
@@ -367,11 +413,11 @@ public class frmAdmin extends javax.swing.JFrame {
         AAsignar_QuitarMateria.add(lbQuitarMateriaf);
         lbQuitarMateriaf.setBounds(-10, 0, 60, 50);
 
-        RCModificarDatos.setBackground(new java.awt.Color(0, 153, 153));
+        RCModificarDatos.setBackground(new java.awt.Color(192, 4, 29));
         RCModificarDatos.setLayout(null);
 
         lbCrearMateria1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbCrearMateria1.setForeground(new java.awt.Color(0, 0, 0));
+        lbCrearMateria1.setForeground(new java.awt.Color(255, 255, 255));
         lbCrearMateria1.setText("Modificar Datos");
         RCModificarDatos.add(lbCrearMateria1);
         lbCrearMateria1.setBounds(50, 20, 150, 20);
@@ -380,22 +426,22 @@ public class frmAdmin extends javax.swing.JFrame {
         RCModificarDatos.add(lbModificarDatosf);
         lbModificarDatosf.setBounds(0, 10, 50, 40);
 
-        RCMatricular.setBackground(new java.awt.Color(204, 0, 204));
+        RCMatricular.setBackground(new java.awt.Color(192, 4, 29));
         RCMatricular.setLayout(null);
 
         lbCrearMateria3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbCrearMateria3.setForeground(new java.awt.Color(0, 0, 0));
+        lbCrearMateria3.setForeground(new java.awt.Color(255, 255, 255));
         lbCrearMateria3.setText("ingresar usuario");
         RCMatricular.add(lbCrearMateria3);
         lbCrearMateria3.setBounds(50, 20, 150, 20);
         RCMatricular.add(lbingresaruserf);
         lbingresaruserf.setBounds(0, 10, 50, 40);
 
-        RCListadoUsuarios.setBackground(new java.awt.Color(0, 0, 0));
+        RCListadoUsuarios.setBackground(new java.awt.Color(192, 4, 29));
         RCListadoUsuarios.setLayout(null);
 
         lbListadoUsuarios.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbListadoUsuarios.setForeground(new java.awt.Color(0, 0, 0));
+        lbListadoUsuarios.setForeground(new java.awt.Color(255, 255, 255));
         lbListadoUsuarios.setText("Listado de Usuarios");
         RCListadoUsuarios.add(lbListadoUsuarios);
         lbListadoUsuarios.setBounds(50, 20, 150, 20);

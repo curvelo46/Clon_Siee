@@ -92,7 +92,7 @@ private void cargarRoles() {
     grupoRoles.clearSelection();
 
     String sql = "{CALL obtener_roles_usuarios()}";
-    try (Connection conn = baseDatos.getConnection();
+    try (Connection conn = ConexionBD.getConnection();
          CallableStatement cs = conn.prepareCall(sql);
          ResultSet rs = cs.executeQuery()) {
 
@@ -123,7 +123,7 @@ private void cargarUsuariosPorRol(String rol) {
     modeloTabla.setRowCount(0);
 
     String sql = "{CALL listar_usuarios_por_rol(?)}";
-    try (Connection conn = baseDatos.getConnection();
+    try (Connection conn = ConexionBD.getConnection();
          CallableStatement cs = conn.prepareCall(sql)) {
         cs.setString(1, rol);
         ResultSet rs = cs.executeQuery();
@@ -159,7 +159,7 @@ private void cargarUsuariosPorRol(String rol) {
     private int obtenerIdCarreraSP(String nombreCarrera) {
         int id = 0;
         String sql = "CALL id_carrera_por_nombre(?)";
-        try (Connection conn = baseDatos.getConnection();
+        try (Connection conn = ConexionBD.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, nombreCarrera);
             ResultSet rs = ps.executeQuery();
@@ -179,7 +179,7 @@ private void cargarUsuariosPorRol(String rol) {
 
         int idCarrera = obtenerIdCarreraSP(carrera);
         String sql = "CALL listar_estudiantes_por_docente_materia(?, ?, ?)";
-        try (Connection conn = baseDatos.getConnection();
+        try (Connection conn = ConexionBD.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, usuarioDocente);
             ps.setString(2, materia);

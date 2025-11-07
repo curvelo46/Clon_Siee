@@ -49,9 +49,9 @@ public class frmplataforma extends javax.swing.JFrame {
     new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DReportes);
     new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(Ddesempeño);
     
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AAsignar_QuitarMateria);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AQuitar);
     new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(ACrearCarrera);
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(ACrearMaterias);
+    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AMaterias);
     new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AReporteAcademico);
     
     new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCListadoUsuarios);
@@ -77,7 +77,6 @@ public class frmplataforma extends javax.swing.JFrame {
     AjustesObjetos.ajustarImagen(lbFOTO,"src\\imagenes\\Listados.png" );
     AjustesObjetos.ajustarImagen(lbCbn, "src\\imagenes\\Corporacion-Bolivariana-del-Norte-CBN.png");
     AjustesObjetos.ajustarImagen(lbNotas, "src\\imagenes\\Notas.png");
-
     AjustesObjetos.ajustarImagen(lbReportes, "src\\imagenes\\Reportes.png");
     AjustesObjetos.ajustarImagen(lbDesempeño, "src\\imagenes\\desempeño.png");
     AjustesObjetos.ajustarImagen(lbCrearMateriaf, "src\\imagenes\\56640216-college-education-outlined-and-colored-icons.png");
@@ -112,21 +111,19 @@ public class frmplataforma extends javax.swing.JFrame {
         
     // Usar CardLayout
     JpanelMenu.setLayout(new java.awt.CardLayout());
-
     
     DListadosAlumnos.setMaximumSize(new Dimension(379, 55));    
     Ddesempeño.setMaximumSize(new Dimension(379, 55));
     DNotasAlumnos.setMaximumSize(new Dimension(379, 55));
     DReportes.setMaximumSize(new Dimension(379, 55));
-
     
-    AAsignar_QuitarMateria.setMaximumSize(new Dimension(379, 55));
+    AQuitar.setMaximumSize(new Dimension(379, 55));
     ACrearCarrera.setMaximumSize(new Dimension(379, 55));
-    ACrearMaterias.setMaximumSize(new Dimension(379, 55));
+    AMaterias.setMaximumSize(new Dimension(379, 55));
     AReporteAcademico.setMaximumSize(new Dimension(379, 55));
     
     RCListadoUsuarios.setMaximumSize(new Dimension(379, 55));
-       RCRegistro.setMaximumSize(new Dimension(379, 55));
+    RCRegistro.setMaximumSize(new Dimension(379, 55));
     RCModificarDatos.setMaximumSize(new Dimension(379, 55));
     RCModificarDatos.addMouseListener(new java.awt.event.MouseAdapter() {
     @Override
@@ -143,7 +140,7 @@ public class frmplataforma extends javax.swing.JFrame {
     menuAdmin.setLayout(new BoxLayout(menuAdmin, BoxLayout.Y_AXIS));
     
     menuAdmin.add(sepAdm1); 
-    menuAdmin.add(ACrearMaterias);
+    menuAdmin.add(AMaterias);
     
     menuAdmin.add(sepAdm2); 
     menuAdmin.add(ACrearCarrera);
@@ -152,7 +149,7 @@ public class frmplataforma extends javax.swing.JFrame {
     menuAdmin.add(AReporteAcademico);
     
     menuAdmin.add(sepAdm4); 
-    menuAdmin.add(AAsignar_QuitarMateria);
+    menuAdmin.add(AQuitar);
     menuAdmin.add(sepAdm5); 
     
     // Panel de menú Registro control
@@ -174,7 +171,6 @@ public class frmplataforma extends javax.swing.JFrame {
     menuRegistroC.add(sepReg5); 
   
     
-    
     // Panel de menú DOCENTE
     JPanel menuDocente = new JPanel();
     menuDocente.setLayout(new BoxLayout(menuDocente, BoxLayout.Y_AXIS));
@@ -185,9 +181,7 @@ public class frmplataforma extends javax.swing.JFrame {
 
     menuDocente.add(sepDoc2);
     menuDocente.add(DNotasAlumnos);
-
     
-
     menuDocente.add(sepDoc4);
     menuDocente.add(DReportes);
 
@@ -195,16 +189,65 @@ public class frmplataforma extends javax.swing.JFrame {
     menuDocente.add(Ddesempeño);
     
     
+    JPanel menuError = new JPanel();
+    menuError.setLayout(new BoxLayout(menuError, BoxLayout.Y_AXIS));
+    menuError.setBackground(new Color(192,4,29));
+    
+    JPanel menuAlumnos = new JPanel();
+    menuAlumnos.setLayout(new BoxLayout(menuAlumnos, BoxLayout.Y_AXIS));
+    menuAlumnos.setBackground(new Color(192,4,29));
+    
+    // Crear opciones para alumnos (EJEMPLO - personaliza según necesidad)
+    JPanel panelMisNotas = new JPanel();
+    panelMisNotas.setBackground(new Color(192,4,29));
+    panelMisNotas.setMaximumSize(new Dimension(379, 55));
+    panelMisNotas.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            PanelMisNotas panel = new PanelMisNotas(usuarioActual, baseDatos);
+            jtPestañas.addTab("Mis Notas", panel);
+        }
+    });
+    
+    JLabel lbMisNotas = new JLabel("Notas");
+    lbMisNotas.setFont(new java.awt.Font("Segoe UI", 1, 14));
+    lbMisNotas.setForeground(Color.WHITE);
+    panelMisNotas.add(lbMisNotas);
+    
+    JPanel panelMiDesempeno = new JPanel();
+    panelMiDesempeno.setBackground(new Color(192,4,29));
+    panelMiDesempeno.setMaximumSize(new Dimension(379, 55));
+    panelMiDesempeno.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            // Lógica para ver desempeño
+            PanelReportesAlumno panel = new PanelReportesAlumno(usuarioActual);
+            jtPestañas.addTab("reportes", panel);
+        }
+    });
+    
+    JLabel lbMiDesempeno = new JLabel("Reportes Academicos");
+    lbMiDesempeno.setFont(new java.awt.Font("Segoe UI", 1, 14));
+    lbMiDesempeno.setForeground(Color.WHITE);
+    panelMiDesempeno.add(lbMiDesempeno);
+    
+    // Agregar separadores y paneles al menú de alumnos
+    menuAlumnos.add(crearSeparador(new Color(192,4,29), 40));
+    menuAlumnos.add(panelMisNotas);
+    menuAlumnos.add(crearSeparador(new Color(192,4,29), 40));
+    menuAlumnos.add(panelMiDesempeno);
+    
+    menuDocente.add(sepDoc5);
+    menuDocente.add(Ddesempeño);
+    
     // Agregar ambos al CardLayout
     JpanelMenu.setLayout(new CardLayout());
     JpanelMenu.add(menuAdmin, "ADMIN");
     JpanelMenu.add(menuDocente, "DOCENTE");
     JpanelMenu.add(menuRegistroC, "registroc");
-    
-    
+    JpanelMenu.add(menuAlumnos, "ALUMNOS");
+    JpanelMenu.add(menuError, "Sin_cargo");
+
     
     // Mostrar el menú según el rol
-    
     CardLayout cl = (CardLayout) JpanelMenu.getLayout();
 
     if (Cargos.equals("administrador")) {
@@ -213,22 +256,19 @@ public class frmplataforma extends javax.swing.JFrame {
         cl.show(JpanelMenu, "DOCENTE");
     }else if(Cargos.equals("registro y control")){
         cl.show(JpanelMenu, "registroc");
-        
+    }else if (Cargos.equals("alumno")){
+        cl.show(JpanelMenu, "ALUMNOS");
+    }else{        
+        cl.show(JpanelMenu, "Sin_cargo");
     }
-    
-    
-   
-    
-    
   }
     
-    
     private void aplicarHoverLabel(JLabel label) {
-    label.addMouseListener(new java.awt.event.MouseAdapter() {
-        private final Color originalFg = label.getForeground();
-        private final Color originalBg = label.getParent().getBackground();
-        private final Color hoverFg = Color.BLACK; // color del texto en hover
-        private final Color hoverBg = new Color(250,217,124); // color del panel en hover
+        label.addMouseListener(new java.awt.event.MouseAdapter() {
+            private final Color originalFg = label.getForeground();
+            private final Color originalBg = label.getParent().getBackground();
+            private final Color hoverFg = Color.BLACK; // color del texto en hover
+            private final Color hoverBg = new Color(250,217,124); // color del panel en hover
 
         @Override
         public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -244,15 +284,14 @@ public class frmplataforma extends javax.swing.JFrame {
     });
 }
     
-    
-    
+
     private JPanel crearSeparador(Color color, int alto) {
-    JPanel sep = new JPanel();
-    sep.setBackground(color);
-    sep.setPreferredSize(new Dimension(150, alto));
-    sep.setMaximumSize(new Dimension(150, alto));
-    sep.setAlignmentX(LEFT_ALIGNMENT);
-    return sep;
+        JPanel sep = new JPanel();
+        sep.setBackground(color);
+        sep.setPreferredSize(new Dimension(150, alto));
+        sep.setMaximumSize(new Dimension(150, alto));
+        sep.setAlignmentX(LEFT_ALIGNMENT);
+        return sep;
 }
 
         
@@ -268,12 +307,12 @@ public class frmplataforma extends javax.swing.JFrame {
     private void miinitComponents() {
 
         JpanelMenu = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
+        jpanelMenuSuperior = new javax.swing.JPanel();
         lbicono = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        lbCorporacion = new javax.swing.JLabel();
         btnSalir = new javax.swing.JButton();
         jtPestañas = new javax.swing.JTabbedPane();
-        jPanel2 = new javax.swing.JPanel();
+        jpanelLogo = new javax.swing.JPanel();
         lbCbn = new javax.swing.JLabel();
         DNotasAlumnos = new javax.swing.JPanel();
         lbANotas = new javax.swing.JLabel();
@@ -298,13 +337,13 @@ public class frmplataforma extends javax.swing.JFrame {
         RCRegistro = new javax.swing.JPanel();
         lbRegistro = new javax.swing.JLabel(); // Cambiado de lbListado2 a lbRegistro
         lbRegistros = new javax.swing.JLabel();
-        ACrearMaterias = new javax.swing.JPanel();
+        AMaterias = new javax.swing.JPanel();
         lbCrearMateriaf = new javax.swing.JLabel();
         lbCrearMateria = new javax.swing.JLabel();
         ACrearCarrera = new javax.swing.JPanel();
         lbCrearCarrera = new javax.swing.JLabel();
         lbCrearcarreraF = new javax.swing.JLabel();
-        AAsignar_QuitarMateria = new javax.swing.JPanel();
+        AQuitar = new javax.swing.JPanel();
         lbQuitarMateria = new javax.swing.JLabel();
         lbQuitarMateriaf = new javax.swing.JLabel();
         AReporteAcademico = new javax.swing.JPanel();
@@ -319,20 +358,20 @@ public class frmplataforma extends javax.swing.JFrame {
         JpanelMenu.setLayout(null);
         getContentPane().add(JpanelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 190, 580));
 
-        jPanel3.setBackground(new java.awt.Color(192, 4, 29));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jpanelMenuSuperior.setBackground(new java.awt.Color(192, 4, 29));
+        jpanelMenuSuperior.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lbicono.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbFoto(evt);
             }
         });
-        jPanel3.add(lbicono, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 0, 110, 100));
+        jpanelMenuSuperior.add(lbicono, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 0, 110, 100));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Corporacion Bolibariana del Norte");
-        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
+        lbCorporacion.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lbCorporacion.setForeground(new java.awt.Color(255, 255, 255));
+        lbCorporacion.setText("Corporacion Bolibariana del Norte");
+        jpanelMenuSuperior.add(lbCorporacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
 
         btnSalir.setText("Cerrar Seccion");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
@@ -340,9 +379,9 @@ public class frmplataforma extends javax.swing.JFrame {
                 btnSalirActionPerformed(evt);
             }
         });
-        jPanel3.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, -1, -1));
+        jpanelMenuSuperior.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, -1, -1));
 
-        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 0, 1020, 100));
+        getContentPane().add(jpanelMenuSuperior, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 0, 1020, 100));
 
         jtPestañas.setBackground(new java.awt.Color(204, 204, 204));
         jtPestañas.setForeground(new java.awt.Color(153, 153, 153));
@@ -354,13 +393,12 @@ public class frmplataforma extends javax.swing.JFrame {
         });
         getContentPane().add(jtPestañas, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 100, 1020, 580));
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jpanelLogo.setBackground(new java.awt.Color(255, 255, 255));
+        jpanelLogo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        lbCbn.setText("jLabel1");
-        jPanel2.add(lbCbn, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 190, 100));
+        jpanelLogo.add(lbCbn, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 190, 100));
 
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 190, 100));
+        getContentPane().add(jpanelLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 190, 100));
 
         DNotasAlumnos.setBackground(new java.awt.Color(192, 4, 29));
         DNotasAlumnos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -515,30 +553,30 @@ public class frmplataforma extends javax.swing.JFrame {
         lbRegistros.setBounds(0, 10, 50, 40);
         getContentPane().add(RCRegistro, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 190, 201, 38));
 
-        ACrearMaterias.setBackground(new java.awt.Color(192, 4, 29));
-        ACrearMaterias.addMouseListener(new java.awt.event.MouseAdapter() {
+        AMaterias.setBackground(new java.awt.Color(192, 4, 29));
+        AMaterias.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 ACrearMateriasMouseClicked(evt);
             }
         });
-        ACrearMaterias.setLayout(null);
+        AMaterias.setLayout(null);
 
         lbCrearMateriaf.setText("jLabel4");
-        ACrearMaterias.add(lbCrearMateriaf);
+        AMaterias.add(lbCrearMateriaf);
         lbCrearMateriaf.setBounds(0, 10, 50, 40);
 
         lbCrearMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbCrearMateria.setForeground(new java.awt.Color(255, 255, 255));
-        lbCrearMateria.setText("Crear Materia");
+        lbCrearMateria.setText("Crear/asignar Materias");
         lbCrearMateria.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbCrearMateriaMouseClicked(evt);
             }
         });
-        ACrearMaterias.add(lbCrearMateria);
+        AMaterias.add(lbCrearMateria);
         lbCrearMateria.setBounds(60, 20, 150, 20);
 
-        getContentPane().add(ACrearMaterias, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 190, 201, 38));
+        getContentPane().add(AMaterias, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 190, 201, 38));
 
         ACrearCarrera.setBackground(new java.awt.Color(192, 4, 29));
         ACrearCarrera.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -565,13 +603,13 @@ public class frmplataforma extends javax.swing.JFrame {
 
         getContentPane().add(ACrearCarrera, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 140, 201, 38));
 
-        AAsignar_QuitarMateria.setBackground(new java.awt.Color(192, 4, 29));
-        AAsignar_QuitarMateria.addMouseListener(new java.awt.event.MouseAdapter() {
+        AQuitar.setBackground(new java.awt.Color(192, 4, 29));
+        AQuitar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 AAsignar_QuitarMateriaMouseClicked(evt);
             }
         });
-        AAsignar_QuitarMateria.setLayout(null);
+        AQuitar.setLayout(null);
 
         lbQuitarMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbQuitarMateria.setForeground(new java.awt.Color(255, 255, 255));
@@ -581,14 +619,14 @@ public class frmplataforma extends javax.swing.JFrame {
                 lbQuitarMateriaMouseClicked(evt);
             }
         });
-        AAsignar_QuitarMateria.add(lbQuitarMateria);
+        AQuitar.add(lbQuitarMateria);
         lbQuitarMateria.setBounds(50, 10, 140, 30);
 
         lbQuitarMateriaf.setText("jLabel4");
-        AAsignar_QuitarMateria.add(lbQuitarMateriaf);
+        AQuitar.add(lbQuitarMateriaf);
         lbQuitarMateriaf.setBounds(-10, 0, 60, 50);
 
-        getContentPane().add(AAsignar_QuitarMateria, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 290, 201, 38));
+        getContentPane().add(AQuitar, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 290, 201, 38));
 
         AReporteAcademico.setBackground(new java.awt.Color(192, 4, 29));
         AReporteAcademico.setRequestFocusEnabled(false);
@@ -627,48 +665,46 @@ public class frmplataforma extends javax.swing.JFrame {
             btnSalir.setVisible(false);
         }else{
             btnSalir.setVisible(true);
-        }
-        
-        
+        }   
     }                       
 
     private void abrirListadoEstudiantes() {
-    String materiaAsignada = obtenerMateriaDelDocente(usuarioActual);
-    if (materiaAsignada == null || materiaAsignada.trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "No tienes materias asignadas.");
-        return;
+        String materiaAsignada = obtenerMateriaDelDocente(usuarioActual);
+        if (materiaAsignada == null || materiaAsignada.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No tienes materias asignadas.");
+            return;
+        }
+
+        PanelListaEstudiantes panel = new PanelListaEstudiantes(baseDatos, usuarioActual);
+
+        jtPestañas.addTab("Listado", panel);
+        jtPestañas.setSelectedComponent(panel);
     }
-
-    PanelListaEstudiantes panel = new PanelListaEstudiantes(baseDatos, usuarioActual);
-
-    jtPestañas.addTab("Listado", panel);
-    jtPestañas.setSelectedComponent(panel);
-}
     
     private String obtenerMateriaDelDocente(String usuarioDocente) {
-    String materia = null;
-    String sql = "CALL obtener_materia_docente(?)";
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, usuarioDocente);
-        ResultSet rs = stmt.executeQuery();
+        String materia = null;
+        String sql = "CALL obtener_materia_docente(?)";
+        try (Connection conn = ConexionBD.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, usuarioDocente);
+            ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
             materia = rs.getString("materia");
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return materia;
     }
-    return materia;
-}
 
     private void lbANotasMouseClicked(java.awt.event.MouseEvent evt) {                                      
-     PanelAsignarNotasPorMateria panel=new PanelAsignarNotasPorMateria(usuarioActual);
+         PanelAsignarNotasPorMateria panel=new PanelAsignarNotasPorMateria(usuarioActual);
         jtPestañas.addTab("Notas",panel);
     }                                     
 
     private void lbListadoMouseClicked(java.awt.event.MouseEvent evt) {                                       
         // TODO add your handling code here:
-         abrirListadoEstudiantes();
+        abrirListadoEstudiantes();
         System.out.println("si ");
     }                                      
 
@@ -684,17 +720,16 @@ public class frmplataforma extends javax.swing.JFrame {
 
     private void DdesempeñoMouseClicked(java.awt.event.MouseEvent evt) {                                        
         // TODO add your handling code here:
-        
-     PanelPromediosD desempeño = new PanelPromediosD(usuarioActual);
-    jtPestañas.addTab("Promedios", desempeño);
-    jtPestañas.setSelectedComponent(desempeño);
+        PanelPromediosD desempeño = new PanelPromediosD(usuarioActual);
+        jtPestañas.addTab("Promedios", desempeño);
+        jtPestañas.setSelectedComponent(desempeño);
     }                                       
 
     private void lbReporteADMouseClicked(java.awt.event.MouseEvent evt) {                                         
         // TODO add your handling code here:
         PanelReportesD panel = new PanelReportesD(baseDatos, usuarioActual);
 
-        // 👉 tamaño del área visible del JTabbedPane
+        //tamaño del área visible del JTabbedPane
         Dimension size = jtPestañas.getSize();
         panel.setPreferredSize(size);
 
@@ -703,16 +738,13 @@ public class frmplataforma extends javax.swing.JFrame {
     }                                        
 
     private void jtPestañasMouseClicked(java.awt.event.MouseEvent evt) {                                        
-        // TODO add your handling code here:
 
-        if (evt.getClickCount() == 2) { // doble clic
-                int index = jtPestañas.getSelectedIndex();
-                if (index != -1) {
-                    jtPestañas.removeTabAt(index); // cierra la pestaña
-                }
+        if (evt.getClickCount() == 2) { 
+            int index = jtPestañas.getSelectedIndex();
+            if (index != -1) {
+                jtPestañas.removeTabAt(index); 
             }
-
-        
+        }
     }                                       
 
     private void lbCrearMateriaMouseClicked(java.awt.event.MouseEvent evt) {                                            
@@ -728,7 +760,7 @@ public class frmplataforma extends javax.swing.JFrame {
 
     private void DReportesMouseClicked(java.awt.event.MouseEvent evt) {                                       
         // TODO add your handling code here:
-            lbReporteADMouseClicked(evt);
+        lbReporteADMouseClicked(evt);
     }                                      
 
     private void RCListadoUsuariosMouseClicked(java.awt.event.MouseEvent evt) {                                               
@@ -755,14 +787,16 @@ public class frmplataforma extends javax.swing.JFrame {
 
     private void lbReporteAAMouseClicked(java.awt.event.MouseEvent evt) {                                         
         // TODO add your handling code here:
-    PanelAlumnosPorCarrera panel=new PanelAlumnosPorCarrera();
-    JScrollPane scroll = new JScrollPane(panel);
-    scroll.setPreferredSize(new Dimension(950, 500));
-    jtPestañas.addTab("Reportes y desempeño", scroll);
+        PanelAlumnosPorCarrera panel=new PanelAlumnosPorCarrera();
+        JScrollPane scroll = new JScrollPane(panel);
+        scroll.setPreferredSize(new Dimension(950, 500));
+        jtPestañas.addTab("Reportes y desempeño", scroll);
     }                                        
 
     private void AAsignar_QuitarMateriaMouseClicked(java.awt.event.MouseEvent evt) {                                                    
         // TODO add your handling code here:
+        PanelRetirarMateriaADocente panel=new PanelRetirarMateriaADocente();
+        jtPestañas.addTab("Quitar materia", panel);
     }                                                   
 
     private void lbQuitarMateriaMouseClicked(java.awt.event.MouseEvent evt) {                                             
@@ -776,8 +810,6 @@ public class frmplataforma extends javax.swing.JFrame {
         frmLogin login=new frmLogin(baseDatos);
         login.setVisible(true);
         this.dispose();
-        
-        
     }                                        
 
     /**
@@ -793,11 +825,11 @@ public class frmplataforma extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel2 = new javax.swing.JPanel();
+        jpanelLogo = new javax.swing.JPanel();
         lbCbn = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        jpanelMenuSuperior = new javax.swing.JPanel();
         lbicono = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        lbCorporacion = new javax.swing.JLabel();
         btnSalir = new javax.swing.JButton();
         JpanelMenu = new javax.swing.JPanel();
         jtPestañas = new javax.swing.JTabbedPane();
@@ -817,7 +849,7 @@ public class frmplataforma extends javax.swing.JFrame {
         Ddesempeño = new javax.swing.JPanel();
         lbDesempeño = new javax.swing.JLabel();
         lbListado2 = new javax.swing.JLabel();
-        ACrearMaterias = new javax.swing.JPanel();
+        AMaterias = new javax.swing.JPanel();
         lbCrearMateriaf = new javax.swing.JLabel();
         lbCrearMateria = new javax.swing.JLabel();
         ACrearCarrera = new javax.swing.JPanel();
@@ -826,7 +858,7 @@ public class frmplataforma extends javax.swing.JFrame {
         AReporteAcademico = new javax.swing.JPanel();
         lbReporteAA = new javax.swing.JLabel();
         lbReportesA = new javax.swing.JLabel();
-        AAsignar_QuitarMateria = new javax.swing.JPanel();
+        AQuitar = new javax.swing.JPanel();
         lbQuitarMateria = new javax.swing.JLabel();
         lbQuitarMateriaf = new javax.swing.JLabel();
         RCModificarDatos = new javax.swing.JPanel();
@@ -841,14 +873,12 @@ public class frmplataforma extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jpanelLogo.setBackground(new java.awt.Color(255, 255, 255));
+        jpanelLogo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jpanelLogo.add(lbCbn, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 190, 100));
 
-        lbCbn.setText("jLabel1");
-        jPanel2.add(lbCbn, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 190, 100));
-
-        jPanel3.setBackground(new java.awt.Color(192, 4, 29));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jpanelMenuSuperior.setBackground(new java.awt.Color(192, 4, 29));
+        jpanelMenuSuperior.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lbicono.setText("jose");
         lbicono.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -856,15 +886,15 @@ public class frmplataforma extends javax.swing.JFrame {
                 lbiconolbFoto(evt);
             }
         });
-        jPanel3.add(lbicono, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 0, 110, 100));
+        jpanelMenuSuperior.add(lbicono, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 0, 110, 100));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Corporacion Bolibariana del Norte");
-        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
+        lbCorporacion.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lbCorporacion.setForeground(new java.awt.Color(255, 255, 255));
+        lbCorporacion.setText("Corporacion Bolibariana del Norte");
+        jpanelMenuSuperior.add(lbCorporacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
 
         btnSalir.setText("Cerrar Seccion");
-        jPanel3.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, -1, -1));
+        jpanelMenuSuperior.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, -1, -1));
 
         JpanelMenu.setBackground(new java.awt.Color(192, 4, 29));
         JpanelMenu.setMinimumSize(new java.awt.Dimension(200, 465));
@@ -940,18 +970,18 @@ public class frmplataforma extends javax.swing.JFrame {
         Ddesempeño.add(lbListado2);
         lbListado2.setBounds(50, 20, 150, 20);
 
-        ACrearMaterias.setBackground(new java.awt.Color(192, 4, 29));
-        ACrearMaterias.setLayout(null);
+        AMaterias.setBackground(new java.awt.Color(192, 4, 29));
+        AMaterias.setLayout(null);
 
         lbCrearMateriaf.setText("jLabel4");
-        ACrearMaterias.add(lbCrearMateriaf);
+        AMaterias.add(lbCrearMateriaf);
         lbCrearMateriaf.setBounds(0, 10, 50, 40);
 
         lbCrearMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbCrearMateria.setForeground(new java.awt.Color(255, 255, 255));
-        lbCrearMateria.setText("Crear Materia");
-        ACrearMaterias.add(lbCrearMateria);
-        lbCrearMateria.setBounds(60, 20, 150, 20);
+        lbCrearMateria.setText("Crear /asignar Materia");
+        AMaterias.add(lbCrearMateria);
+        lbCrearMateria.setBounds(40, 20, 160, 20);
 
         ACrearCarrera.setBackground(new java.awt.Color(192, 4, 29));
         ACrearCarrera.setLayout(null);
@@ -980,17 +1010,17 @@ public class frmplataforma extends javax.swing.JFrame {
         AReporteAcademico.add(lbReportesA);
         lbReportesA.setBounds(0, 10, 50, 40);
 
-        AAsignar_QuitarMateria.setBackground(new java.awt.Color(192, 4, 29));
-        AAsignar_QuitarMateria.setLayout(null);
+        AQuitar.setBackground(new java.awt.Color(192, 4, 29));
+        AQuitar.setLayout(null);
 
         lbQuitarMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbQuitarMateria.setForeground(new java.awt.Color(255, 255, 255));
         lbQuitarMateria.setText("Quitar Materia");
-        AAsignar_QuitarMateria.add(lbQuitarMateria);
+        AQuitar.add(lbQuitarMateria);
         lbQuitarMateria.setBounds(50, 10, 140, 30);
 
         lbQuitarMateriaf.setText("jLabel4");
-        AAsignar_QuitarMateria.add(lbQuitarMateriaf);
+        AQuitar.add(lbQuitarMateriaf);
         lbQuitarMateriaf.setBounds(-10, 0, 60, 50);
 
         RCModificarDatos.setBackground(new java.awt.Color(192, 4, 29));
@@ -1062,8 +1092,8 @@ public class frmplataforma extends javax.swing.JFrame {
                     .addComponent(AReporteAcademico, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(ACrearCarrera, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
-                        .addComponent(ACrearMaterias, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(AAsignar_QuitarMateria, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(AMaterias, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(AQuitar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(DReportes, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
@@ -1092,23 +1122,21 @@ public class frmplataforma extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(RCListadoUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(DListadosAlumnos, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(DReportes, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(RCRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(RCRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(Ddesempeño, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(79, 79, 79)
-                .addComponent(ACrearMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(AMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(ACrearCarrera, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(AAsignar_QuitarMateria, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(AQuitar, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(AReporteAcademico, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(38, Short.MAX_VALUE))
@@ -1123,9 +1151,9 @@ public class frmplataforma extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jpanelLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 1020, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jpanelMenuSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, 1020, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -1138,8 +1166,8 @@ public class frmplataforma extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jpanelLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jpanelMenuSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(JpanelMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1190,9 +1218,9 @@ public class frmplataforma extends javax.swing.JFrame {
     }//GEN-LAST:event_RCModificarDatosMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel AAsignar_QuitarMateria;
     private javax.swing.JPanel ACrearCarrera;
-    private javax.swing.JPanel ACrearMaterias;
+    private javax.swing.JPanel AMaterias;
+    private javax.swing.JPanel AQuitar;
     private javax.swing.JPanel AReporteAcademico;
     private javax.swing.JPanel DListadosAlumnos;
     private javax.swing.JPanel DNotasAlumnos;
@@ -1204,13 +1232,13 @@ public class frmplataforma extends javax.swing.JFrame {
     private javax.swing.JPanel RCModificarDatos;
     private javax.swing.JPanel RCRegistro;
     private javax.swing.JButton btnSalir;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jpanelLogo;
+    private javax.swing.JPanel jpanelMenuSuperior;
     private javax.swing.JTabbedPane jtPestañas;
     private javax.swing.JLabel lbANotas;
     private javax.swing.JLabel lbCbn;
+    private javax.swing.JLabel lbCorporacion;
     private javax.swing.JLabel lbCrearCarrera;
     private javax.swing.JLabel lbCrearMateria;
     private javax.swing.JLabel lbCrearMateriaf;

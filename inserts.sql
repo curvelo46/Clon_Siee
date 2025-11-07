@@ -10,6 +10,9 @@ VALUES
  '3012345678', 'laura@mail.com',  'Calle 45 #12-34'),
 
 ('Mario',  NULL, 'Sánchez', NULL, 40, 112233445, 'masculino', 'administrador',
+ '3023456789', 'mario@mail.com',  'Av 6 #15-89'),
+ 
+ ('Mandres',  NULL, 'Sánchez', NULL, 40, 112245, 'masculino', 'registro y control',
  '3023456789', 'mario@mail.com',  'Av 6 #15-89');
 
 -- =============================
@@ -60,7 +63,7 @@ INSERT INTO Alumno_Materias (alumno_id, docente_materia_id, corte1) VALUES
 
 select*from docente_materias;
 select*from alumno_materias;
-
+select* from docentes;
 select*from materias;
 select*from alumnos;
 select*from Reportes;

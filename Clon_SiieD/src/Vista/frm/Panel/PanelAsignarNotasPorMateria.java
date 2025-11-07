@@ -34,7 +34,7 @@ public class PanelAsignarNotasPorMateria extends JPanel {
         public boolean isCellEditable(int row, int column) {
             if (column >= 2 && column <= 4) {
                 int corteColumna = column - 1;
-                int editCol = column + 5;
+                int editCol = column + 4;
                 boolean esCorteActual = (corteColumna == corteSeleccionado);
                 boolean noEditado = "0".equals(getValueAt(row, editCol).toString());
                 return esCorteActual && noEditado;

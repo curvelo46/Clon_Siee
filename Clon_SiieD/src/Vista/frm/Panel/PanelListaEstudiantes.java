@@ -7,9 +7,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
-import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class PanelListaEstudiantes extends JPanel {
 
@@ -65,7 +63,7 @@ public class PanelListaEstudiantes extends JPanel {
         comboMaterias.addItem("Seleccione materia");
 
         String sql = "CALL obtener_materias_docente(?)";
-        try (Connection conn = baseDatos.getConnection();
+        try (Connection conn = ConexionBD.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, usuarioDocente);
             ResultSet rs = ps.executeQuery();
@@ -95,7 +93,7 @@ public class PanelListaEstudiantes extends JPanel {
     int idCarrera = obtenerCarreraDeMateriaDocente(usuarioDocente, materia);
 
     String sql = "{CALL listar_estudiantes_por_docente_materia(?, ?, ?)}";
-    try (Connection conn = baseDatos.getConnection();
+    try (Connection conn = ConexionBD.getConnection();
          CallableStatement stmt = conn.prepareCall(sql)) {
         stmt.setString(1, usuarioDocente);
         stmt.setString(2, materia);

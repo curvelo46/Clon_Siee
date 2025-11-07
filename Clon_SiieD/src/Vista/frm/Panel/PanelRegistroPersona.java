@@ -1,6 +1,7 @@
 package Vista.frm.Panel;
 
 import Clases.Base_De_Datos;
+import Clases.ConexionBD;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -192,7 +193,7 @@ public class PanelRegistroPersona extends JPanel {
     private void cargarCarreras() {
         cmbCarrera.removeAllItems();
         String sql = "{CALL carreras()}";
-        try (Connection conn = baseDatos.getConnection();
+        try (Connection conn = ConexionBD.getConnection();
              CallableStatement cs = conn.prepareCall(sql);
              ResultSet rs = cs.executeQuery()) {
             while (rs.next()) cmbCarrera.addItem(rs.getString("nombre"));
@@ -256,7 +257,7 @@ public class PanelRegistroPersona extends JPanel {
                 return;
             }
 
-            try (Connection conn = baseDatos.getConnection()) {
+            try (Connection conn = ConexionBD.getConnection()) {
                 conn.setAutoCommit(false);
 
                 /* 1. Registrar usuario */

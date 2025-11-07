@@ -2,19 +2,22 @@ package Vista.frm;
 
 import Clases.AjustesObjetos;
 import Clases.Base_De_Datos;
+import Clases.ConexionBD;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import javax.swing.JOptionPane;
 
-
-
-
 public class frmLogin extends javax.swing.JFrame {
-     private Base_De_Datos baseDatos;
     
-    /**
-     * Creates new form frmLogin
-     */
+    private Base_De_Datos baseDatos;
+    
     public frmLogin(Base_De_Datos dato) {
         initComponents();
         this.baseDatos =dato;
@@ -22,8 +25,7 @@ public class frmLogin extends javax.swing.JFrame {
         setSize(820,365);
         setResizable(false);
         setLocationRelativeTo(null);
-        AjustesObjetos.ajustarImagen(lbLogo,"src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg");
-       
+        AjustesObjetos.ajustarImagen(lbLogo,"src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg");       
     }
 
     /**
@@ -128,60 +130,70 @@ public class frmLogin extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtUsuarioActionPerformed
 
+    private List<String> obtenerCargosPermitidos() {
+        List<String> cargos = new ArrayList<>();
+        String sql = "{CALL Cargos(?)}";
+    
+        try {
+            Connection conn = ConexionBD.getConnection(); 
+            CallableStatement cs = conn.prepareCall(sql);
+            cs.setString(1, "");
+            ResultSet rs = cs.executeQuery();
+
+            while (rs.next()) {
+                cargos.add(rs.getString("cargo"));
+            }
+            rs.close();
+            cs.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar cargos: " + e.getMessage());
+        }
+    
+    
+        return new ArrayList<>(new LinkedHashSet<>(cargos));
+    }
+    
     private void btnSecionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSecionActionPerformed
         // TODO add your handling code here:
         String usuario = txtUsuario.getText().trim();
         String contraseña = new String(txtContraseña.getPassword());
+
+        if (usuario.isEmpty() || contraseña.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String rol = baseDatos.login(usuario, contraseña);
+
+        if (rol == null) {
+            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Acceso denegado", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         
-         
-    
-    if (usuario.isEmpty() || contraseña.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
+        List<String> cargosPermitidos = obtenerCargosPermitidos(); 
 
-    
-   
-    
-    // Consultar en la BD
-    String rol = baseDatos.login(usuario, contraseña);
+        boolean rolValido = false;
+        for (String cargo : cargosPermitidos) {
+            if (rol.equalsIgnoreCase(cargo)) {
+                rolValido = true;
+                break;
+            }
+        }
 
-    if (rol == null) {
-        JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Acceso denegado", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
+        if (!rolValido) {
+            JOptionPane.showMessageDialog(this, 
+                "Su cargo '" + rol + "' no está autorizado para acceder al sistema.\n" +
+                "Contacte al administrador si cree que esto es un error.", 
+                "Acceso Restringido", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    // Abrir la ventana correspondiente según el rol obtenido de la BD
-    switch (rol.toLowerCase()) {
-        case "alumno":
-                frmplataforma panel=new frmplataforma(baseDatos, rol, usuario);
-            panel.setVisible(true);
-            this.dispose();
-            break;
-
-        case "docente":
-             panel=new frmplataforma(baseDatos, rol, usuario);
-            panel.setVisible(true);
-            this.dispose();
-            break;
-
-        case "administrador":
-            panel=new frmplataforma(baseDatos, rol, usuario);
-            panel.setVisible(true);
-            this.dispose();
-            break;
-            
-        case "registro y control":
-            panel=new frmplataforma(baseDatos, rol, usuario);
-            panel.setVisible(true);
-            this.dispose();
-            break;
         
-
-        default:
-            JOptionPane.showMessageDialog(this, "Rol no reconocido en la BD: " + rol, "Error", JOptionPane.ERROR_MESSAGE);
-            break;
-    }
+        frmplataforma panel = new frmplataforma(baseDatos, rol, usuario);
+        panel.setVisible(true);
+        this.dispose();       
     }//GEN-LAST:event_btnSecionActionPerformed
     
    
@@ -212,11 +224,6 @@ public class frmLogin extends javax.swing.JFrame {
             txtUsuario.requestFocus();
         }
     }//GEN-LAST:event_txtContraseñaKeyPressed2
-
-    /**
-     * @param args the command line arguments
-     */
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSecion;

@@ -43,7 +43,7 @@ public class EfectoHoverPanel {
                 panel.setBackground(colorOriginalFondo);
                 for (JLabel label : labelsOriginales) {
                     if (label != null) {
-                        label.setForeground(Color.WHITE); // o el color original que uses
+                        label.setForeground(Color.WHITE); 
                     }
                 }
             }

@@ -61,9 +61,6 @@ public static void ajustarImagen(JLabel label, String ruta) {
     label.repaint();
 }
 
-
-
-    
     public static void ajustarTabla(JTable table) {
         TableColumnModel columnModel = table.getColumnModel();
         for (int column = 0; column < table.getColumnCount(); column++) {
@@ -83,7 +80,6 @@ public static void ajustarImagen(JLabel label, String ruta) {
                     break;
                 }
             }
-
             tableColumn.setPreferredWidth(preferredWidth);
         }
     }

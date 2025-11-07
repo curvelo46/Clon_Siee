@@ -87,7 +87,7 @@ BEGIN
 		WHERE user_ = p_usuario AND contrasena_hash = p_contrasena;
 	END //
 
-CREATE PROCEDURE obtener_sexo_alumno(
+CREATE PROCEDURE obtener_sexo_usuario(
 		IN p_nombre_usuario VARCHAR(50)
 	)
 BEGIN
@@ -100,6 +100,11 @@ BEGIN
 CREATE PROCEDURE obtener_user_por_cc(IN p_cc VARCHAR(100))
 BEGIN
     SELECT user_ FROM Usuarios WHERE cc = p_cc;
+END //
+
+CREATE PROCEDURE Cargos(IN p_cc VARCHAR(100))
+BEGIN
+    SELECT DISTINCT cargo FROM Usuarios;
 END //
 
 
@@ -310,26 +315,120 @@ WHERE ud.user_ = p_docente_user
 END //
 
 
-CREATE PROCEDURE registrar_usuario(
+
+
+
+CREATE PROCEDURE registrar_personal(
     IN p_nombre VARCHAR(50),
     IN p_segundoNombre VARCHAR(50),
     IN p_apellido VARCHAR(50),
     IN p_segundoApellido VARCHAR(50),
     IN p_edad INT,
     IN p_telefono VARCHAR(15),
-    IN p_correo VARCHAR (50),
+    IN p_correo VARCHAR(50),
     IN p_direccion VARCHAR(100),
     IN p_cedula VARCHAR(20),
     IN p_genero VARCHAR(10),
-    IN p_cargo VARCHAR(20)
+    IN p_cargo VARCHAR(20),
+    IN p_carrera_nombre VARCHAR(125)
 )
 BEGIN
-	
-    INSERT INTO usuarios
-    (nombre, segundo_Nombre, apellido, segundo_Apellido, edad, telefono, correo, direccion, cc, sexo, cargo)
-    VALUES
-    (p_nombre, p_segundoNombre, p_apellido, p_segundoApellido, p_edad, p_telefono, p_correo, p_direccion, p_cedula, p_genero, p_cargo );
-END//
+    DECLARE v_usuario_id INT;
+
+    -- Validar duplicados
+    IF EXISTS (SELECT 1 FROM Usuarios WHERE cc = p_cedula) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: La cédula ya está registrada';
+    END IF;
+
+    IF p_correo IS NOT NULL AND p_correo != '' THEN
+        IF EXISTS (SELECT 1 FROM Usuarios WHERE correo = p_correo) THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Error: El correo ya está registrado';
+        END IF;
+    END IF;
+
+    -- Insertar usuario (sin credenciales, el trigger las genera)
+    INSERT INTO usuarios (
+        nombre, segundo_Nombre, apellido, segundo_Apellido, 
+        edad, telefono, correo, direccion, cc, sexo, cargo        
+    ) VALUES (
+        p_nombre, NULLIF(p_segundoNombre, ''), p_apellido, NULLIF(p_segundoApellido, ''),
+        p_edad, NULLIF(p_telefono, ''), NULLIF(p_correo, ''), NULLIF(p_direccion, ''),
+        p_cedula, p_genero, p_cargo 
+    );
+
+    SET v_usuario_id = LAST_INSERT_ID();
+
+    -- Insertar en tabla de rol
+    IF p_cargo = 'alumno' THEN
+        INSERT INTO Alumnos (id) VALUES (v_usuario_id);
+        
+        -- Matricular en carrera si se seleccionó
+        IF p_carrera_nombre IS NOT NULL AND p_carrera_nombre != '' THEN
+            CALL matricular_alumno_en_carrera(v_usuario_id, p_carrera_nombre);
+        END IF;
+        
+    ELSEIF p_cargo = 'docente' THEN
+        INSERT INTO Docentes (id) VALUES (v_usuario_id);
+        
+    ELSEIF p_cargo = 'administrador' THEN
+        INSERT INTO Administradores (id) VALUES (v_usuario_id);
+        
+    ELSEIF p_cargo = 'registro y control' THEN
+        INSERT INTO RegistroYControl (id) VALUES (v_usuario_id);
+    END IF;
+
+END //
+
+
+
+
+-- Procedimiento de matrícula corregido
+CREATE PROCEDURE matricular_alumno_en_carrera(
+    IN p_alumno_id INT,
+    IN p_carrera_nombre VARCHAR(125)
+)
+BEGIN
+    DECLARE v_carrera_id INT;
+    DECLARE v_docente_materia_id INT;
+    DECLARE done INT DEFAULT 0;
+
+    -- Cursor para materias de la carrera con docentes asignados
+    DECLARE curMaterias CURSOR FOR
+        SELECT dm.id
+        FROM Materias m
+        JOIN Docente_Materias dm ON dm.materia_id = m.id
+        WHERE m.carrera_id = v_carrera_id;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- Obtener ID de carrera
+    SELECT id INTO v_carrera_id
+    FROM Carreras
+    WHERE nombre = p_carrera_nombre;
+
+    IF v_carrera_id IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La carrera especificada no existe';
+    END IF;
+
+    OPEN curMaterias;
+
+    loop_materias: LOOP
+        FETCH curMaterias INTO v_docente_materia_id;
+        IF done THEN LEAVE loop_materias; END IF;
+
+        INSERT INTO Alumno_Materias (alumno_id, docente_materia_id, corte1, corte2, corte3)
+        VALUES (p_alumno_id, v_docente_materia_id, 0, 0, 0);
+    END LOOP;
+
+    CLOSE curMaterias;
+END //
+
+
+
+
 
 
 CREATE PROCEDURE reiniciar_notas()
@@ -352,63 +451,7 @@ begin
 end//
 
 
-CREATE PROCEDURE matricular_alumno_en_carrera(
-    IN p_user VARCHAR(50),
-    IN p_carrera_nombre VARCHAR(125)
-)
-BEGIN
-    DECLARE v_alumno_id INT;
-    DECLARE v_carrera_id INT;
-    DECLARE v_docente_materia_id INT;
-    DECLARE done INT DEFAULT 0;
 
-    -- Cursor para recorrer todas las materias de la carrera
-    DECLARE curMaterias CURSOR FOR
-        SELECT dm.id
-        FROM Carrera_Materias cm
-        JOIN Materias m ON cm.materia_id = m.id
-        JOIN Docente_Materias dm ON dm.materia_id = m.id
-        WHERE cm.carrera_id = v_carrera_id;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-
-    -- 1️⃣ Obtener el ID del alumno
-    SELECT u.id INTO v_alumno_id
-    FROM Usuarios u
-    WHERE u.user_ = p_user AND u.cargo = 'alumno';
-
-    -- 2️⃣ Obtener el ID de la carrera
-    SELECT id INTO v_carrera_id
-    FROM Carreras
-    WHERE nombre = p_carrera_nombre;
-
-    -- 3️⃣ Verificar que ambos existan
-    IF v_alumno_id IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El usuario no existe o no es un alumno';
-    END IF;
-
-    IF v_carrera_id IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'La carrera especificada no existe';
-    END IF;
-
-    -- 4️⃣ Recorrer las materias de la carrera y matricular al alumno
-    OPEN curMaterias;
-
-    loop_materias: LOOP
-        FETCH curMaterias INTO v_docente_materia_id;
-        IF done THEN
-            LEAVE loop_materias;
-        END IF;
-
-        -- Insertar la relación alumno - materia
-        INSERT INTO Alumno_Materias (alumno_id, docente_materia_id, corte1, corte2, corte3)
-        VALUES (v_alumno_id, v_docente_materia_id, 0, 0, 0);
-    END LOOP;
-
-    CLOSE curMaterias;
-END //
 
 
 create procedure carreras()
@@ -734,6 +777,75 @@ BEGIN
     WHERE r.id_alumno = p_id_alumno
     ORDER BY r.fecha DESC;
 END //
+
+
+
+CREATE PROCEDURE listar_usuarios_por_rol(
+    IN p_rol VARCHAR(50)
+)
+BEGIN
+    SELECT 
+        cc,
+        nombre,
+        segundo_nombre,
+        apellido,
+        segundo_apellido,
+        edad,
+        sexo AS genero,
+        direccion,
+        telefono,
+        correo
+    FROM Usuarios
+    WHERE cargo = p_rol
+    ORDER BY apellido, nombre;
+END //
+
+
+
+CREATE PROCEDURE obtener_roles_usuarios()
+BEGIN
+    SELECT DISTINCT cargo AS rol
+    FROM Usuarios
+    WHERE cargo IN ('alumno', 'docente', 'administrador', 'registro y control')
+    ORDER BY rol;
+END //
+
+
+
+CREATE PROCEDURE obtener_reportes_alumno_completos(IN p_username_alumno VARCHAR(50))
+BEGIN
+    SELECT 
+        r.fecha,
+        CONCAT(ud.nombre, ' ', ud.apellido) AS docente,
+        GROUP_CONCAT(DISTINCT m.nombre SEPARATOR ', ') AS materias,
+        r.reporte
+    FROM Reportes r
+    JOIN Docentes d ON d.id = r.id_docente
+    JOIN Usuarios ud ON ud.id = d.id
+    JOIN Alumnos a ON a.id = r.id_alumno
+    JOIN Usuarios ua ON ua.id = a.id
+    LEFT JOIN Docente_Materias dm ON dm.docente_id = d.id
+    LEFT JOIN Materias m ON m.id = dm.materia_id
+    WHERE ua.user_ = p_username_alumno
+    GROUP BY r.fecha, r.id_docente, r.reporte
+    ORDER BY r.fecha DESC;
+END//
+
+
+
+CREATE PROCEDURE obtener_carreras_del_alumno(IN p_username VARCHAR(50))
+BEGIN
+    SELECT DISTINCT c.id, c.nombre
+    FROM Carreras c
+    JOIN Materias m ON m.carrera_id = c.id
+    JOIN Docente_Materias dm ON dm.materia_id = m.id
+    JOIN Alumno_Materias am ON am.docente_materia_id = dm.id
+    JOIN Alumnos a ON a.id = am.alumno_id
+    JOIN Usuarios u ON u.id = a.id
+    WHERE u.user_ = p_username;
+END//
+
+
 
 CREATE PROCEDURE listar_notas_por_alumno_carrera(IN p_id_alumno INT, IN p_id_carrera INT)
 BEGIN

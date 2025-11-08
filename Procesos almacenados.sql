@@ -102,7 +102,7 @@ BEGIN
     SELECT user_ FROM Usuarios WHERE cc = p_cc;
 END //
 
-CREATE PROCEDURE Cargos(IN p_cc VARCHAR(100))
+CREATE PROCEDURE Cargos()
 BEGIN
     SELECT DISTINCT cargo FROM Usuarios;
 END //
@@ -791,7 +791,7 @@ BEGIN
         apellido,
         segundo_apellido,
         edad,
-        sexo AS genero,
+        sexo,
         direccion,
         telefono,
         correo

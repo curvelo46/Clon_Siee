@@ -492,12 +492,17 @@ public class frmplataforma extends javax.swing.JFrame {
 
         RCModificarDatos.setBackground(new java.awt.Color(192, 4, 29));
         RCModificarDatos.setLayout(null);
-
+        RCModificarDatos.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            RCModificarDatosMouseClicked(evt);
+            }
+        });
         lbModificarDatos.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbModificarDatos.setForeground(new java.awt.Color(255, 255, 255));
         lbModificarDatos.setText("Modificar Datos");
         RCModificarDatos.add(lbModificarDatos);
         lbModificarDatos.setBounds(50, 20, 150, 20);
+        
 
         lbModificarDatosf.setText("jLabel4");
         RCModificarDatos.add(lbModificarDatosf);
@@ -1028,6 +1033,11 @@ public class frmplataforma extends javax.swing.JFrame {
         lbModificarDatos.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbModificarDatos.setForeground(new java.awt.Color(255, 255, 255));
         lbModificarDatos.setText("Modificar Datos");
+        lbModificarDatos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbModificarDatosMouseClicked(evt);
+            }
+        });
         RCModificarDatos.add(lbModificarDatos);
         lbModificarDatos.setBounds(50, 20, 150, 20);
 
@@ -1210,6 +1220,14 @@ public class frmplataforma extends javax.swing.JFrame {
         PanelGestionUsuario pane=new PanelGestionUsuario();
         jtPestañas.addTab("control", pane); 
     }//GEN-LAST:event_RCModificarDatosMouseClicked
+
+    private void lbModificarDatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbModificarDatosMouseClicked
+        // TODO add your handling code here:
+        PanelMatriculaAlumno panel=new PanelMatriculaAlumno();
+        jtPestañas.addTab("matriculas", panel); 
+        PanelGestionUsuario pane=new PanelGestionUsuario();
+        jtPestañas.addTab("control", pane); 
+    }//GEN-LAST:event_lbModificarDatosMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel ACrearCarrera;

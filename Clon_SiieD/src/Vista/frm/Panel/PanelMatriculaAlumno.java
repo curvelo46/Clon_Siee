@@ -144,7 +144,7 @@ public class PanelMatriculaAlumno extends JPanel {
 
     private void matricularAlumno() {
     String alumno = (String) comboAlumnos.getSelectedItem();
-    String seleccion = getSelectedMateria(); // Ahora retorna un String que es el ID o "TODAS"
+    String seleccion = getSelectedMateria();
 
     if (alumno == null || seleccion == null) {
         JOptionPane.showMessageDialog(this, "Seleccione alumno y materia.");
@@ -154,32 +154,85 @@ public class PanelMatriculaAlumno extends JPanel {
     try (Connection conn = ConexionBD.getConnection()) {
         conn.setAutoCommit(false);
         int idAlumno = getAlumnoId(conn, alumno);
+        StringBuilder mensaje = new StringBuilder();
+        boolean hayErrores = false;
+        boolean hayExito = false;
 
         if ("TODAS".equals(seleccion)) {
-            // Matricular en todas las materias visible en el panel
-            int count = 0;
+            // Matricular en todas las materias seleccionadas
+            int matriculadas = 0;
+            int yaExistentes = 0;
+            int errores = 0;
+
             for (Component c : panelMaterias.getComponents()) {
                 if (c instanceof JRadioButton) {
                     JRadioButton rb = (JRadioButton) c;
                     String cmd = rb.getActionCommand();
-                    if (!"TODAS".equals(cmd) && rb.isSelected()) { // Todas seleccionadas
+                    if (!"TODAS".equals(cmd) && rb.isSelected()) {
                         int dmId = Integer.parseInt(cmd);
-                        matricularEnMateria(conn, idAlumno, dmId);
-                        count++;
+                        int resultado = matricularEnMateria(conn, idAlumno, dmId);
+                        
+                        if (resultado == 1) {
+                            matriculadas++;
+                            hayExito = true;
+                        } else if (resultado == 0) {
+                            yaExistentes++;
+                        } else {
+                            errores++;
+                            hayErrores = true;
+                        }
                     }
                 }
             }
-            lblInfo.setText("✅ Matriculado en " + count + " materias.");
+            
+            // Construir mensaje detallado
+            if (matriculadas > 0) {
+                mensaje.append("✅ Matriculado en ").append(matriculadas).append(" materia(s) exitosamente.\n");
+            }
+            if (yaExistentes > 0) {
+                mensaje.append("⚠️ Ya estaba matriculado en ").append(yaExistentes).append(" materia(s).\n");
+            }
+            if (errores > 0) {
+                mensaje.append("❌ Error al matricular en ").append(errores).append(" materia(s).\n");
+            }
+            
         } else {
-            // Matricular en una sola materia específica
+            // Matricular en una sola materia
             int dmId = Integer.parseInt(seleccion);
-            matricularEnMateria(conn, idAlumno, dmId);
-            lblInfo.setText("✅ Matriculado en la materia seleccionada.");
+            int resultado = matricularEnMateria(conn, idAlumno, dmId);
+            
+            if (resultado == 1) {
+                mensaje.append("✅ Matriculado exitosamente en la materia seleccionada.");
+                hayExito = true;
+            } else if (resultado == 0) {
+                mensaje.append("⚠️ El alumno ya está matriculado en esta materia.");
+            } else {
+                mensaje.append("❌ Error al matricular en la materia.");
+                hayErrores = true;
+            }
         }
 
-        conn.commit();
+        // Mostrar mensaje según el resultado
+        if (hayExito && !hayErrores) {
+            conn.commit();
+            JOptionPane.showMessageDialog(this, mensaje.toString(), 
+                "Operación Exitosa", JOptionPane.INFORMATION_MESSAGE);
+        } else if (hayErrores) {
+            conn.rollback();
+            JOptionPane.showMessageDialog(this, mensaje.toString(), 
+                "Errores en la Operación", JOptionPane.ERROR_MESSAGE);
+        } else {
+            conn.rollback();
+            JOptionPane.showMessageDialog(this, mensaje.toString(), 
+                "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        lblInfo.setText(mensaje.toString().replace("\n", " | "));
+
     } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "❌ Error al matricular: " + ex.getMessage());
+        JOptionPane.showMessageDialog(this, 
+            "❌ Error general al matricular: " + ex.getMessage(), 
+            "Error Crítico", JOptionPane.ERROR_MESSAGE);
         ex.printStackTrace();
     }
 }
@@ -241,6 +294,17 @@ public class PanelMatriculaAlumno extends JPanel {
     }
     return null;
 }
+    
+    private boolean alumnoYaMatriculado(Connection conn, int idAlumno, int idDocenteMateria) throws SQLException {
+    String sql = "SELECT 1 FROM Alumno_Materias WHERE alumno_id = ? AND docente_materia_id = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, idAlumno);
+        ps.setInt(2, idDocenteMateria);
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next(); // Retorna true si ya existe
+        }
+    }
+}
 
     private int getAlumnoId(Connection conn, String nombreCompleto) throws SQLException {
         String[] partes = nombreCompleto.split(" ", 2);
@@ -256,14 +320,24 @@ public class PanelMatriculaAlumno extends JPanel {
     }
 
 
-    private void matricularEnMateria(Connection conn, int idAlumno, int idDocenteMateria) throws SQLException {
-        String sql = "INSERT IGNORE INTO Alumno_Materias (alumno_id, docente_materia_id, corte1, corte2, corte3) VALUES (?, ?, 0, 0, 0)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idAlumno);
-            ps.setInt(2, idDocenteMateria);
-            ps.executeUpdate();
-        }
+private int matricularEnMateria(Connection conn, int idAlumno, int idDocenteMateria) throws SQLException {
+    // Verificar si ya está matriculado
+    if (alumnoYaMatriculado(conn, idAlumno, idDocenteMateria)) {
+        return 0; // Ya existente
     }
+    
+    // Intentar matricular
+    String sql = "INSERT INTO Alumno_Materias (alumno_id, docente_materia_id, corte1, corte2, corte3) VALUES (?, ?, 0, 0, 0)";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, idAlumno);
+        ps.setInt(2, idDocenteMateria);
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0 ? 1 : -1; // 1 éxito, -1 error
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        return -1; // Error
+    }
+}
     
     /**
      * This method is called from within the constructor to initialize the form.

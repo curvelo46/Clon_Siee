@@ -132,12 +132,11 @@ public class frmLogin extends javax.swing.JFrame {
 
     private List<String> obtenerCargosPermitidos() {
         List<String> cargos = new ArrayList<>();
-        String sql = "{CALL Cargos(?)}";
+        String sql = "{CALL Cargos()}";
     
         try {
             Connection conn = ConexionBD.getConnection(); 
             CallableStatement cs = conn.prepareCall(sql);
-            cs.setString(1, "");
             ResultSet rs = cs.executeQuery();
 
             while (rs.next()) {

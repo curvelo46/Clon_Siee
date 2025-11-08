@@ -107,7 +107,6 @@ private void cargarRoles() {
         if (grupoRoles.getButtonCount() > 0) {
             JRadioButton primero = (JRadioButton) grupoRoles.getElements().nextElement();
             primero.setSelected(true);
-            cargarUsuariosPorRol(primero.getText());
         }
 
         panelRoles.revalidate();

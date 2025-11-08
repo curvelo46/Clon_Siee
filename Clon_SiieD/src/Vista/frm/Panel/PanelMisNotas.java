@@ -164,10 +164,10 @@ public class PanelMisNotas extends JPanel {
                 
                 Object[] fila = {
                     materia,
-                    String.format("%.2f", corte1),
-                    String.format("%.2f", corte2),
-                    String.format("%.2f", corte3),
-                    String.format("%.2f", promedio)
+                    String.format("%.1f", corte1),
+                    String.format("%.1f", corte2),
+                    String.format("%.1f", corte3),
+                    String.format("%.1f", promedio)
                 };
                 modeloTabla.addRow(fila);
             }

@@ -236,55 +236,88 @@ public class PanelRegistroPersona extends JPanel {
     }
 
     private void registrarPersona() {
-        if (!validarCampos()) return;
+    if (!validarCampos()) return;
 
-        try {
-            String nom = txtNombre.getText().trim();
-            String segNom = txtSegundoNombre.getText().trim();
-            String ape = txtApellido.getText().trim();
-            String segApe = txtSegundoApellido.getText().trim();
-            int edad = Integer.parseInt(txtEdad.getText().trim());
-            String tel = txtTelefono.getText().trim();
-            String mail = txtCorreo.getText().trim();
-            String dir = txtDireccion.getText().trim();
-            String ced = txtCedula.getText().trim();
-            String gen = (String) cmbGenero.getSelectedItem();
-            String cargo = ((String) cmbCargo.getSelectedItem()).toLowerCase();
-            String carrera = cmbCarrera.isVisible() ? (String) cmbCarrera.getSelectedItem() : null;
+    Connection conn = null;
+    CallableStatement cs = null;
+    
+    try {
+        String nom = txtNombre.getText().trim();
+        String segNom = txtSegundoNombre.getText().trim();
+        String ape = txtApellido.getText().trim();
+        String segApe = txtSegundoApellido.getText().trim();
+        int edad = Integer.parseInt(txtEdad.getText().trim());
+        String tel = txtTelefono.getText().trim();
+        String mail = txtCorreo.getText().trim();
+        String dir = txtDireccion.getText().trim();
+        String ced = txtCedula.getText().trim();
+        String gen = (String) cmbGenero.getSelectedItem();
+        String cargo = ((String) cmbCargo.getSelectedItem()).toLowerCase();
+        String carrera = cmbCarrera.isVisible() ? (String) cmbCarrera.getSelectedItem() : null;
 
-            if (nom.isEmpty() || ape.isEmpty() || ced.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Faltan campos obligatorios.");
-                return;
+        if (nom.isEmpty() || ape.isEmpty() || ced.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Faltan campos obligatorios.");
+            return;
+        }
+
+        conn = ConexionBD.getConnection();
+        conn.setAutoCommit(false); // Iniciar transacción
+
+        /* Registrar usuario */
+        String sqlUsuario = "{CALL registrar_personal(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        cs = conn.prepareCall(sqlUsuario);
+        
+        cs.setString(1, nom);
+        cs.setString(2, segNom.isEmpty() ? null : segNom);
+        cs.setString(3, ape);
+        cs.setString(4, segApe.isEmpty() ? null : segApe);
+        cs.setInt(5, edad);
+        cs.setString(6, tel.isEmpty() ? null : tel);
+        cs.setString(7, mail.isEmpty() ? null : mail);
+        cs.setString(8, dir.isEmpty() ? null : dir);
+        cs.setString(9, ced);
+        cs.setString(10, gen);
+        cs.setString(11, cargo);
+        cs.setString(12, carrera); // Puede ser null para no-alumnos
+        
+        cs.execute();
+
+        conn.commit(); // ✅ CONFIRMAR LA TRANSACCIÓN
+        
+        JOptionPane.showMessageDialog(this, "✅ Persona registrada exitosamente");
+        limpiarCampos();
+
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Edad inválida.");
+    } catch (SQLException ex) {
+        // Hacer rollback en caso de error
+        if (conn != null) {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-
-            try (Connection conn = ConexionBD.getConnection()) {
-                conn.setAutoCommit(false);
-
-                /* 1. Registrar usuario */
-                String sqlUsuario = "{CALL registrar_usuario(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-                try (CallableStatement cs = conn.prepareCall(sqlUsuario)) {
-                    cs.setString(1, nom);
-                    cs.setString(2, segNom);
-                    cs.setString(3, ape);
-                    cs.setString(4, segApe);
-                    cs.setInt(5, edad);
-                    cs.setString(6, tel);
-                    cs.setString(7, mail);
-                    cs.setString(8, dir);
-                    cs.setString(9, ced);
-                    cs.setString(10, gen);
-                    cs.setString(11, cargo);
-                    cs.execute();
-                }
-
+        }
+        JOptionPane.showMessageDialog(this, "❌ Error: " + ex.getMessage());
+        ex.printStackTrace();
+    } finally {
+        // Cerrar recursos
+        if (cs != null) {
+            try {
+                cs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Edad o cédula inválida.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "❌ Error: " + ex.getMessage());
-            ex.printStackTrace();
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+}
 
     private void limpiarCampos() {
         txtNombre.setText("");

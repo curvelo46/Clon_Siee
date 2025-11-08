@@ -83,8 +83,8 @@ public class PanelMatriculaAlumno extends JPanel {
 
     private void cargarMateriasPorCarrera() {
     panelMaterias.removeAll();
-
-    // ✅ Eliminar todos los botones del grupo manualmente
+    
+    // Limpiar grupo de botones
     Enumeration<AbstractButton> buttons = grupoMaterias.getElements();
     while (buttons.hasMoreElements()) {
         grupoMaterias.remove(buttons.nextElement());
@@ -93,121 +93,141 @@ public class PanelMatriculaAlumno extends JPanel {
     String carrera = (String) comboCarreras.getSelectedItem();
     if (carrera == null) return;
 
-    List<String> materias = new ArrayList<>();
-    String sql = "SELECT m.nombre FROM Materias m JOIN Carreras c ON m.carrera_id = c.id WHERE c.nombre = ? ORDER BY m.nombre";
+    // ✅ Nuevo query: incluye docente y docente_materia_id
+    String sql = "SELECT dm.id AS docente_materia_id, \n" +
+"               m.nombre AS materia_nombre,\n" +
+"               CONCAT(u.nombre, ' ', u.apellido) AS docente_nombre\n" +
+"        FROM Docente_Materias dm\n" +
+"        JOIN Materias m ON dm.materia_id = m.id\n" +
+"        JOIN Carreras c ON m.carrera_id = c.id\n" +
+"        JOIN Docentes d ON d.id = dm.docente_id\n" +
+"        JOIN Usuarios u ON u.id = d.id\n" +
+"        WHERE c.nombre = ?\n" +
+"        ORDER BY m.nombre, u.apellido, u.nombre";
 
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
+        
         ps.setString(1, carrera);
         try (ResultSet rs = ps.executeQuery()) {
+            
+            JRadioButton rbTodas = new JRadioButton("Todas las materias");
+            rbTodas.setActionCommand("TODAS"); // Especial command
+            grupoMaterias.add(rbTodas);
+            panelMaterias.add(rbTodas);
+
             while (rs.next()) {
-                materias.add(rs.getString("nombre"));
+                int dmId = rs.getInt("docente_materia_id");
+                String materia = rs.getString("materia_nombre");
+                String docente = rs.getString("docente_nombre");
+                
+                // ✅ Mostrar "Materia - Profesor"
+                String displayText = materia + " - Prof. " + docente;
+                JRadioButton rb = new JRadioButton(displayText);
+                rb.setActionCommand(String.valueOf(dmId)); // ✅ Guardar ID directo!
+                grupoMaterias.add(rb);
+                panelMaterias.add(rb);
             }
         }
+        
+        if (grupoMaterias.getButtonCount() > 0) {
+            ((JRadioButton)grupoMaterias.getElements().nextElement()).setSelected(true);
+        }
+
+        panelMaterias.revalidate();
+        panelMaterias.repaint();
+
     } catch (Exception ex) {
         JOptionPane.showMessageDialog(this, "Error al cargar materias: " + ex.getMessage());
-        return;
     }
-
-    JRadioButton rbTodas = new JRadioButton("Todas las materias");
-    rbTodas.setActionCommand("TODAS");
-    grupoMaterias.add(rbTodas);
-    panelMaterias.add(rbTodas);
-
-    for (String m : materias) {
-        JRadioButton rb = new JRadioButton(m);
-        rb.setActionCommand(m);
-        grupoMaterias.add(rb);
-        panelMaterias.add(rb);
-    }
-
-    if (grupoMaterias.getButtonCount() > 0) {
-        rbTodas.setSelected(true);
-    }
-
-    panelMaterias.revalidate();
-    panelMaterias.repaint();
 }
 
     private void matricularAlumno() {
-        String alumno = (String) comboAlumnos.getSelectedItem();
-        String carrera = (String) comboCarreras.getSelectedItem();
-        String seleccion = getSelectedMateria();
+    String alumno = (String) comboAlumnos.getSelectedItem();
+    String seleccion = getSelectedMateria(); // Ahora retorna un String que es el ID o "TODAS"
 
-        if (alumno == null || carrera == null || seleccion == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione alumno, carrera y materia.");
-            return;
-        }
-
-        try (Connection conn = ConexionBD.getConnection()) {
-            conn.setAutoCommit(false);
-
-            int idAlumno = getAlumnoId(conn, alumno);
-            int idCarrera = getCarreraId(conn, carrera);
-
-            if ("TODAS".equals(seleccion)) {
-                List<Integer> ids = getDocenteMateriaIds(conn, idCarrera);
-                for (int dmId : ids) {
-                    matricularEnMateria(conn, idAlumno, dmId);
-                }
-                lblInfo.setText("Matriculado en " + ids.size() + " materias.");
-            } else {
-                int dmId = getDocenteMateriaId(conn, idCarrera, seleccion);
-                if (dmId != -1) {
-                    matricularEnMateria(conn, idAlumno, dmId);
-                    lblInfo.setText("Matriculado en " + seleccion);
-                }
-            }
-
-            conn.commit();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al matricular: " + ex.getMessage());
-        }
+    if (alumno == null || seleccion == null) {
+        JOptionPane.showMessageDialog(this, "Seleccione alumno y materia.");
+        return;
     }
 
-    private void retirarAlumno() {
-        String alumno = (String) comboAlumnos.getSelectedItem();
-        String carrera = (String) comboCarreras.getSelectedItem();
-        String seleccion = getSelectedMateria();
+    try (Connection conn = ConexionBD.getConnection()) {
+        conn.setAutoCommit(false);
+        int idAlumno = getAlumnoId(conn, alumno);
 
-        if (alumno == null || carrera == null || seleccion == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione alumno, carrera y materia.");
-            return;
-        }
-
-        try (Connection conn = ConexionBD.getConnection()) {
-            conn.setAutoCommit(false);
-
-            int idAlumno = getAlumnoId(conn, alumno);
-            int idCarrera = getCarreraId(conn, carrera);
-
-            if ("TODAS".equals(seleccion)) {
-                String sql = "DELETE FROM Alumno_Materias WHERE alumno_id = ? AND docente_materia_id IN " +
-                             "(SELECT dm.id FROM Docente_Materias dm JOIN Materias m ON dm.materia_id = m.id WHERE m.carrera_id = ?)";
-                try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                    ps.setInt(1, idAlumno);
-                    ps.setInt(2, idCarrera);
-                    int rows = ps.executeUpdate();
-                    lblInfo.setText("Retirado de " + rows + " materias.");
-                }
-            } else {
-                int dmId = getDocenteMateriaId(conn, idCarrera, seleccion);
-                if (dmId != -1) {
-                    String sql = "DELETE FROM Alumno_Materias WHERE alumno_id = ? AND docente_materia_id = ?";
-                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                        ps.setInt(1, idAlumno);
-                        ps.setInt(2, dmId);
-                        ps.executeUpdate();
-                        lblInfo.setText("Retirado de " + seleccion);
+        if ("TODAS".equals(seleccion)) {
+            // Matricular en todas las materias visible en el panel
+            int count = 0;
+            for (Component c : panelMaterias.getComponents()) {
+                if (c instanceof JRadioButton) {
+                    JRadioButton rb = (JRadioButton) c;
+                    String cmd = rb.getActionCommand();
+                    if (!"TODAS".equals(cmd) && rb.isSelected()) { // Todas seleccionadas
+                        int dmId = Integer.parseInt(cmd);
+                        matricularEnMateria(conn, idAlumno, dmId);
+                        count++;
                     }
                 }
             }
+            lblInfo.setText("✅ Matriculado en " + count + " materias.");
+        } else {
+            // Matricular en una sola materia específica
+            int dmId = Integer.parseInt(seleccion);
+            matricularEnMateria(conn, idAlumno, dmId);
+            lblInfo.setText("✅ Matriculado en la materia seleccionada.");
+        }
 
-            conn.commit();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al retirar: " + ex.getMessage
-                    ());
+        conn.commit();
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "❌ Error al matricular: " + ex.getMessage());
+        ex.printStackTrace();
+    }
 }
+
+
+    private void retirarAlumno() {
+    String alumno = (String) comboAlumnos.getSelectedItem();
+    String seleccion = getSelectedMateria();
+
+    if (alumno == null || seleccion == null) {
+        JOptionPane.showMessageDialog(this, "Seleccione alumno y materia.");
+        return;
+    }
+
+    try (Connection conn = ConexionBD.getConnection()) {
+        conn.setAutoCommit(false);
+        int idAlumno = getAlumnoId(conn, alumno);
+
+        if ("TODAS".equals(seleccion)) {
+            // Retirar de todas
+            String sql = "DELETE FROM Alumno_Materias WHERE alumno_id = ? AND docente_materia_id IN " +
+                         "(SELECT dm.id FROM Docente_Materias dm " +
+                         " JOIN Materias m ON dm.materia_id = m.id " +
+                         " JOIN Carreras c ON m.carrera_id = c.id " +
+                         " WHERE c.nombre = ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, idAlumno);
+                ps.setString(2, (String) comboCarreras.getSelectedItem());
+                int rows = ps.executeUpdate();
+                lblInfo.setText("🗑️ Retirado de " + rows + " materias.");
+            }
+        } else {
+            // Retirar de una específica
+            int dmId = Integer.parseInt(seleccion);
+            String sql = "DELETE FROM Alumno_Materias WHERE alumno_id = ? AND docente_materia_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, idAlumno);
+                ps.setInt(2, dmId);
+                ps.executeUpdate();
+                lblInfo.setText("🗑️ Retirado de la materia.");
+            }
+        }
+
+        conn.commit();
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "❌ Error al retirar: " + ex.getMessage());
+        ex.printStackTrace();
+    }
 }
     
     private String getSelectedMateria() {
@@ -215,69 +235,35 @@ public class PanelMatriculaAlumno extends JPanel {
         if (c instanceof JRadioButton) {
             JRadioButton rb = (JRadioButton) c;
             if (rb.isSelected()) {
-                return rb.getActionCommand();
+                return rb.getActionCommand(); // Retorna "TODAS" o el ID como String
             }
         }
     }
     return null;
 }
 
-private int getAlumnoId(Connection conn, String nombreCompleto) throws SQLException {
-    String[] partes = nombreCompleto.split(" ", 2);
-    String sql = "CALL obtener_id_alumno_por_nombre_apellido(?, ?)";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, partes[0]);
-        ps.setString(2, partes[1]);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getInt("id");
+    private int getAlumnoId(Connection conn, String nombreCompleto) throws SQLException {
+        String[] partes = nombreCompleto.split(" ", 2);
+        String sql = "CALL obtener_id_alumno_por_nombre_apellido(?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, partes[0]);
+            ps.setString(2, partes[1]);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt("id");
+            }
+        }
+        throw new SQLException("Alumno no encontrado");
+    }
+
+
+    private void matricularEnMateria(Connection conn, int idAlumno, int idDocenteMateria) throws SQLException {
+        String sql = "INSERT IGNORE INTO Alumno_Materias (alumno_id, docente_materia_id, corte1, corte2, corte3) VALUES (?, ?, 0, 0, 0)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idAlumno);
+            ps.setInt(2, idDocenteMateria);
+            ps.executeUpdate();
         }
     }
-    throw new SQLException("Alumno no encontrado");
-}
-
-private int getCarreraId(Connection conn, String nombre) throws SQLException {
-    String sql = "CALL id_carrera_por_nombre(?)";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, nombre);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getInt("id");
-        }
-    }
-    throw new SQLException("Carrera no encontrada");
-}
-
-private int getDocenteMateriaId(Connection conn, int idCarrera, String materia) throws SQLException {
-    String sql = "SELECT dm.id FROM Docente_Materias dm JOIN Materias m ON dm.materia_id = m.id WHERE m.carrera_id = ? AND m.nombre = ? LIMIT 1";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, idCarrera);
-        ps.setString(2, materia);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getInt("id");
-        }
-    }
-    return -1;
-}
-
-private List<Integer> getDocenteMateriaIds(Connection conn, int idCarrera) throws SQLException {
-    List<Integer> ids = new ArrayList<>();
-    String sql = "SELECT dm.id FROM Docente_Materias dm JOIN Materias m ON dm.materia_id = m.id WHERE m.carrera_id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, idCarrera);
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) ids.add(rs.getInt("id"));
-        }
-    }
-    return ids;
-}
-
-private void matricularEnMateria(Connection conn, int idAlumno, int idDocenteMateria) throws SQLException {
-    String sql = "INSERT IGNORE INTO Alumno_Materias (alumno_id, docente_materia_id, corte1, corte2, corte3) VALUES (?, ?, 0, 0, 0)";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, idAlumno);
-        ps.setInt(2, idDocenteMateria);
-        ps.executeUpdate();
-    }
-}
     
     /**
      * This method is called from within the constructor to initialize the form.

@@ -8,20 +8,15 @@ import java.awt.Dimension;
 import Clases.Base_De_Datos;
 import Clases.ConexionBD;
 import static java.awt.Component.LEFT_ALIGNMENT;
-
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import Vista.frm.Panel.*;
-
 
 public class frmplataforma extends javax.swing.JFrame {
        
@@ -31,259 +26,258 @@ public class frmplataforma extends javax.swing.JFrame {
     private String usuarioActual; 
     
     public frmplataforma(Base_De_Datos basedato,String Cargo,String usuario) {
-
-    miinitComponents();
-         
-    this.usuarioActual = usuario;
-    btnSalir.setVisible(false);
-    this.baseDatos = basedato;
-    Cargos=Cargo;
-    setTitle("Siie administrativo");
-    setSize(1224, 717);
-    setResizable(false);
-    setLocationRelativeTo(null);
-    this.getContentPane().setBackground(new Color(240, 244, 248));
-
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DListadosAlumnos);
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DNotasAlumnos);
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DReportes);
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(Ddesempeño);
-    
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AQuitar);
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(ACrearCarrera);
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AMaterias);
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AReporteAcademico);
-    
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCListadoUsuarios);
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCRegistro);
-    new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCModificarDatos);
-    
-     // ---------- hover sobre LABELS de los paneles ----------
-    aplicarHoverLabel(lbANotas);
-    aplicarHoverLabel(lbListado);
-    aplicarHoverLabel(lbListado2);
-    aplicarHoverLabel(lbReporteAD);
-
-    aplicarHoverLabel(lbCrearMateria);
-    aplicarHoverLabel(lbCrearCarrera);
-    aplicarHoverLabel(lbQuitarMateria);
-    aplicarHoverLabel(lbReporteAA);
-
-    aplicarHoverLabel(lbListadoUsuarios);
-    aplicarHoverLabel(lbModificarDatos);
-    aplicarHoverLabel(lbListado2);   
-
-    AjustesObjetos.ajustarImagen(lbicono, "src\\imagenes\\foto.png");
-    AjustesObjetos.ajustarImagen(lbFOTO,"src\\imagenes\\Listados.png" );
-    AjustesObjetos.ajustarImagen(lbCbn, "src\\imagenes\\Corporacion-Bolivariana-del-Norte-CBN.png");
-    AjustesObjetos.ajustarImagen(lbNotas, "src\\imagenes\\Notas.png");
-    AjustesObjetos.ajustarImagen(lbReportes, "src\\imagenes\\Reportes.png");
-    AjustesObjetos.ajustarImagen(lbDesempeño, "src\\imagenes\\desempeño.png");
-    AjustesObjetos.ajustarImagen(lbCrearMateriaf, "src\\imagenes\\56640216-college-education-outlined-and-colored-icons.png");
-    AjustesObjetos.ajustarImagen(lbCrearcarreraF, "src\\imagenes\\carrera.png");
-    AjustesObjetos.ajustarImagen(lbQuitarMateriaf, "src\\imagenes\\remover.png");
-    AjustesObjetos.ajustarImagen(lbReportesA, "src\\imagenes\\Dc.png");
-    AjustesObjetos.ajustarImagen(lbModificarDatosf, "src\\imagenes\\system-user-administrator-icon-set-600nw-376451899.png");
-    AjustesObjetos.ajustarImagen(lbRegistros, "src\\imagenes\\funcion 2.png");
-    AjustesObjetos.ajustarImagen(lblistausuariosf, "src\\imagenes\\icono-funciones-utiles-conjunto-rueda-dentada-simbolo-logotipo-vector-investigacion-util-estilo-negro-lleno-delineado-signo-negocio-multiples-ruedas-dentadas_268104-6873.png");
-    
-  
-    // ===== Separadores para menuDocente =====
-    JPanel sepDoc1 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepDoc2 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepDoc3 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepDoc4 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepDoc5 = crearSeparador(new Color(192,4,29), 40);
-
-    // ===== Separadores para menuregistroControl =====
-    JPanel sepReg1 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepReg2 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepReg3 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepReg5 = crearSeparador(new Color(192,4,29), 40);
-    
-    // ===== Separadores para menuAdmin =====
-    JPanel sepAdm1 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepAdm2 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepAdm3 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepAdm4 = crearSeparador(new Color(192,4,29), 40);
-    JPanel sepAdm5 = crearSeparador(new Color(192,4,29), 40);
-
+        miinitComponents();
         
-    // Usar CardLayout
-    JpanelMenu.setLayout(new java.awt.CardLayout());
-    
-    DListadosAlumnos.setMaximumSize(new Dimension(379, 55));    
-    Ddesempeño.setMaximumSize(new Dimension(379, 55));
-    DNotasAlumnos.setMaximumSize(new Dimension(379, 55));
-    DReportes.setMaximumSize(new Dimension(379, 55));
-    
-    AQuitar.setMaximumSize(new Dimension(379, 55));
-    ACrearCarrera.setMaximumSize(new Dimension(379, 55));
-    AMaterias.setMaximumSize(new Dimension(379, 55));
-    AReporteAcademico.setMaximumSize(new Dimension(379, 55));
-    
-    RCListadoUsuarios.setMaximumSize(new Dimension(379, 55));
-    RCRegistro.setMaximumSize(new Dimension(379, 55));
-    RCModificarDatos.setMaximumSize(new Dimension(379, 55));
-    RCModificarDatos.addMouseListener(new java.awt.event.MouseAdapter() {
-    @Override
-    public void mouseClicked(java.awt.event.MouseEvent evt) {
-        RCModificarDatosMouseClicked(evt);
-    }
-});
-    
+        this.usuarioActual = usuario;
+        btnSalir.setVisible(false);
+        this.baseDatos = basedato;
+        Cargos=Cargo;
+        setTitle("Siie administrativo");
+        setSize(1224, 717);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        this.getContentPane().setBackground(new Color(240, 244, 248));
 
-    // Panel de menú ADMIN
-    JPanel menuAdmin = new JPanel();
-    
-    menuAdmin.setBackground(new Color	(192,4,29));
-    menuAdmin.setLayout(new BoxLayout(menuAdmin, BoxLayout.Y_AXIS));
-    
-    menuAdmin.add(sepAdm1); 
-    menuAdmin.add(AMaterias);
-    
-    menuAdmin.add(sepAdm2); 
-    menuAdmin.add(ACrearCarrera);
-    
-    menuAdmin.add(sepAdm3); 
-    menuAdmin.add(AReporteAcademico);
-    
-    menuAdmin.add(sepAdm4); 
-    menuAdmin.add(AQuitar);
-    menuAdmin.add(sepAdm5); 
-    
-    // Panel de menú Registro control
-    
-    JPanel menuRegistroC = new JPanel();
-    
-    menuRegistroC.setBackground(new Color	(192,4,29));
-    menuRegistroC.setLayout(new BoxLayout(menuRegistroC, BoxLayout.Y_AXIS));
-    
-    menuRegistroC.add(sepReg1); 
-    menuRegistroC.add(RCListadoUsuarios);
-    
-    menuRegistroC.add(sepReg2); 
-    menuRegistroC.add(RCRegistro);
-    
-    menuRegistroC.add(sepReg3); 
-    menuRegistroC.add(RCModificarDatos);
-    
-    menuRegistroC.add(sepReg5); 
-  
-    
-    // Panel de menú DOCENTE
-    JPanel menuDocente = new JPanel();
-    menuDocente.setLayout(new BoxLayout(menuDocente, BoxLayout.Y_AXIS));
+        // Aplicar efectos hover a paneles
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DListadosAlumnos);
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DNotasAlumnos);
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DReportes);
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(Ddesempeño);
+        
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AQuitar);
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(ACrearCarrera);
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AMaterias);
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(AReporteAcademico);
+        
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCListadoUsuarios);
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCRegistro);
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(RCModificarDatos);
+        
+        // Aplicar hover sobre LABELS de los paneles
+        aplicarHoverLabel(lbANotas);
+        aplicarHoverLabel(lbListado);
+        aplicarHoverLabel(lbListado2);
+        aplicarHoverLabel(lbReporteAD);
 
-    menuDocente.setBackground(new Color(192,4,29));
-    menuDocente.add(sepDoc1);
-    menuDocente.add(DListadosAlumnos);
+        aplicarHoverLabel(lbCrearMateria);
+        aplicarHoverLabel(lbCrearCarrera);
+        aplicarHoverLabel(lbQuitarMateria);
+        aplicarHoverLabel(lbReporteAA);
 
-    menuDocente.add(sepDoc2);
-    menuDocente.add(DNotasAlumnos);
-    
-    menuDocente.add(sepDoc4);
-    menuDocente.add(DReportes);
+        aplicarHoverLabel(lbListadoUsuarios);
+        aplicarHoverLabel(lbModificarDatos);
+        aplicarHoverLabel(lbListado2);   
 
-    menuDocente.add(sepDoc5);
-    menuDocente.add(Ddesempeño);
-    
-    
-    JPanel menuError = new JPanel();
-    menuError.setLayout(new BoxLayout(menuError, BoxLayout.Y_AXIS));
-    menuError.setBackground(new Color(192,4,29));
-    
-    JPanel menuAlumnos = new JPanel();
-    menuAlumnos.setLayout(new BoxLayout(menuAlumnos, BoxLayout.Y_AXIS));
-    menuAlumnos.setBackground(new Color(192,4,29));
-    
-    // Crear opciones para alumnos (EJEMPLO - personaliza según necesidad)
-    JPanel panelMisNotas = new JPanel();
-    panelMisNotas.setBackground(new Color(192,4,29));
-    panelMisNotas.setMaximumSize(new Dimension(379, 55));
-    panelMisNotas.addMouseListener(new java.awt.event.MouseAdapter() {
-        public void mouseClicked(java.awt.event.MouseEvent evt) {
-            PanelMisNotas panel = new PanelMisNotas(usuarioActual, baseDatos);
-            jtPestañas.addTab("Mis Notas", panel);
+        // ====== NUEVO: Actualizar foto de perfil según género ======
+        actualizarFotoPerfilPorGenero();
+
+        // ====== NUEVO: Aplicar hover a labels de estudiante ======
+        // (Se aplicará después de crear los paneles de estudiante)
+
+        AjustesObjetos.ajustarImagen(lbFOTO,"src\\imagenes\\Listados.png" );
+        AjustesObjetos.ajustarImagen(lbCbn, "src\\imagenes\\Corporacion-Bolivariana-del-Norte-CBN.png");
+        AjustesObjetos.ajustarImagen(lbNotas, "src\\imagenes\\Notas.png");
+        AjustesObjetos.ajustarImagen(lbReportes, "src\\imagenes\\Reportes.png");
+        AjustesObjetos.ajustarImagen(lbDesempeño, "src\\imagenes\\desempeño.png");
+        AjustesObjetos.ajustarImagen(lbCrearMateriaf, "src\\imagenes\\56640216-college-education-outlined-and-colored-icons.png");
+        AjustesObjetos.ajustarImagen(lbCrearcarreraF, "src\\imagenes\\carrera.png");
+        AjustesObjetos.ajustarImagen(lbQuitarMateriaf, "src\\imagenes\\remover.png");
+        AjustesObjetos.ajustarImagen(lbReportesA, "src\\imagenes\\Dc.png");
+        AjustesObjetos.ajustarImagen(lbModificarDatosf, "src\\imagenes\\system-user-administrator-icon-set-600nw-376451899.png");
+        AjustesObjetos.ajustarImagen(lbRegistros, "src\\imagenes\\funcion 2.png");
+        AjustesObjetos.ajustarImagen(lblistausuariosf, "src\\imagenes\\icono-funciones-utiles-conjunto-rueda-dentada-simbolo-logotipo-vector-investigacion-util-estilo-negro-lleno-delineado-signo-negocio-multiples-ruedas-dentadas_268104-6873.png");
+                
+        // Separadores...
+        JPanel sepDoc1 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepDoc2 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepDoc3 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepDoc4 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepDoc5 = crearSeparador(new Color(192,4,29), 40);
+
+        JPanel sepReg1 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepReg2 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepReg3 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepReg5 = crearSeparador(new Color(192,4,29), 40);
+        
+        JPanel sepAdm1 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepAdm2 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepAdm3 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepAdm4 = crearSeparador(new Color(192,4,29), 40);
+        JPanel sepAdm5 = crearSeparador(new Color(192,4,29), 40);
+
+        // Panel de menú ADMIN
+        JPanel menuAdmin = new JPanel();
+        menuAdmin.setBackground(new Color(192,4,29));
+        menuAdmin.setLayout(new BoxLayout(menuAdmin, BoxLayout.Y_AXIS));
+        
+        menuAdmin.add(sepAdm1); 
+        menuAdmin.add(AMaterias);
+        menuAdmin.add(sepAdm2); 
+        menuAdmin.add(ACrearCarrera);
+        menuAdmin.add(sepAdm3); 
+        menuAdmin.add(AReporteAcademico);
+        menuAdmin.add(sepAdm4); 
+        menuAdmin.add(AQuitar);
+        menuAdmin.add(sepAdm5); 
+
+        // Panel de menú Registro control
+        JPanel menuRegistroC = new JPanel();
+        menuRegistroC.setBackground(new Color(192,4,29));
+        menuRegistroC.setLayout(new BoxLayout(menuRegistroC, BoxLayout.Y_AXIS));
+        
+        menuRegistroC.add(sepReg1); 
+        menuRegistroC.add(RCListadoUsuarios);
+        menuRegistroC.add(sepReg2); 
+        menuRegistroC.add(RCRegistro);
+        menuRegistroC.add(sepReg3); 
+        menuRegistroC.add(RCModificarDatos);
+        menuRegistroC.add(sepReg5); 
+
+        // Panel de menú DOCENTE
+        JPanel menuDocente = new JPanel();
+        menuDocente.setLayout(new BoxLayout(menuDocente, BoxLayout.Y_AXIS));
+        menuDocente.setBackground(new Color(192,4,29));
+        menuDocente.add(sepDoc1);
+        menuDocente.add(DListadosAlumnos);
+        menuDocente.add(sepDoc2);
+        menuDocente.add(DNotasAlumnos);
+        menuDocente.add(sepDoc4);
+        menuDocente.add(DReportes);
+        menuDocente.add(sepDoc5);
+        menuDocente.add(Ddesempeño);
+
+        // Panel de menú ALUMNOS
+        JPanel menuAlumnos = new JPanel();
+        menuAlumnos.setLayout(new BoxLayout(menuAlumnos, BoxLayout.Y_AXIS));
+        menuAlumnos.setBackground(new Color(192,4,29));
+        
+        // Crear opciones para alumnos
+        JPanel panelMisNotas = new JPanel();
+        panelMisNotas.setBackground(new Color(192,4,29));
+        panelMisNotas.setMaximumSize(new Dimension(379, 55));
+        panelMisNotas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PanelMisNotas panel = new PanelMisNotas(usuarioActual, baseDatos);
+                jtPestañas.addTab("Mis Notas", panel);
+            }
+        });
+        
+        JLabel lbMisNotas = new JLabel("Notas");
+        lbMisNotas.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        lbMisNotas.setForeground(Color.WHITE);
+        panelMisNotas.add(lbMisNotas);
+        
+        JPanel panelMiDesempeno = new JPanel();
+        panelMiDesempeno.setBackground(new Color(192,4,29));
+        panelMiDesempeno.setMaximumSize(new Dimension(379, 55));
+        panelMiDesempeno.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PanelReportesAlumno panel = new PanelReportesAlumno(usuarioActual);
+                jtPestañas.addTab("reportes", panel);
+            }
+        });
+        
+        JLabel lbMiDesempeno = new JLabel("Reportes Academicos");
+        lbMiDesempeno.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        lbMiDesempeno.setForeground(Color.WHITE);
+        panelMiDesempeno.add(lbMiDesempeno);
+        
+        // Aplicar hover a los nuevos labels de estudiante
+        aplicarHoverLabelEstudiante(lbMisNotas);
+        aplicarHoverLabelEstudiante(lbMiDesempeno);
+        
+        // Agregar separadores y paneles al menú de alumnos
+        menuAlumnos.add(crearSeparador(new Color(192,4,29), 40));
+        menuAlumnos.add(panelMisNotas);
+        menuAlumnos.add(crearSeparador(new Color(192,4,29), 40));
+        menuAlumnos.add(panelMiDesempeno);
+        
+        JPanel menuError = new JPanel();
+        menuError.setLayout(new BoxLayout(menuError, BoxLayout.Y_AXIS));
+        menuError.setBackground(new Color(192,4,29));
+        
+        // Agregar al CardLayout
+        JpanelMenu.setLayout(new CardLayout());
+        JpanelMenu.add(menuAdmin, "ADMIN");
+        JpanelMenu.add(menuDocente, "DOCENTE");
+        JpanelMenu.add(menuRegistroC, "registroc");
+        JpanelMenu.add(menuAlumnos, "ALUMNOS");
+        JpanelMenu.add(menuError, "Sin_cargo");
+        
+        // Mostrar el menú según el rol
+        CardLayout cl = (CardLayout) JpanelMenu.getLayout();
+
+        if (Cargos.equals("administrador")) {
+            cl.show(JpanelMenu, "ADMIN");
+        } else if(Cargos.equals("docente")){
+            cl.show(JpanelMenu, "DOCENTE");
+        }else if(Cargos.equals("registro y control")){
+            cl.show(JpanelMenu, "registroc");
+        }else if (Cargos.equals("alumno")){
+            cl.show(JpanelMenu, "ALUMNOS");
+        }else{        
+            cl.show(JpanelMenu, "Sin_cargo");
         }
-    });
-    
-    JLabel lbMisNotas = new JLabel("Notas");
-    lbMisNotas.setFont(new java.awt.Font("Segoe UI", 1, 14));
-    lbMisNotas.setForeground(Color.WHITE);
-    panelMisNotas.add(lbMisNotas);
-    
-    JPanel panelMiDesempeno = new JPanel();
-    panelMiDesempeno.setBackground(new Color(192,4,29));
-    panelMiDesempeno.setMaximumSize(new Dimension(379, 55));
-    panelMiDesempeno.addMouseListener(new java.awt.event.MouseAdapter() {
-        public void mouseClicked(java.awt.event.MouseEvent evt) {
-            // Lógica para ver desempeño
-            PanelReportesAlumno panel = new PanelReportesAlumno(usuarioActual);
-            jtPestañas.addTab("reportes", panel);
-        }
-    });
-    
-    JLabel lbMiDesempeno = new JLabel("Reportes Academicos");
-    lbMiDesempeno.setFont(new java.awt.Font("Segoe UI", 1, 14));
-    lbMiDesempeno.setForeground(Color.WHITE);
-    panelMiDesempeno.add(lbMiDesempeno);
-    
-    // Agregar separadores y paneles al menú de alumnos
-    menuAlumnos.add(crearSeparador(new Color(192,4,29), 40));
-    menuAlumnos.add(panelMisNotas);
-    menuAlumnos.add(crearSeparador(new Color(192,4,29), 40));
-    menuAlumnos.add(panelMiDesempeno);
-    
-    menuDocente.add(sepDoc5);
-    menuDocente.add(Ddesempeño);
-    
-    // Agregar ambos al CardLayout
-    JpanelMenu.setLayout(new CardLayout());
-    JpanelMenu.add(menuAdmin, "ADMIN");
-    JpanelMenu.add(menuDocente, "DOCENTE");
-    JpanelMenu.add(menuRegistroC, "registroc");
-    JpanelMenu.add(menuAlumnos, "ALUMNOS");
-    JpanelMenu.add(menuError, "Sin_cargo");
-
-    
-    // Mostrar el menú según el rol
-    CardLayout cl = (CardLayout) JpanelMenu.getLayout();
-
-    if (Cargos.equals("administrador")) {
-        cl.show(JpanelMenu, "ADMIN");
-    } else if(Cargos.equals("docente")){
-        cl.show(JpanelMenu, "DOCENTE");
-    }else if(Cargos.equals("registro y control")){
-        cl.show(JpanelMenu, "registroc");
-    }else if (Cargos.equals("alumno")){
-        cl.show(JpanelMenu, "ALUMNOS");
-    }else{        
-        cl.show(JpanelMenu, "Sin_cargo");
     }
-  }
     
+    // ====== MÉTODO NUEVO: Actualizar foto según género ======
+    private void actualizarFotoPerfilPorGenero() {
+        String genero = baseDatos.obtenerSexoAlumno(usuarioActual);
+        String rutaImagen;
+        
+        if ("masculino".equalsIgnoreCase(genero)) {
+            rutaImagen = "src\\imagenes\\Imagen3.png";
+        } else if ("femenino".equalsIgnoreCase(genero)) {
+            rutaImagen = "src\\imagenes\\foto.png";
+        } else {
+            rutaImagen = "src\\imagenes\\OIP.PNG";
+        }
+        
+        AjustesObjetos.ajustarImagen(lbicono, rutaImagen);
+    }
+
+    // ====== MÉTODO NUEVO: Hover específico para labels de estudiante ======
+    private void aplicarHoverLabelEstudiante(JLabel label) {
+        label.addMouseListener(new java.awt.event.MouseAdapter() {
+            private final Color originalFg = label.getForeground();
+            private final Color originalBg = label.getParent().getBackground();
+            private final Color hoverFg = Color.BLACK;
+            private final Color hoverBg = new Color(250, 217, 124);
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                label.setForeground(hoverFg);
+                label.getParent().setBackground(hoverBg);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                label.setForeground(originalFg);
+                label.getParent().setBackground(originalBg);
+            }
+        });
+    }
+
     private void aplicarHoverLabel(JLabel label) {
         label.addMouseListener(new java.awt.event.MouseAdapter() {
             private final Color originalFg = label.getForeground();
             private final Color originalBg = label.getParent().getBackground();
-            private final Color hoverFg = Color.BLACK; // color del texto en hover
-            private final Color hoverBg = new Color(250,217,124); // color del panel en hover
+            private final Color hoverFg = Color.BLACK;
+            private final Color hoverBg = new Color(250,217,124);
 
-        @Override
-        public void mouseEntered(java.awt.event.MouseEvent evt) {
-            label.setForeground(hoverFg);
-            label.getParent().setBackground(hoverBg);
-        }
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                label.setForeground(hoverFg);
+                label.getParent().setBackground(hoverBg);
+            }
 
-        @Override
-        public void mouseExited(java.awt.event.MouseEvent evt) {
-            label.setForeground(originalFg);
-            label.getParent().setBackground(originalBg);
-        }
-    });
-}
-    
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                label.setForeground(originalFg);
+                label.getParent().setBackground(originalBg);
+            }
+        });
+    }
 
     private JPanel crearSeparador(Color color, int alto) {
         JPanel sep = new JPanel();
@@ -292,7 +286,7 @@ public class frmplataforma extends javax.swing.JFrame {
         sep.setMaximumSize(new Dimension(150, alto));
         sep.setAlignmentX(LEFT_ALIGNMENT);
         return sep;
-}
+    }
 
         
     /**

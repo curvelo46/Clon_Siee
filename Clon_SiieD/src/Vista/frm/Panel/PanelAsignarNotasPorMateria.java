@@ -9,6 +9,11 @@ import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.event.TableModelEvent;
+import javax.swing.table.TableCellEditor;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.BadLocationException;
 
 public class PanelAsignarNotasPorMateria extends JPanel {
 
@@ -50,6 +55,7 @@ public class PanelAsignarNotasPorMateria extends JPanel {
         cargarMateriasEnCombo();
         configurarCombo();
         configurarBotonGuardar();
+        configurarEditorDeNotas(); // ✅ NUEVO: Configura validación de entrada
         ocultarColumnasDesdeInicio();
         modelo.addTableModelListener(e -> {
             if (e.getType() == TableModelEvent.UPDATE) {
@@ -212,13 +218,40 @@ public class PanelAsignarNotasPorMateria extends JPanel {
         int dmId = obtenerDocenteMateriaId();
         if (dmId == -1) return;
 
+        // ✅ VALIDACIÓN ANTES DE GUARDAR
+        for (Integer row : filasEditadas) {
+            try {
+                String valor = modelo.getValueAt(row, corteSeleccionado + 1).toString();
+                if (!valor.isEmpty()) {
+                    double nota = Double.parseDouble(valor);
+                    if (nota < 0.0 || nota > 5.0) {
+                        JOptionPane.showMessageDialog(this, 
+                            "❌ La nota debe estar entre 0.0 y 5.0\n\n" +
+                            "Alumno: " + modelo.getValueAt(row, 1) + "\n" +
+                            "Corte: " + corteSeleccionado + "\n" +
+                            "Nota ingresada: " + nota, 
+                            "Error de validación", JOptionPane.ERROR_MESSAGE);
+                        return; // No guardar si hay nota inválida
+                    }
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, 
+                    "❌ Valor numérico inválido en la fila " + (row + 1), 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
         String sql = "CALL actualizar_nota(?, ?, ?, ?)";
         try (Connection conn = ConexionBD.getConnection();
              CallableStatement cs = conn.prepareCall(sql)) {
 
             for (Integer row : filasEditadas) {
                 int alumnoId = (int) modelo.getValueAt(row, 0);
-                double nota = Double.parseDouble(modelo.getValueAt(row, corteSeleccionado + 1).toString());
+                String valor = modelo.getValueAt(row, corteSeleccionado + 1).toString();
+                if (valor.isEmpty()) continue; // Ignorar vacío
+                
+                double nota = Double.parseDouble(valor);
                 int editCol = corteSeleccionado + 5;
                 if (!"0".equals(modelo.getValueAt(row, editCol).toString())) continue;
 
@@ -242,6 +275,75 @@ public class PanelAsignarNotasPorMateria extends JPanel {
         }
     }
 
+    // ✅ NUEVO: Configura validación en tiempo real para las celdas de notas
+    private void configurarEditorDeNotas() {
+        TableCellEditor notaEditor = new DefaultCellEditor(createNotaTextField()) {
+            @Override
+            public boolean stopCellEditing() {
+                String valor = (String) getCellEditorValue();
+                if (valor != null && !valor.isEmpty()) {
+                    try {
+                        double nota = Double.parseDouble(valor);
+                        if (nota < 0.0 || nota > 5.0) {
+                            JOptionPane.showMessageDialog(PanelAsignarNotasPorMateria.this,
+                                "La nota debe estar entre 0.0 y 5.0", "Error", JOptionPane.ERROR_MESSAGE);
+                            return false; // No permitir terminar edición
+                        }
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(PanelAsignarNotasPorMateria.this,
+                            "Ingrese un valor numérico válido", "Error", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                }
+                return super.stopCellEditing();
+            }
+        };
+        
+        // Asignar a las columnas de notas (2, 3, 4)
+        tabla.getColumnModel().getColumn(2).setCellEditor(notaEditor);
+        tabla.getColumnModel().getColumn(3).setCellEditor(notaEditor);
+        tabla.getColumnModel().getColumn(4).setCellEditor(notaEditor);
+    }
+
+    // ✅ NUEVO: Crea JTextField con filtro para solo permitir 0.0-5.0
+    private JTextField createNotaTextField() {
+        JTextField textField = new JTextField();
+        ((AbstractDocument) textField.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string == null) return;
+                String nuevoTexto = fb.getDocument().getText(0, fb.getDocument().getLength()) + string;
+                if (esInputValido(nuevoTexto)) {
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text == null) return;
+                String nuevoTexto = fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
+                if (esInputValido(nuevoTexto)) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+
+            private boolean esInputValido(String input) {
+                if (input.isEmpty()) return true;
+                // Permite: vacío, dígitos, punto decimal, máximo "5" o "4.9", "4.99"
+                if (input.matches("\\d{1}(\\.\\d{0,2})?")) {
+                    try {
+                        double val = Double.parseDouble(input);
+                        return val >= 0.0 && val <= 5.0;
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                }
+                return false;
+            }
+        });
+        return textField;
+    }
+
     private void ocultarColumnasDesdeInicio() {
         ocultarColumnas(0, 6, 7, 8);
     }
@@ -255,7 +357,6 @@ public class PanelAsignarNotasPorMateria extends JPanel {
     }
 
     
-
     // <editor-fold defaultstate="collapsed" desc="Generated*/
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

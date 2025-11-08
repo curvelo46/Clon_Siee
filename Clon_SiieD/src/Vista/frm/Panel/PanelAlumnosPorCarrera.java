@@ -1,11 +1,13 @@
 package Vista.frm.Panel;
 
+import Clases.Base_De_Datos;
 import Clases.ConexionBD;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
 import java.util.Enumeration;
+import java.util.List;
 
 public class PanelAlumnosPorCarrera extends JPanel {
 
@@ -14,26 +16,28 @@ public class PanelAlumnosPorCarrera extends JPanel {
     private final JComboBox<String> comboAlumnos = new JComboBox<>();
     private final JTextField txtBuscar = new JTextField(15);
     private final JButton btnBuscar = new JButton("Buscar");
+    
+    /* ---------- Repositorio de datos ---------- */
+    private final Base_De_Datos  repo = new Base_De_Datos();
 
     /* ---------- Tablas y modelos ---------- */
     private final JTable tablaNotas = new JTable();
-   private final DefaultTableModel modeloNotas = new DefaultTableModel(
+    private final DefaultTableModel modeloNotas = new DefaultTableModel(
         new Object[]{"Materia", "Corte 1", "Corte 2", "Corte 3", "Promedio"}, 0) {
-    @Override
-    public boolean isCellEditable(int row, int column) {
-        return false; // 🔒 No editable
-    }
-};
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // 🔒 No editable
+        }
+    };
 
     private final JTable tablaReportes = new JTable();
-    
     private final DefaultTableModel modeloReportes = new DefaultTableModel(
         new Object[]{"Reporte", "Docente", "Fecha"}, 0) {
-    @Override
-    public boolean isCellEditable(int row, int column) {
-        return false;
-    }
-};
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
 
     private final JLabel lblPromedioGeneral = new JLabel("Promedio general: --");
 
@@ -65,30 +69,26 @@ public class PanelAlumnosPorCarrera extends JPanel {
         norte.add(panelCombo);
         panelAlumnos.add(norte, BorderLayout.NORTH);
 
-       /* ---------- Centro: notas + reportes ---------- */
+        /* ---------- Centro: notas + reportes ---------- */
         tablaNotas.setModel(modeloNotas);
         JScrollPane scrollNotas = new JScrollPane(tablaNotas);
         scrollNotas.setBorder(BorderFactory.createTitledBorder("Notas por materia"));
 
         /* --- nuevo contenedor para la tabla y su etiqueta --- */
         JPanel panelNotasConPromedio = new JPanel(new BorderLayout());
-         panelNotasConPromedio.add(scrollNotas, BorderLayout.CENTER);
-         panelNotasConPromedio.add(lblPromedioGeneral, BorderLayout.SOUTH);
+        panelNotasConPromedio.add(scrollNotas, BorderLayout.CENTER);
+        panelNotasConPromedio.add(lblPromedioGeneral, BorderLayout.SOUTH);
         
         tablaReportes.setModel(modeloReportes);
         JScrollPane scrollReportes = new JScrollPane(tablaReportes);
         scrollReportes.setBorder(BorderFactory.createTitledBorder("Reportes del alumno"));
 
-        JSplitPane splitCentral = new JSplitPane(JSplitPane.VERTICAL_SPLIT,panelNotasConPromedio,scrollReportes);
-        
+        JSplitPane splitCentral = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panelNotasConPromedio, scrollReportes);
         splitCentral.setDividerLocation(250);
         splitCentral.setResizeWeight(0.5);
-        
-        add(splitCentral, BorderLayout.CENTER);
 
         JPanel panelCentral = new JPanel(new BorderLayout());
         panelCentral.add(splitCentral, BorderLayout.CENTER);
-
 
         /* ---------- ensamblado ---------- */
         add(scrollRadios, BorderLayout.WEST);
@@ -109,68 +109,49 @@ public class PanelAlumnosPorCarrera extends JPanel {
         panelRadios.removeAll();
         grupoCarreras.clearSelection();
 
-        String sql = "CALL listar_carreras()";
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                JRadioButton rb = new JRadioButton(rs.getString("nombre"));
-                rb.setAlignmentX(Component.LEFT_ALIGNMENT);
-                rb.setOpaque(false);
-                grupoCarreras.add(rb);
-                panelRadios.add(rb);
-
-                rb.addActionListener(e -> {
-                    String carrera = rb.getText();
-                    cargarAlumnosPorCarrera(carrera, null);
-                });
-            }
-
-            if (grupoCarreras.getButtonCount() > 0) {
-                JRadioButton primero = (JRadioButton) grupoCarreras.getElements().nextElement();
-                primero.setSelected(true);
-                cargarAlumnosPorCarrera(primero.getText(), null);
-            }
-
+        List<String> carreras = repo.listarCarreras();
+        
+        if (carreras.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No se encontraron carreras registradas.");
             panelRadios.revalidate();
             panelRadios.repaint();
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar carreras: " + ex.getMessage());
+            return;
         }
+
+        for (String carrera : carreras) {
+            JRadioButton rb = new JRadioButton(carrera);
+            rb.setAlignmentX(Component.LEFT_ALIGNMENT);
+            rb.setOpaque(false);
+            grupoCarreras.add(rb);
+            panelRadios.add(rb);
+
+            rb.addActionListener(e -> {
+                cargarAlumnosPorCarrera(rb.getText(), null);
+            });
+        }
+
+        if (grupoCarreras.getButtonCount() > 0) {
+            JRadioButton primero = (JRadioButton) grupoCarreras.getElements().nextElement();
+            primero.setSelected(true);
+            cargarAlumnosPorCarrera(primero.getText(), null);
+        }
+
+        panelRadios.revalidate();
+        panelRadios.repaint();
     }
 
     /* -------------------- ALUMNOS -------------------- */
     private void cargarAlumnosPorCarrera(String carrera, String filtro) {
         comboAlumnos.removeAllItems();
 
-        String sql = (filtro == null || filtro.trim().isEmpty())
-                ? "CALL listar_alumnos_por_carrera(?)"
-                : "CALL buscar_alumnos_por_nombre_carrera(?, ?)";
-
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, carrera);
-            if (filtro != null && !filtro.trim().isEmpty()) {
-                ps.setString(2, filtro);
+        List<String> alumnos = repo.listarAlumnosPorCarrera(carrera, filtro);
+        
+        if (alumnos.isEmpty()) {
+            comboAlumnos.addItem("Sin coincidencias");
+        } else {
+            for (String alumno : alumnos) {
+                comboAlumnos.addItem(alumno);
             }
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    String nombre = rs.getString("nombre");
-                    String apellido = rs.getString("apellido");
-                    comboAlumnos.addItem(nombre + " " + apellido);
-                }
-            }
-
-            if (comboAlumnos.getItemCount() == 0) {
-                comboAlumnos.addItem("Sin coincidencias");
-            }
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar alumnos: " + ex.getMessage());
         }
     }
 
@@ -197,120 +178,46 @@ public class PanelAlumnosPorCarrera extends JPanel {
         String nombre = alumno.split(" ")[0];
         String apellido = alumno.split(" ")[1];
 
-        int idAlumno = 0;
-        int idCarrera = 0;
+        int idAlumno = repo.obtenerIdAlumnoPorNombre(nombre, apellido);
+        int idCarrera = repo.obtenerIdCarreraPorNombre(carreraNombre);
+        
+        if (idAlumno == 0 || idCarrera == 0) return;
 
-        try (Connection conn = ConexionBD.getConnection()) {
+        List<Object[]> notas = repo.listarNotasPorAlumnoCarrera(idAlumno, idCarrera);
+        
+        double sumaTotal = 0;
+        int materias = 0;
 
-            // 1. ID alumno
-            String sqlAlumno = "CALL obtener_id_alumno_por_nombre_apellido(?, ?)";
-            try (PreparedStatement ps = conn.prepareStatement(sqlAlumno)) {
-                ps.setString(1, nombre);
-                ps.setString(2, apellido);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) idAlumno = rs.getInt("id");
-                }
-            }
-            if (idAlumno == 0) return;
+        for (Object[] nota : notas) {
+            modeloNotas.addRow(nota);
+            sumaTotal += Double.parseDouble((String) nota[4]); // Índice del promedio
+            materias++;
+        }
 
-            // 2. ID carrera
-            String sqlCarrera = "CALL id_carrera_por_nombre(?)";
-            try (PreparedStatement ps = conn.prepareStatement(sqlCarrera)) {
-                ps.setString(1, carreraNombre);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) idCarrera = rs.getInt("id");
-                }
-            }
-            if (idCarrera == 0) return;
-
-            // 3. Notas
-            String sqlNotas = "CALL listar_notas_por_alumno_carrera(?, ?)";
-            try (PreparedStatement ps = conn.prepareStatement(sqlNotas)) {
-                ps.setInt(1, idAlumno);
-                ps.setInt(2, idCarrera);
-                try (ResultSet rs = ps.executeQuery()) {
-                    double sumaTotal = 0;
-                    int materias = 0;
-
-                    while (rs.next()) {
-                        String materia = rs.getString("nombre_materia");
-                        double c1 = rs.getDouble("corte1");
-                        double c2 = rs.getDouble("corte2");
-                        double c3 = rs.getDouble("corte3");
-                        double prom = (c1 + c2 + c3) / 3.0;
-
-                        modeloNotas.addRow(new Object[]{
-                                materia,
-                                String.format("%.1f", c1),
-                                String.format("%.1f", c2),
-                                String.format("%.1f", c3),
-                                String.format("%.1f", prom)
-                        });
-
-                        sumaTotal += prom;
-                        materias++;
-                    }
-
-                    if (materias > 0) {
-                        double promedioGeneral = sumaTotal / materias;
-                        lblPromedioGeneral.setText("Promedio general: " + String.format("%.1f", promedioGeneral));
-                    }
-                }
-            }
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar notas: " + ex.getMessage());
+        if (materias > 0) {
+            double promedioGeneral = sumaTotal / materias;
+            lblPromedioGeneral.setText("Promedio general: " + String.format("%.1f", promedioGeneral));
         }
     }
 
     /* -------------------- REPORTES -------------------- */
     private void cargarReportesDelAlumno() {
-    modeloReportes.setRowCount(0);
+        modeloReportes.setRowCount(0);
 
-    String alumno = (String) comboAlumnos.getSelectedItem();
-    if (alumno == null || !alumno.contains(" ")) return;
+        String alumno = (String) comboAlumnos.getSelectedItem();
+        if (alumno == null || !alumno.contains(" ")) return;
 
-    String nombre = alumno.split(" ")[0];
-    String apellido = alumno.split(" ")[1];
+        String nombre = alumno.split(" ")[0];
+        String apellido = alumno.split(" ")[1];
 
-    int idAlumno = 0;
-
-    try (Connection conn = ConexionBD.getConnection()) {
-
-        // 1. Obtener ID del alumno
-        String sqlAlumno = "CALL obtener_id_alumno_por_nombre_apellido(?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sqlAlumno)) {
-            ps.setString(1, nombre);
-            ps.setString(2, apellido);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) idAlumno = rs.getInt("id");
-            }
-        }
+        int idAlumno = repo.obtenerIdAlumnoPorNombre(nombre, apellido);
         if (idAlumno == 0) return;
 
-        // 2. Cargar reportes con docente y fecha
-        String sqlReportes = "CALL obtener_reportes_con_docente(?)";
-        try (PreparedStatement ps = conn.prepareStatement(sqlReportes)) {
-            ps.setInt(1, idAlumno);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    String reporte = rs.getString("reporte");
-                    String docente = rs.getString("docente");
-                    Timestamp fecha = rs.getTimestamp("fecha");
-
-                    modeloReportes.addRow(new Object[]{
-                            reporte,
-                            docente,
-                            fecha.toString()
-                    });
-                }
-            }
+        List<Object[]> reportes = repo.obtenerReportesConDocente(idAlumno);
+        for (Object[] reporte : reportes) {
+            modeloReportes.addRow(reporte);
         }
-
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error al cargar reportes: " + ex.getMessage());
     }
-}
 
     /* -------------------- UTILS -------------------- */
     public String getAlumnoSeleccionado() {
@@ -325,6 +232,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
         }
         return null;
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.

@@ -1,16 +1,14 @@
 package Vista.frm.Panel;
 
-import Clases.ConexionBD;
-
+import Clases.Base_De_Datos;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.*;
-import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
-public class PanelPromediosD extends javax.swing.JPanel {
-
+public class PanelPromediosD extends JPanel {
+    private final Base_De_Datos baseDatos = new Base_De_Datos();
     private final String docente;
     private String materiaSeleccionada = null;
 
@@ -19,6 +17,7 @@ public class PanelPromediosD extends javax.swing.JPanel {
     private JTable tablaNotas;
     private JLabel lbPromedio;
     private JPanel jpanelGrupos;
+    private ButtonGroup grupoMaterias;
 
     public PanelPromediosD(String docente) {
         this.docente = docente;
@@ -29,9 +28,7 @@ public class PanelPromediosD extends javax.swing.JPanel {
         agregarFiltrosDesempeno();
     }
 
-    /* -------------------- INICIALIZAR COMPONENTES -------------------- */
     private void initComponentes() {
-        // NORTE
         JPanel norte = new JPanel(new FlowLayout(FlowLayout.LEFT));
         norte.setBackground(new Color(214, 245, 255));
         norte.add(new JLabel("Promedio del grupo:", SwingConstants.LEFT));
@@ -40,13 +37,11 @@ public class PanelPromediosD extends javax.swing.JPanel {
         norte.add(lbPromedio);
         add(norte, BorderLayout.NORTH);
 
-        // CENTRO – tabla
         tablaNotas = new JTable();
         tablaNotas.setModel(new DefaultTableModel(
                 new Object[]{"Estudiante", "Corte 1", "Corte 2", "Corte 3", "Promedio"}, 0));
         add(new JScrollPane(tablaNotas), BorderLayout.CENTER);
 
-        // ESTE – filtros
         jpanelGrupos = new JPanel();
         jpanelGrupos.setLayout(new BoxLayout(jpanelGrupos, BoxLayout.Y_AXIS));
         jpanelGrupos.setBackground(new Color(240, 244, 248));
@@ -58,32 +53,30 @@ public class PanelPromediosD extends javax.swing.JPanel {
         add(panelEste, BorderLayout.EAST);
     }
 
-    /* -------------------- CARGAR MATERIAS -------------------- */
     private void cargarMateriasDelDocente() {
         jpanelGrupos.removeAll();
-        String sql = "CALL obtener_materias_docente(?)";
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, docente);
-            ResultSet rs = ps.executeQuery();
-            ButtonGroup grupo = new ButtonGroup();
-            while (rs.next()) {
-                final String materiaNombre = rs.getString("nombre");
+        
+        try {
+            List<String> materias = baseDatos.obtenerMateriasDocente(docente);
+            
+            grupoMaterias = new ButtonGroup();
+            for (String materiaNombre : materias) {
                 JRadioButton rb = new JRadioButton(materiaNombre);
                 rb.setAlignmentX(Component.LEFT_ALIGNMENT);
                 rb.addActionListener(e -> {
                     materiaSeleccionada = materiaNombre;
                     cargarTablaConPromedio();
                 });
-                grupo.add(rb);
+                grupoMaterias.add(rb);
                 jpanelGrupos.add(rb);
             }
-            if (grupo.getButtonCount() > 0) {
-                ((JRadioButton) grupo.getElements().nextElement()).setSelected(true);
+            
+            if (grupoMaterias.getButtonCount() > 0) {
+                ((JRadioButton) grupoMaterias.getElements().nextElement()).setSelected(true);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar materias: " + e.getMessage());
-            e.printStackTrace();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar materias", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         jpanelGrupos.add(new JSeparator());
@@ -91,7 +84,6 @@ public class PanelPromediosD extends javax.swing.JPanel {
         jpanelGrupos.repaint();
     }
 
-    /* -------------------- FILTROS DESEMPAÑO -------------------- */
     private void agregarFiltrosDesempeno() {
         jpanelGrupos.add(Box.createVerticalStrut(10));
         jpanelGrupos.add(new JLabel("Filtrar por:"));
@@ -117,7 +109,6 @@ public class PanelPromediosD extends javax.swing.JPanel {
         rbAlto.setSelected(true);
     }
 
-    /* -------------------- CARGAR TABLA CON PROMEDIO -------------------- */
     private void cargarTablaConPromedio() {
         if (materiaSeleccionada == null) return;
 
@@ -129,18 +120,20 @@ public class PanelPromediosD extends javax.swing.JPanel {
         double suma = 0;
         int cnt = 0;
 
-        String sql = "CALL listar_notas_docente_materia(?, ?, NULL)";
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, docente);
-            ps.setString(2, materiaSeleccionada);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                String estudiante = rs.getString("estudiante");
-                double c1 = rs.getDouble("corte1");
-                double c2 = rs.getDouble("corte2");
-                double c3 = rs.getDouble("corte3");
+        try {
+            List<Object[]> notas = baseDatos.listarNotasPromedioDocenteMateria(docente, materiaSeleccionada);
+            
+            if (notas.isEmpty()) {
+                tablaNotas.setModel(modelo);
+                lbPromedio.setText("0.0");
+                return;
+            }
+            
+            for (Object[] nota : notas) {
+                String estudiante = (String) nota[0];
+                double c1 = (Double) nota[1];
+                double c2 = (Double) nota[2];
+                double c3 = (Double) nota[3];
                 double promedio = (c1 + c2 + c3) / 3.0;
 
                 boolean incluir = true;
@@ -150,27 +143,24 @@ public class PanelPromediosD extends javax.swing.JPanel {
                 if (!incluir) continue;
 
                 modelo.addRow(new Object[]{
-                        estudiante,
-                        String.format("%.1f", c1),
-                        String.format("%.1f", c2),
-                        String.format("%.1f", c3),
-                        String.format("%.1f", promedio)
+                    estudiante,
+                    String.format("%.1f", c1),
+                    String.format("%.1f", c2),
+                    String.format("%.1f", c3),
+                    String.format("%.1f", promedio)
                 });
                 suma += promedio;
                 cnt++;
             }
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar tabla: " + e.getMessage());
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar tabla", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         tablaNotas.setModel(modelo);
         lbPromedio.setText(cnt > 0 ? String.format("%.1f", suma / cnt) : "0.0");
-    }
-
-    /* -------------------- GENERATED -------------------- */
-         
+    }         
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

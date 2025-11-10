@@ -1,110 +1,162 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package Vista.frm.Panel;
-import Clases.ConexionBD;
+
+import Clases.Base_De_Datos;
 import javax.swing.*;
 import java.awt.*;
-import java.sql.*;
 
 public class PanelGestionUsuario extends JPanel {
+    // === 1. DECLARACIÓN DE VARIABLES (componentes) ===
     private JTextField txtCedula, txtNombre, txtSegundoNombre, txtApellido, txtSegundoApellido;
     private JTextField txtEdad, txtTelefono, txtCorreo, txtDireccion;
     private JButton btnBuscar, btnGuardar;
     private JLabel lblCargo;
     private int usuarioId;
     private String cargo;
+    private Base_De_Datos baseDatos = new Base_De_Datos();
 
     public PanelGestionUsuario() {
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Fila 0: Cédula
-        gbc.gridx = 0; gbc.gridy = 0;
-        add(new JLabel("Cédula:"), gbc);
-        txtCedula = new JTextField(15);
-        gbc.gridx = 1;
-        add(txtCedula, gbc);
-        btnBuscar = new JButton("Buscar");
-        gbc.gridx = 2;
-        add(btnBuscar, gbc);
-
-        // Fila 1: Nombre
-        gbc.gridx = 0; gbc.gridy = 1;
-        add(new JLabel("Nombre:"), gbc);
-        txtNombre = new JTextField(20);
-        gbc.gridx = 1;
-        add(txtNombre, gbc);
-
-        // Fila 2: Segundo Nombre
-        gbc.gridx = 0; gbc.gridy = 2;
-        add(new JLabel("Segundo Nombre:"), gbc);
-        txtSegundoNombre = new JTextField(20);
-        gbc.gridx = 1;
-        add(txtSegundoNombre, gbc);
-
-        // Fila 3: Apellido
-        gbc.gridx = 0; gbc.gridy = 3;
-        add(new JLabel("Apellido:"), gbc);
-        txtApellido = new JTextField(20);
-        gbc.gridx = 1;
-        add(txtApellido, gbc);
-
-        // Fila 4: Segundo Apellido
-        gbc.gridx = 0; gbc.gridy = 4;
-        add(new JLabel("Segundo Apellido:"), gbc);
-        txtSegundoApellido = new JTextField(20);
-        gbc.gridx = 1;
-        add(txtSegundoApellido, gbc);
-
-        // Fila 5: Edad
-        gbc.gridx = 0; gbc.gridy = 5;
-        add(new JLabel("Edad:"), gbc);
-        txtEdad = new JTextField(5);
-        gbc.gridx = 1;
-        add(txtEdad, gbc);
-
-        // Fila 6: Teléfono
-        gbc.gridx = 0; gbc.gridy = 6;
-        add(new JLabel("Teléfono:"), gbc);
-        txtTelefono = new JTextField(20);
-        gbc.gridx = 1;
-        add(txtTelefono, gbc);
-
-        // Fila 7: Correo
-        gbc.gridx = 0; gbc.gridy = 7;
-        add(new JLabel("Correo:"), gbc);
-        txtCorreo = new JTextField(20);
-        gbc.gridx = 1;
-        add(txtCorreo, gbc);
-
-        // Fila 8: Dirección
-        gbc.gridx = 0; gbc.gridy = 8;
-        add(new JLabel("Dirección:"), gbc);
-        txtDireccion = new JTextField(20);
-        gbc.gridx = 1;
-        add(txtDireccion, gbc);
-
-        // Fila 9: Cargo (solo lectura)
-        gbc.gridx = 0; gbc.gridy = 9;
-        add(new JLabel("Cargo:"), gbc);
-        lblCargo = new JLabel("-");
-        gbc.gridx = 1;
-        add(lblCargo, gbc);
-
-        // Fila 10: Botón Guardar
-        btnGuardar = new JButton("Guardar Cambios");
-        gbc.gridx = 1; gbc.gridy = 10;
-        add(btnGuardar, gbc);
-
-        // Eventos
+        // === 2. INICIALIZAR COMPONENTES ===
+        miinitComponents();
+        
+        // === 3. CONFIGURAR LISTENERS (después de inicializar) ===
         btnBuscar.addActionListener(e -> buscarUsuario());
         btnGuardar.addActionListener(e -> guardarCambios());
     }
 
+    /**
+     * Método que inicializa TODOS los componentes y el layout
+     */
+    private void miinitComponents() {
+        // Configurar panel principal
+        setLayout(new GridBagLayout());
+        setBackground(Color.WHITE);
+        
+        // Inicializar GridBagConstraints
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        
+        // === INICIALIZAR TODOS LOS COMPONENTES ===
+        txtCedula = new JTextField(15);
+        txtNombre = new JTextField(15);
+        txtSegundoNombre = new JTextField(15);
+        txtApellido = new JTextField(15);
+        txtSegundoApellido = new JTextField(15);
+        txtEdad = new JTextField(15);
+        txtTelefono = new JTextField(15);
+        txtCorreo = new JTextField(15);
+        txtDireccion = new JTextField(15);
+        
+        btnBuscar = new JButton("Buscar");
+        btnGuardar = new JButton("Guardar Cambios");
+        
+        lblCargo = new JLabel("Cargo: -");
+
+        // === CREAR FORMULARIO ===
+        int fila = 0;
+        
+        // Fila 0: Cédula + Buscar
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Cédula:"), gbc);
+        
+        gbc.gridx = 1;
+        add(txtCedula, gbc);
+        
+        gbc.gridx = 2;
+        add(btnBuscar, gbc);
+        fila++;
+
+        // Fila 1: Nombre
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Nombre:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 2;
+        add(txtNombre, gbc);
+        gbc.gridwidth = 1;
+        fila++;
+
+        // Fila 2: Segundo Nombre
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Segundo Nombre:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 2;
+        add(txtSegundoNombre, gbc);
+        gbc.gridwidth = 1;
+        fila++;
+
+        // Fila 3: Apellido
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Apellido:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 2;
+        add(txtApellido, gbc);
+        gbc.gridwidth = 1;
+        fila++;
+
+        // Fila 4: Segundo Apellido
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Segundo Apellido:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 2;
+        add(txtSegundoApellido, gbc);
+        gbc.gridwidth = 1;
+        fila++;
+
+        // Fila 5: Edad
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Edad:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 2;
+        add(txtEdad, gbc);
+        gbc.gridwidth = 1;
+        fila++;
+
+        // Fila 6: Teléfono
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Teléfono:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 2;
+        add(txtTelefono, gbc);
+        gbc.gridwidth = 1;
+        fila++;
+
+        // Fila 7: Correo
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Correo:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 2;
+        add(txtCorreo, gbc);
+        gbc.gridwidth = 1;
+        fila++;
+
+        // Fila 8: Dirección
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Dirección:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 2;
+        add(txtDireccion, gbc);
+        gbc.gridwidth = 1;
+        fila++;
+
+        // Fila 9: Cargo (no editable)
+        gbc.gridx = 0; gbc.gridy = fila;
+        add(new JLabel("Cargo Actual:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 2;
+        lblCargo.setFont(new Font("Arial", Font.BOLD, 14));
+        lblCargo.setForeground(Color.BLUE);
+        add(lblCargo, gbc);
+        gbc.gridwidth = 1;
+        fila++;
+
+        // Fila 10: Botón Guardar
+        gbc.gridx = 1; gbc.gridy = fila;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(btnGuardar, gbc);
+    }
+
+    // Resto de métodos (buscarUsuario, guardarCambios) igual que antes
     private void buscarUsuario() {
         String cedula = txtCedula.getText().trim();
         if (cedula.isEmpty()) {
@@ -112,79 +164,43 @@ public class PanelGestionUsuario extends JPanel {
             return;
         }
 
-        String sql = "SELECT id, nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cargo " +
-                     "FROM Usuarios WHERE cc = ?";
-
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, cedula);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                usuarioId = rs.getInt("id");
-                cargo = rs.getString("cargo");
-                txtNombre.setText(rs.getString("nombre"));
-                txtSegundoNombre.setText(rs.getString("segundo_nombre"));
-                txtApellido.setText(rs.getString("apellido"));
-                txtSegundoApellido.setText(rs.getString("segundo_apellido"));
-                txtEdad.setText(String.valueOf(rs.getInt("edad")));
-                txtTelefono.setText(rs.getString("telefono"));
-                txtCorreo.setText(rs.getString("correo"));
-                txtDireccion.setText(rs.getString("direccion"));
-                lblCargo.setText(cargo);
-            } else {
-                JOptionPane.showMessageDialog(this, "Usuario no encontrado.");
-            }
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al buscar usuario.");
+        Object[] usuario = baseDatos.buscarUsuarioPorCedula(cedula);
+        if (usuario != null) {
+            usuarioId = (int) usuario[0];
+            cargo = (String) usuario[1];
+            txtNombre.setText((String) usuario[2]);
+            txtSegundoNombre.setText((String) usuario[3]);
+            txtApellido.setText((String) usuario[4]);
+            txtSegundoApellido.setText((String) usuario[5]);
+            txtEdad.setText(String.valueOf(usuario[6]));
+            txtTelefono.setText((String) usuario[7]);
+            txtCorreo.setText((String) usuario[8]);
+            txtDireccion.setText((String) usuario[9]);
+            lblCargo.setText(cargo);
+        } else {
+            JOptionPane.showMessageDialog(this, "Usuario no encontrado.");
         }
     }
 
     private void guardarCambios() {
-    if (usuarioId == 0) {
-        JOptionPane.showMessageDialog(this, "Primero busque un usuario.");
-        return;
+        if (usuarioId == 0) {
+            JOptionPane.showMessageDialog(this, "Primero busque un usuario.");
+            return;
+        }
+
+        try {
+            int edad = Integer.parseInt(txtEdad.getText().trim());
+            baseDatos.actualizarUsuario(cargo, usuarioId, txtCedula.getText().trim(),
+                txtNombre.getText().trim(), txtSegundoNombre.getText().trim(),
+                txtApellido.getText().trim(), txtSegundoApellido.getText().trim(),
+                edad, txtTelefono.getText().trim(), txtCorreo.getText().trim(),
+                txtDireccion.getText().trim());
+            JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Ingrese una edad válida.", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-
-    String procedimiento = null;
-    if ("alumno".equals(cargo)) {
-        procedimiento = "{call actualizar_estudiante(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-    } else if ("docente".equals(cargo)) {
-        procedimiento = "{call actualizar_docente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-    } else if ("administrador".equals(cargo)) {
-        procedimiento = "{call actualizar_administrador(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-    } else if ("registro y control".equals(cargo)) {
-        procedimiento = "{call actualizar_registro_control(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-    } else {
-        JOptionPane.showMessageDialog(this, "No se puede editar este tipo de usuario.");
-        return;
-    }
-
-    try (Connection conn = ConexionBD.getConnection();
-         CallableStatement cs = conn.prepareCall(procedimiento)) {
-
-        cs.setInt(1, usuarioId);
-        cs.setString(2, txtCedula.getText().trim());
-        cs.setString(3, txtNombre.getText().trim());
-        cs.setString(4, txtSegundoNombre.getText().trim());
-        cs.setString(5, txtApellido.getText().trim());
-        cs.setString(6, txtSegundoApellido.getText().trim());
-        cs.setInt(7, Integer.parseInt(txtEdad.getText().trim()));
-        cs.setString(8, txtTelefono.getText().trim());
-        cs.setString(9, txtCorreo.getText().trim());
-        cs.setString(10, txtDireccion.getText().trim());
-
-        cs.executeUpdate();
-        JOptionPane.showMessageDialog(this, "Usuario actualizado correctamente.");
-
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al actualizar usuario.");
-    }
-}
 
     /**
      * This method is called from within the constructor to initialize the form.

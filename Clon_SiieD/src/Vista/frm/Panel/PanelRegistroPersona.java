@@ -1,14 +1,12 @@
 package Vista.frm.Panel;
 
 import Clases.Base_De_Datos;
-import Clases.ConexionBD;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.sql.*;
 import java.util.regex.Pattern;
+import java.util.List;
 
 public class PanelRegistroPersona extends JPanel {
 
@@ -191,16 +189,24 @@ public class PanelRegistroPersona extends JPanel {
 }
 
     private void cargarCarreras() {
-        cmbCarrera.removeAllItems();
-        String sql = "{CALL carreras()}";
-        try (Connection conn = ConexionBD.getConnection();
-             CallableStatement cs = conn.prepareCall(sql);
-             ResultSet rs = cs.executeQuery()) {
-            while (rs.next()) cmbCarrera.addItem(rs.getString("nombre"));
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar carreras: " + ex.getMessage());
+    cmbCarrera.removeAllItems();
+    
+    try {
+        // Llamada al método de Base_De_Datos
+        List<String> carreras = baseDatos.cargarCarrerasRegistro();
+        
+        if (carreras.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No se pudieron cargar las carreras o no hay carreras registradas.");
+        } else {
+            for (String carrera : carreras) {
+                cmbCarrera.addItem(carrera);
+            }
         }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error al cargar carreras: " + ex.getMessage());
     }
+}
+
 
     private void ajustarPorCargo() {
         boolean esAlumno = "alumno".equalsIgnoreCase((String) cmbCargo.getSelectedItem());
@@ -238,10 +244,8 @@ public class PanelRegistroPersona extends JPanel {
     private void registrarPersona() {
     if (!validarCampos()) return;
 
-    Connection conn = null;
-    CallableStatement cs = null;
-    
     try {
+        // Obtener datos de los campos (igual que antes)
         String nom = txtNombre.getText().trim();
         String segNom = txtSegundoNombre.getText().trim();
         String ape = txtApellido.getText().trim();
@@ -255,70 +259,30 @@ public class PanelRegistroPersona extends JPanel {
         String cargo = ((String) cmbCargo.getSelectedItem()).toLowerCase();
         String carrera = cmbCarrera.isVisible() ? (String) cmbCarrera.getSelectedItem() : null;
 
+        // Validar campos obligatorios
         if (nom.isEmpty() || ape.isEmpty() || ced.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Faltan campos obligatorios.");
             return;
         }
 
-        conn = ConexionBD.getConnection();
-        conn.setAutoCommit(false); // Iniciar transacción
+        // Llamada al método de Base_De_Datos (ahora no maneja la conexión directamente)
+        boolean exito = baseDatos.registrarPersonal(
+            nom, segNom, ape, segApe, edad, tel, mail, dir, ced, gen, cargo, carrera
+        );
 
-        /* Registrar usuario */
-        String sqlUsuario = "{CALL registrar_personal(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-        cs = conn.prepareCall(sqlUsuario);
-        
-        cs.setString(1, nom);
-        cs.setString(2, segNom.isEmpty() ? null : segNom);
-        cs.setString(3, ape);
-        cs.setString(4, segApe.isEmpty() ? null : segApe);
-        cs.setInt(5, edad);
-        cs.setString(6, tel.isEmpty() ? null : tel);
-        cs.setString(7, mail.isEmpty() ? null : mail);
-        cs.setString(8, dir.isEmpty() ? null : dir);
-        cs.setString(9, ced);
-        cs.setString(10, gen);
-        cs.setString(11, cargo);
-        cs.setString(12, carrera); // Puede ser null para no-alumnos
-        
-        cs.execute();
-
-        conn.commit(); // ✅ CONFIRMAR LA TRANSACCIÓN
-        
-        JOptionPane.showMessageDialog(this, "✅ Persona registrada exitosamente");
-        limpiarCampos();
+        if (exito) {
+            JOptionPane.showMessageDialog(this, "✅ Persona registrada exitosamente");
+            limpiarCampos();
+        } else {
+            JOptionPane.showMessageDialog(this, "❌ Error al registrar la persona. Por favor, verifique los datos.");
+        }
 
     } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, "Edad inválida.");
-    } catch (SQLException ex) {
-        // Hacer rollback en caso de error
-        if (conn != null) {
-            try {
-                conn.rollback();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        JOptionPane.showMessageDialog(this, "❌ Error: " + ex.getMessage());
-        ex.printStackTrace();
-    } finally {
-        // Cerrar recursos
-        if (cs != null) {
-            try {
-                cs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        JOptionPane.showMessageDialog(this, "Edad inválida. Debe ser un número.");
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "❌ Error inesperado: " + ex.getMessage());
     }
 }
-
     private void limpiarCampos() {
         txtNombre.setText("");
         txtSegundoNombre.setText("");

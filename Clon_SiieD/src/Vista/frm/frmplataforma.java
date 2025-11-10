@@ -6,17 +6,14 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import Clases.Base_De_Datos;
-import Clases.ConexionBD;
 import static java.awt.Component.LEFT_ALIGNMENT;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import Vista.frm.Panel.*;
+import java.awt.BorderLayout;
 
 public class frmplataforma extends javax.swing.JFrame {
        
@@ -25,20 +22,38 @@ public class frmplataforma extends javax.swing.JFrame {
     private final Base_De_Datos baseDatos;
     private String usuarioActual; 
     
-    public frmplataforma(Base_De_Datos basedato,String Cargo,String usuario) {
-        miinitComponents();
-        
-        this.usuarioActual = usuario;
-        btnSalir.setVisible(false);
-        this.baseDatos = basedato;
-        Cargos=Cargo;
-        setTitle("Siie administrativo");
-        setSize(1224, 717);
-        setResizable(false);
-        setLocationRelativeTo(null);
-        this.getContentPane().setBackground(new Color(240, 244, 248));
-
-        // Aplicar efectos hover a paneles
+public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
+    miinitComponents();
+    
+    this.usuarioActual = usuario;
+    btnSalir.setVisible(false);
+    this.baseDatos = basedato;
+    Cargos = Cargo;
+    
+    // LIMPIAR y reconfigurar JpanelMenu
+    JpanelMenu.removeAll();
+    JpanelMenu.setLayout(new CardLayout());
+    
+    setTitle("Siie administrativo");
+    setSize(1224, 717);
+    setResizable(false);
+    setLocationRelativeTo(null);
+    this.getContentPane().setBackground(new Color(240, 244, 248));
+    
+    // Reconfigurar todos los paneles de menú para que usen BorderLayout
+    reconfigurarPanelMenu(AMaterias, lbCrearMateriaf, lbCrearMateria);
+    reconfigurarPanelMenu(ACrearCarrera, lbCrearcarreraF, lbCrearCarrera);
+    reconfigurarPanelMenu(AReporteAcademico, lbReportesA, lbReporteAA);
+    reconfigurarPanelMenu(AQuitar, lbQuitarMateriaf, lbQuitarMateria);
+    reconfigurarPanelMenu(RCListadoUsuarios, lblistausuariosf, lbListadoUsuarios);
+    reconfigurarPanelMenu(RCRegistro, lbRegistros, lbRegistro);
+    reconfigurarPanelMenu(RCModificarDatos, lbModificarDatosf, lbModificarDatos);
+    reconfigurarPanelMenu(DListadosAlumnos, lbFOTO, lbListado);
+    reconfigurarPanelMenu(DNotasAlumnos, lbNotas, lbANotas);
+    reconfigurarPanelMenu(DReportes, lbReportes, lbReporteAD);
+    reconfigurarPanelMenu(Ddesempeño, lbDesempeño, lbListado2);
+    
+    // Aplicar efectos hover a paneles
         new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DListadosAlumnos);
         new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DNotasAlumnos);
         new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DReportes);
@@ -63,6 +78,8 @@ public class frmplataforma extends javax.swing.JFrame {
         aplicarHoverLabel(lbCrearCarrera);
         aplicarHoverLabel(lbQuitarMateria);
         aplicarHoverLabel(lbReporteAA);
+        
+        aplicarHoverLabel(lbRegistro);
 
         aplicarHoverLabel(lbListadoUsuarios);
         aplicarHoverLabel(lbModificarDatos);
@@ -109,52 +126,97 @@ public class frmplataforma extends javax.swing.JFrame {
         JPanel menuAdmin = new JPanel();
         menuAdmin.setBackground(new Color(192,4,29));
         menuAdmin.setLayout(new BoxLayout(menuAdmin, BoxLayout.Y_AXIS));
+        menuAdmin.setPreferredSize(new Dimension(190, 580));
+        menuAdmin.setMaximumSize(new Dimension(190, 580));
         
-        menuAdmin.add(sepAdm1); 
+        // Aplicar tamaños máximos a cada componente para evitar que se estiren
+        sepAdm1.setMaximumSize(new Dimension(190, 60)); 
+        menuAdmin.add(sepAdm1);
+        AMaterias.setMaximumSize(new Dimension(190, 60));
         menuAdmin.add(AMaterias);
+        
+        sepAdm2.setMaximumSize(new Dimension(190, 60));
         menuAdmin.add(sepAdm2); 
+        ACrearCarrera.setMaximumSize(new Dimension(190, 60));
         menuAdmin.add(ACrearCarrera);
+        
+        sepAdm3.setMaximumSize(new Dimension(190, 60));
         menuAdmin.add(sepAdm3); 
+        AReporteAcademico.setMaximumSize(new Dimension(190, 60));
         menuAdmin.add(AReporteAcademico);
+        
+        sepAdm4.setMaximumSize(new Dimension(190, 60));
         menuAdmin.add(sepAdm4); 
+        AQuitar.setMaximumSize(new Dimension(190, 60));
         menuAdmin.add(AQuitar);
+        
+        sepAdm5.setMaximumSize(new Dimension(190, 60));
         menuAdmin.add(sepAdm5); 
 
         // Panel de menú Registro control
         JPanel menuRegistroC = new JPanel();
         menuRegistroC.setBackground(new Color(192,4,29));
         menuRegistroC.setLayout(new BoxLayout(menuRegistroC, BoxLayout.Y_AXIS));
+        menuRegistroC.setPreferredSize(new Dimension(190, 580));
+        menuRegistroC.setMaximumSize(new Dimension(190, 580));
         
+        sepReg1.setMaximumSize(new Dimension(190, 60));
         menuRegistroC.add(sepReg1); 
+        RCListadoUsuarios.setMaximumSize(new Dimension(190, 60));
         menuRegistroC.add(RCListadoUsuarios);
+        
+        sepReg2.setMaximumSize(new Dimension(190, 60));
         menuRegistroC.add(sepReg2); 
+        RCRegistro.setMaximumSize(new Dimension(190, 60));
         menuRegistroC.add(RCRegistro);
+        
+        sepReg3.setMaximumSize(new Dimension(190, 60));
         menuRegistroC.add(sepReg3); 
+        RCModificarDatos.setMaximumSize(new Dimension(190, 60));
         menuRegistroC.add(RCModificarDatos);
+        
+        sepReg5.setMaximumSize(new Dimension(190, 60));
         menuRegistroC.add(sepReg5); 
 
         // Panel de menú DOCENTE
         JPanel menuDocente = new JPanel();
         menuDocente.setLayout(new BoxLayout(menuDocente, BoxLayout.Y_AXIS));
         menuDocente.setBackground(new Color(192,4,29));
+        menuDocente.setPreferredSize(new Dimension(190, 580));
+        menuDocente.setMaximumSize(new Dimension(190, 580));
+        
+        sepDoc1.setMaximumSize(new Dimension(190, 60));
         menuDocente.add(sepDoc1);
+        DListadosAlumnos.setMaximumSize(new Dimension(190, 60));
         menuDocente.add(DListadosAlumnos);
+        
+        sepDoc2.setMaximumSize(new Dimension(190, 60));
         menuDocente.add(sepDoc2);
+        DNotasAlumnos.setMaximumSize(new Dimension(190, 60));
         menuDocente.add(DNotasAlumnos);
+        
+        sepDoc4.setMaximumSize(new Dimension(190, 60));
         menuDocente.add(sepDoc4);
+        DReportes.setMaximumSize(new Dimension(190, 60));
         menuDocente.add(DReportes);
+        
+        sepDoc5.setMaximumSize(new Dimension(190, 60));
         menuDocente.add(sepDoc5);
+        Ddesempeño.setMaximumSize(new Dimension(190, 60));
         menuDocente.add(Ddesempeño);
 
         // Panel de menú ALUMNOS
         JPanel menuAlumnos = new JPanel();
         menuAlumnos.setLayout(new BoxLayout(menuAlumnos, BoxLayout.Y_AXIS));
         menuAlumnos.setBackground(new Color(192,4,29));
+        menuAlumnos.setPreferredSize(new Dimension(190, 580));
+        menuAlumnos.setMaximumSize(new Dimension(190, 580));
         
         // Crear opciones para alumnos
         JPanel panelMisNotas = new JPanel();
         panelMisNotas.setBackground(new Color(192,4,29));
-        panelMisNotas.setMaximumSize(new Dimension(379, 55));
+        panelMisNotas.setMaximumSize(new Dimension(190, 60));
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(panelMisNotas);
         panelMisNotas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 PanelMisNotas panel = new PanelMisNotas(usuarioActual, baseDatos);
@@ -165,11 +227,18 @@ public class frmplataforma extends javax.swing.JFrame {
         JLabel lbMisNotas = new JLabel("Notas");
         lbMisNotas.setFont(new java.awt.Font("Segoe UI", 1, 14));
         lbMisNotas.setForeground(Color.WHITE);
+        lbMisNotas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PanelMisNotas panel = new PanelMisNotas(usuarioActual, baseDatos);
+                jtPestañas.addTab("Mis Notas", panel);
+            }
+        });
         panelMisNotas.add(lbMisNotas);
         
         JPanel panelMiDesempeno = new JPanel();
         panelMiDesempeno.setBackground(new Color(192,4,29));
-        panelMiDesempeno.setMaximumSize(new Dimension(379, 55));
+        panelMiDesempeno.setMaximumSize(new Dimension(190, 60));
+        new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(panelMiDesempeno);
         panelMiDesempeno.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 PanelReportesAlumno panel = new PanelReportesAlumno(usuarioActual);
@@ -180,11 +249,17 @@ public class frmplataforma extends javax.swing.JFrame {
         JLabel lbMiDesempeno = new JLabel("Reportes Academicos");
         lbMiDesempeno.setFont(new java.awt.Font("Segoe UI", 1, 14));
         lbMiDesempeno.setForeground(Color.WHITE);
+        lbMiDesempeno.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PanelReportesAlumno panel = new PanelReportesAlumno(usuarioActual);
+                jtPestañas.addTab("reportes", panel);
+            }
+        });
         panelMiDesempeno.add(lbMiDesempeno);
         
         // Aplicar hover a los nuevos labels de estudiante
-        aplicarHoverLabelEstudiante(lbMisNotas);
-        aplicarHoverLabelEstudiante(lbMiDesempeno);
+        aplicarHoverLabel(lbMisNotas);
+        aplicarHoverLabel(lbMiDesempeno);
         
         // Agregar separadores y paneles al menú de alumnos
         menuAlumnos.add(crearSeparador(new Color(192,4,29), 40));
@@ -195,6 +270,8 @@ public class frmplataforma extends javax.swing.JFrame {
         JPanel menuError = new JPanel();
         menuError.setLayout(new BoxLayout(menuError, BoxLayout.Y_AXIS));
         menuError.setBackground(new Color(192,4,29));
+        menuError.setPreferredSize(new Dimension(190, 580));
+        menuError.setMaximumSize(new Dimension(190, 580));
         
         // Agregar al CardLayout
         JpanelMenu.setLayout(new CardLayout());
@@ -236,35 +313,35 @@ public class frmplataforma extends javax.swing.JFrame {
         AjustesObjetos.ajustarImagen(lbicono, rutaImagen);
     }
 
-    // ====== MÉTODO NUEVO: Hover específico para labels de estudiante ======
-    private void aplicarHoverLabelEstudiante(JLabel label) {
-        label.addMouseListener(new java.awt.event.MouseAdapter() {
-            private final Color originalFg = label.getForeground();
-            private final Color originalBg = label.getParent().getBackground();
-            private final Color hoverFg = Color.BLACK;
-            private final Color hoverBg = new Color(250, 217, 124);
-
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                label.setForeground(hoverFg);
-                label.getParent().setBackground(hoverBg);
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                label.setForeground(originalFg);
-                label.getParent().setBackground(originalBg);
-            }
-        });
-    }
-
+    
+    private void reconfigurarPanelMenu(JPanel panel, JLabel icono, JLabel texto) {
+    // Quitar el layout null y usar BorderLayout
+    panel.setLayout(new BorderLayout());
+    
+    // Configurar tamaño fijo y alineación
+    panel.setPreferredSize(new Dimension(190, 60));
+    panel.setMinimumSize(new Dimension(190, 60));
+    panel.setMaximumSize(new Dimension(190, 60));
+    panel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+    
+    // Limpiar componentes existentes y reañadirlos con BorderLayout
+    panel.removeAll();
+    icono.setPreferredSize(new Dimension(60, 60));
+    panel.add(icono, BorderLayout.WEST);
+    panel.add(texto, BorderLayout.CENTER);
+    
+    // Asegurar que el fondo sea consistente
+    panel.setBackground(new Color(192, 4, 29));
+}
+    
+    
     private void aplicarHoverLabel(JLabel label) {
-        label.addMouseListener(new java.awt.event.MouseAdapter() {
-            private final Color originalFg = label.getForeground();
-            private final Color originalBg = label.getParent().getBackground();
-            private final Color hoverFg = Color.BLACK;
-            private final Color hoverBg = new Color(250,217,124);
+        final Color originalFg = label.getForeground();
+        final Color originalBg = label.getParent().getBackground();
+        final Color hoverFg = Color.BLACK;
+        final Color hoverBg = new Color(250, 217, 124);
 
+        label.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 label.setForeground(hoverFg);
@@ -282,11 +359,13 @@ public class frmplataforma extends javax.swing.JFrame {
     private JPanel crearSeparador(Color color, int alto) {
         JPanel sep = new JPanel();
         sep.setBackground(color);
-        sep.setPreferredSize(new Dimension(150, alto));
-        sep.setMaximumSize(new Dimension(150, alto));
+        sep.setPreferredSize(new Dimension(190, alto));
+        sep.setMaximumSize(new Dimension(190, alto));
         sep.setAlignmentX(LEFT_ALIGNMENT);
         return sep;
     }
+
+    // ... resto del código ...
 
         
     /**
@@ -323,13 +402,13 @@ public class frmplataforma extends javax.swing.JFrame {
         RCModificarDatos = new javax.swing.JPanel();
         
         lbModificarDatos = new javax.swing.JLabel();
-        lbModificarDatos.setBounds(0, 0, 201, 38); // ocupar todo el panel
+        lbModificarDatos.setBounds(0, 0, 201, 38); 
         lbModificarDatosf = new javax.swing.JLabel();
         RCListadoUsuarios = new javax.swing.JPanel();
         lbListadoUsuarios = new javax.swing.JLabel();
         lblistausuariosf = new javax.swing.JLabel();
         RCRegistro = new javax.swing.JPanel();
-        lbRegistro = new javax.swing.JLabel(); // Cambiado de lbListado2 a lbRegistro
+        lbRegistro = new javax.swing.JLabel(); 
         lbRegistros = new javax.swing.JLabel();
         AMaterias = new javax.swing.JPanel();
         lbCrearMateriaf = new javax.swing.JLabel();
@@ -348,7 +427,7 @@ public class frmplataforma extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         JpanelMenu.setBackground(new java.awt.Color(192, 4, 29));
-        JpanelMenu.setMinimumSize(new java.awt.Dimension(200, 465));
+        JpanelMenu.setMinimumSize(new java.awt.Dimension(225, 465));
         JpanelMenu.setLayout(null);
         getContentPane().add(JpanelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 190, 580));
 
@@ -431,10 +510,15 @@ public class frmplataforma extends javax.swing.JFrame {
         lbDesempeño.setText("jLabel4");
         Ddesempeño.add(lbDesempeño);
         lbDesempeño.setBounds(0, 10, 50, 40);
-
+        
         lbListado2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbListado2.setForeground(new java.awt.Color(255, 255, 255));
         lbListado2.setText("Desempeño");
+        lbListado2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbListado2MouseClicked(evt);
+            }
+        });
         Ddesempeño.add(lbListado2);
         lbListado2.setBounds(50, 20, 150, 20);
 
@@ -475,7 +559,7 @@ public class frmplataforma extends javax.swing.JFrame {
 
         lbReporteAD.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbReporteAD.setForeground(new java.awt.Color(255, 255, 255));
-        lbReporteAD.setText("Reportes Academico");
+        lbReporteAD.setText("Reportes");
         lbReporteAD.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbReporteADMouseClicked(evt);
@@ -566,7 +650,7 @@ public class frmplataforma extends javax.swing.JFrame {
 
         lbCrearMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbCrearMateria.setForeground(new java.awt.Color(255, 255, 255));
-        lbCrearMateria.setText("Crear/asignar Materias");
+        lbCrearMateria.setText("C/asig Materias");
         lbCrearMateria.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbCrearMateriaMouseClicked(evt);
@@ -638,7 +722,7 @@ public class frmplataforma extends javax.swing.JFrame {
 
         lbReporteAA.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbReporteAA.setForeground(new java.awt.Color(255, 255, 255));
-        lbReporteAA.setText("Reportes Academicos");
+        lbReporteAA.setText("Reportes");
         lbReporteAA.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbReporteAAMouseClicked(evt);
@@ -668,7 +752,7 @@ public class frmplataforma extends javax.swing.JFrame {
     }                       
 
     private void abrirListadoEstudiantes() {
-        String materiaAsignada = obtenerMateriaDelDocente(usuarioActual);
+        String materiaAsignada = baseDatos.obtenerMateriaDelDocente(usuarioActual);
         if (materiaAsignada == null || materiaAsignada.trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "No tienes materias asignadas.");
             return;
@@ -679,32 +763,16 @@ public class frmplataforma extends javax.swing.JFrame {
         jtPestañas.addTab("Listado", panel);
         jtPestañas.setSelectedComponent(panel);
     }
-    
-    private String obtenerMateriaDelDocente(String usuarioDocente) {
-        String materia = null;
-        String sql = "CALL obtener_materia_docente(?)";
-        try (Connection conn = ConexionBD.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, usuarioDocente);
-            ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            materia = rs.getString("materia");
-        }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return materia;
-    }
 
     private void lbANotasMouseClicked(java.awt.event.MouseEvent evt) {                                      
-         PanelAsignarNotasPorMateria panel=new PanelAsignarNotasPorMateria(usuarioActual);
-        jtPestañas.addTab("Notas",panel);
+     PanelAsignarNotasPorMateria panel = new PanelAsignarNotasPorMateria(usuarioActual, baseDatos);
+    jtPestañas.addTab("Notas", panel);
     }                                     
 
     private void lbListadoMouseClicked(java.awt.event.MouseEvent evt) {                                       
         // TODO add your handling code here:
         abrirListadoEstudiantes();
-        System.out.println("si ");
+        
     }                                      
 
     private void DListadosAlumnosMouseClicked(java.awt.event.MouseEvent evt) {                                              
@@ -727,8 +795,6 @@ public class frmplataforma extends javax.swing.JFrame {
     private void lbReporteADMouseClicked(java.awt.event.MouseEvent evt) {                                         
         // TODO add your handling code here:
         PanelReportesD panel = new PanelReportesD(baseDatos, usuarioActual);
-
-        //tamaño del área visible del JTabbedPane
         Dimension size = jtPestañas.getSize();
         panel.setPreferredSize(size);
 
@@ -760,6 +826,7 @@ public class frmplataforma extends javax.swing.JFrame {
     private void DReportesMouseClicked(java.awt.event.MouseEvent evt) {                                       
         // TODO add your handling code here:
         lbReporteADMouseClicked(evt);
+        
     }                                      
 
     private void RCListadoUsuariosMouseClicked(java.awt.event.MouseEvent evt) {                                               
@@ -806,7 +873,7 @@ public class frmplataforma extends javax.swing.JFrame {
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
-        frmLogin login=new frmLogin(baseDatos);
+        frmLogin login=new frmLogin();
         login.setVisible(true);
         this.dispose();
     }                                        
@@ -966,6 +1033,11 @@ public class frmplataforma extends javax.swing.JFrame {
         lbListado2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbListado2.setForeground(new java.awt.Color(255, 255, 255));
         lbListado2.setText("Desempeño");
+        lbListado2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbListado2MouseClicked(evt);
+            }
+        });
         Ddesempeño.add(lbListado2);
         lbListado2.setBounds(50, 20, 150, 20);
 
@@ -978,7 +1050,7 @@ public class frmplataforma extends javax.swing.JFrame {
 
         lbCrearMateria.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbCrearMateria.setForeground(new java.awt.Color(255, 255, 255));
-        lbCrearMateria.setText("Crear /asignar Materia");
+        lbCrearMateria.setText("C /asignar Materia");
         AMaterias.add(lbCrearMateria);
         lbCrearMateria.setBounds(40, 20, 160, 20);
 
@@ -1101,10 +1173,10 @@ public class frmplataforma extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(DReportes, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
-                            .addComponent(DNotasAlumnos, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
                             .addComponent(Dpromedio, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(DListadosAlumnos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(Ddesempeño, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE))
+                            .addComponent(Ddesempeño, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
+                            .addComponent(DNotasAlumnos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(92, 92, 92)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(RCListadoUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1116,9 +1188,9 @@ public class frmplataforma extends javax.swing.JFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(DNotasAlumnos, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(RCModificarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(RCModificarDatos, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                    .addComponent(DNotasAlumnos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(8, 8, 8)
@@ -1161,7 +1233,7 @@ public class frmplataforma extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(JpanelMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JpanelMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 1020, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -1174,9 +1246,10 @@ public class frmplataforma extends javax.swing.JFrame {
                     .addComponent(jpanelMenuSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(JpanelMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jtPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jtPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addComponent(JpanelMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         pack();
@@ -1203,31 +1276,40 @@ public class frmplataforma extends javax.swing.JFrame {
     private void lbRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbRegistroMouseClicked
         // TODO add your handling code here:
         PanelRegistroPersona panel=new PanelRegistroPersona(baseDatos);
-        jtPestañas.addTab("Registros Y control",panel);
+        jtPestañas.addTab("Registro",panel);
+        
+        PanelMatriculaAlumno panel2=new PanelMatriculaAlumno();
+        jtPestañas.addTab("matriculas", panel2); 
     }//GEN-LAST:event_lbRegistroMouseClicked
 
     private void RCRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RCRegistroMouseClicked
         // TODO add your handling code here:
         PanelRegistroPersona panel=new PanelRegistroPersona(baseDatos);
-        jtPestañas.addTab("Registros Y control",panel);
+        jtPestañas.addTab("Registro",panel);
+        
+        PanelMatriculaAlumno panel2=new PanelMatriculaAlumno();
+        jtPestañas.addTab("matriculas", panel2); 
 
     }//GEN-LAST:event_RCRegistroMouseClicked
 
     private void RCModificarDatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RCModificarDatosMouseClicked
         // TODO add your handling code here:
-        PanelMatriculaAlumno panel=new PanelMatriculaAlumno();
-        jtPestañas.addTab("matriculas", panel); 
         PanelGestionUsuario pane=new PanelGestionUsuario();
         jtPestañas.addTab("control", pane); 
     }//GEN-LAST:event_RCModificarDatosMouseClicked
 
     private void lbModificarDatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbModificarDatosMouseClicked
         // TODO add your handling code here:
-        PanelMatriculaAlumno panel=new PanelMatriculaAlumno();
-        jtPestañas.addTab("matriculas", panel); 
         PanelGestionUsuario pane=new PanelGestionUsuario();
         jtPestañas.addTab("control", pane); 
+        
     }//GEN-LAST:event_lbModificarDatosMouseClicked
+
+    private void lbListado2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbListado2MouseClicked
+        PanelPromediosD desempeño = new PanelPromediosD(usuarioActual);
+        jtPestañas.addTab("Promedios", desempeño);
+        jtPestañas.setSelectedComponent(desempeño);
+    }//GEN-LAST:event_lbListado2MouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel ACrearCarrera;

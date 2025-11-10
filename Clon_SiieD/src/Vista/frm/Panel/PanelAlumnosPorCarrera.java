@@ -1,11 +1,9 @@
 package Vista.frm.Panel;
 
-import Clases.Base_De_Datos;
-import Clases.ConexionBD;
+import Clases.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.*;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -18,10 +16,12 @@ public class PanelAlumnosPorCarrera extends JPanel {
     private final JButton btnBuscar = new JButton("Buscar");
     
     /* ---------- Repositorio de datos ---------- */
-    private final Base_De_Datos  repo = new Base_De_Datos();
+    private final Base_De_Datos repo = new Base_De_Datos(); 
+    private final AjustesObjetos ajustes = new AjustesObjetos(){}; 
 
     /* ---------- Tablas y modelos ---------- */
     private final JTable tablaNotas = new JTable();
+    
     private final DefaultTableModel modeloNotas = new DefaultTableModel(
         new Object[]{"Materia", "Corte 1", "Corte 2", "Corte 3", "Promedio"}, 0) {
         @Override
@@ -42,6 +42,8 @@ public class PanelAlumnosPorCarrera extends JPanel {
     private final JLabel lblPromedioGeneral = new JLabel("Promedio general: --");
 
     public PanelAlumnosPorCarrera() {
+        AjustesObjetos.ajustarTabla(tablaNotas);
+        AjustesObjetos.ajustarTabla(tablaReportes);
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Seleccione una carrera y alumno"));
 
@@ -102,6 +104,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
         });
 
         cargarCarreras();
+        ajustes.ajustarTabla(tablaNotas);
     }
 
     /* -------------------- CARRERAS -------------------- */
@@ -175,8 +178,10 @@ public class PanelAlumnosPorCarrera extends JPanel {
 
         if (alumno == null || !alumno.contains(" ") || carreraNombre == null) return;
 
-        String nombre = alumno.split(" ")[0];
-        String apellido = alumno.split(" ")[1];
+        String[] partes = alumno.split(" ", 2);
+        if (partes.length < 2) return;
+        String nombre = partes[0];
+        String apellido = partes[1];
 
         int idAlumno = repo.obtenerIdAlumnoPorNombre(nombre, apellido);
         int idCarrera = repo.obtenerIdCarreraPorNombre(carreraNombre);
@@ -190,8 +195,34 @@ public class PanelAlumnosPorCarrera extends JPanel {
 
         for (Object[] nota : notas) {
             modeloNotas.addRow(nota);
-            sumaTotal += Double.parseDouble((String) nota[4]); // Índice del promedio
-            materias++;
+            // ← CORREGIDO: Conversión segura que maneja cualquier tipo numérico
+            Object promedioObj = nota[4];
+            if (promedioObj != null) {
+                try {
+                    double promedio;
+                    if (promedioObj instanceof String) {
+                        // Si es String, limpiar y convertir
+                        String promedioStr = (String) promedioObj;
+                        promedioStr = promedioStr.replace(",", ".").trim(); // Reemplazar coma por punto
+                        if (!promedioStr.isEmpty()) {
+                            promedio = Double.parseDouble(promedioStr);
+                        } else {
+                            continue; // Saltar si está vacío
+                        }
+                    } else if (promedioObj instanceof Number) {
+                        // Si es Double, Float, Integer, etc.
+                        promedio = ((Number) promedioObj).doubleValue();
+                    } else {
+                        System.err.println("Tipo de dato inesperado en promedio: " + promedioObj.getClass());
+                        continue;
+                    }
+                    
+                    sumaTotal += promedio;
+                    materias++;
+                } catch (Exception ex) {
+                    System.err.println("Error al procesar promedio '" + promedioObj + "': " + ex.getMessage());
+                }
+            }
         }
 
         if (materias > 0) {
@@ -207,8 +238,10 @@ public class PanelAlumnosPorCarrera extends JPanel {
         String alumno = (String) comboAlumnos.getSelectedItem();
         if (alumno == null || !alumno.contains(" ")) return;
 
-        String nombre = alumno.split(" ")[0];
-        String apellido = alumno.split(" ")[1];
+        String[] partes = alumno.split(" ", 2);
+        if (partes.length < 2) return;
+        String nombre = partes[0];
+        String apellido = partes[1];
 
         int idAlumno = repo.obtenerIdAlumnoPorNombre(nombre, apellido);
         if (idAlumno == 0) return;

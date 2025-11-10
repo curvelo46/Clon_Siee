@@ -19,16 +19,7 @@ public class Clon_SiieD {
             System.err.println("No se pudo aplicar el estilo Nimbus: " + ex);
         }
 
-        // ====== Iniciar base de datos ======
-        Base_De_Datos baseDatos = new Base_De_Datos();
-        
-       
-
-        // ====== Crear y mostrar ventana principal ======
-            
-            
-
-            frmLogin jose=new frmLogin(baseDatos);
+            frmLogin jose=new frmLogin();
             jose.setVisible(true);
 
         

@@ -2,32 +2,29 @@ package Vista.frm;
 
 import Clases.AjustesObjetos;
 import Clases.Base_De_Datos;
-import Clases.ConexionBD;
+import Clases.EfectoClick;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import javax.swing.JOptionPane;
 
 public class frmLogin extends javax.swing.JFrame {
     
-    private Base_De_Datos baseDatos;
+    private Base_De_Datos consultasBD;
     
-    public frmLogin(Base_De_Datos dato) {
+    public frmLogin() {
         initComponents();
-        this.baseDatos =dato;
+        this.consultasBD = new Base_De_Datos();
         this.getContentPane().setBackground(new Color(221,205,192));
         setSize(820,365);
         setResizable(false);
         setLocationRelativeTo(null);
-        AjustesObjetos.ajustarImagen(lbLogo,"src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg");       
+        AjustesObjetos.ajustarImagen(lbLogo,"src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg");
+        
+        // Aplicar efectos clickeables a los labels
+        configurarEfectosLabels();
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -66,11 +63,6 @@ public class frmLogin extends javax.swing.JFrame {
         getContentPane().add(jLabel3);
         jLabel3.setBounds(380, 200, 140, 32);
 
-        txtContraseña.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtContraseñaActionPerformed(evt);
-            }
-        });
         txtContraseña.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtContraseñaKeyPressed(evt);
@@ -81,11 +73,6 @@ public class frmLogin extends javax.swing.JFrame {
         txtContraseña.setBounds(530, 200, 240, 30);
 
         txtUsuario.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
-        txtUsuario.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtUsuarioActionPerformed(evt);
-            }
-        });
         txtUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtUsuarioKeyPressed(evt);
@@ -121,40 +108,37 @@ public class frmLogin extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void txtContraseñaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContraseñaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtContraseñaActionPerformed
-
-    private void txtUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuarioActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtUsuarioActionPerformed
-
-    private List<String> obtenerCargosPermitidos() {
-        List<String> cargos = new ArrayList<>();
-        String sql = "{CALL Cargos()}";
     
-        try {
-            Connection conn = ConexionBD.getConnection(); 
-            CallableStatement cs = conn.prepareCall(sql);
-            ResultSet rs = cs.executeQuery();
-
-            while (rs.next()) {
-                cargos.add(rs.getString("cargo"));
+    private void configurarEfectosLabels() {
+        // Hacer el logo clickeable (ej: abrir página web o mostrar info)
+        EfectoClick.aplicarLabel(lbLogo, () -> {
+            JOptionPane.showMessageDialog(this, "Sistema de Gestión CBN v1.0", "Información", JOptionPane.INFORMATION_MESSAGE);
+        });
+        
+        // Hacer el título clickeable
+        EfectoClick.aplicarLabel(jLabel1, () -> {
+            // Acción para "CBN"
+            java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+            try {
+                desktop.browse(new java.net.URI("https://cbn.edu.co/"));
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "No se pudo abrir el navegador", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            rs.close();
-            cs.close();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar cargos: " + e.getMessage());
-        }
-    
-    
-        return new ArrayList<>(new LinkedHashSet<>(cargos));
+        });
+        
+        // Hacer el subtítulo clickeable
+        EfectoClick.aplicarLabel(jLabel4, () -> {
+            // Acción para "Lideres en educacion"
+            JOptionPane.showMessageDialog(this, "Misión: Formar líderes con excelencia académica", "Acerca de", JOptionPane.INFORMATION_MESSAGE);
+        });
     }
+    
+    
+    
     
     private void btnSecionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSecionActionPerformed
         // TODO add your handling code here:
-        String usuario = txtUsuario.getText().trim();
+         String usuario = txtUsuario.getText().trim();
         String contraseña = new String(txtContraseña.getPassword());
 
         if (usuario.isEmpty() || contraseña.isEmpty()) {
@@ -162,15 +146,14 @@ public class frmLogin extends javax.swing.JFrame {
             return;
         }
 
-        String rol = baseDatos.login(usuario, contraseña);
+        String rol = consultasBD.login(usuario, contraseña);
 
         if (rol == null) {
             JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Acceso denegado", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        
-        List<String> cargosPermitidos = obtenerCargosPermitidos(); 
+        List<String> cargosPermitidos = consultasBD.obtenerCargosPermitidos(); 
 
         boolean rolValido = false;
         for (String cargo : cargosPermitidos) {
@@ -189,10 +172,10 @@ public class frmLogin extends javax.swing.JFrame {
             return;
         }
 
-        
-        frmplataforma panel = new frmplataforma(baseDatos, rol, usuario);
+        frmplataforma panel = new frmplataforma(consultasBD, rol, usuario);
         panel.setVisible(true);
         this.dispose();       
+            
     }//GEN-LAST:event_btnSecionActionPerformed
     
    

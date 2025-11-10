@@ -19,8 +19,10 @@ import javax.swing.table.TableColumnModel;
  * @author cymaniatico
  */
 public abstract class AjustesObjetos {
+
     
-public static void ajustarImagen(JLabel label, String ruta) {
+    
+    public static void ajustarImagen(JLabel label, String ruta) {
     ImageIcon iconoOriginal = new ImageIcon(ruta);
     Image imagenOriginal = iconoOriginal.getImage();
 

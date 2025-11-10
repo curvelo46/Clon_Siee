@@ -66,7 +66,6 @@
     </Component>
     <Component class="javax.swing.JPasswordField" name="txtContrase&#xf1;a">
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtContrase&#xf1;aActionPerformed"/>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtContrase&#xf1;aKeyPressed,txtContrase&#xf1;aKeyPressed2"/>
       </Events>
       <Constraints>
@@ -82,7 +81,6 @@
         </Property>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtUsuarioActionPerformed"/>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtUsuarioKeyPressed,txtUsuarioKeyPressed2"/>
       </Events>
       <Constraints>

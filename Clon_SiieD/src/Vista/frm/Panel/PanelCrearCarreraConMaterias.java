@@ -1,23 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package Vista.frm.Panel;
 
-import Clases.ConexionBD;
+import Clases.Base_De_Datos;  // ← CAMBIO DE IMPORT
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PanelCrearCarreraConMaterias extends JPanel {
 
-      private JTextField txtNombreCarrera = new JTextField(20);
+    private JTextField txtNombreCarrera = new JTextField(20);
     private JButton btnCrear = new JButton("Crear carrera con materias seleccionadas");
-    private JPanel panelMaterias = new JPanel(new GridLayout(0, 3, 5, 5)); // 3 columnas
+    private JPanel panelMaterias = new JPanel(new GridLayout(0, 3, 5, 5));
     private List<JCheckBox> checkBoxes = new ArrayList<>();
+    private Base_De_Datos basedatos = new Base_De_Datos();  // ← NUEVA INSTANCIA
 
     public PanelCrearCarreraConMaterias() {
         setLayout(new BorderLayout(10, 10));
@@ -27,9 +22,8 @@ public class PanelCrearCarreraConMaterias extends JPanel {
         add(new JScrollPane(panelMaterias), BorderLayout.CENTER);
         add(crearPanelBoton(), BorderLayout.SOUTH);
 
-        cargarTodasLasMaterias(); // ✅ solo materias "libres"
+        cargarTodasLasMaterias();
     }
-
 
     private JPanel crearPanelNombre() {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -46,27 +40,26 @@ public class PanelCrearCarreraConMaterias extends JPanel {
     }
 
     private void cargarTodasLasMaterias() {
-    checkBoxes.clear();
-    panelMaterias.removeAll();
+        checkBoxes.clear();
+        panelMaterias.removeAll();
 
-    // ✅ Trae TODAS las materias (de cualquier carrera)
-    String sql = "SELECT DISTINCT nombre FROM Materias ORDER BY nombre";
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            JCheckBox cb = new JCheckBox(rs.getString("nombre"));
-            checkBoxes.add(cb);
-            panelMaterias.add(cb);
+        try {
+            // ← USO DEL MÉTODO DE Base_De_Datos
+            List<String> materias = basedatos.listarTodasLasMaterias();
+            for (String materia : materias) {
+                JCheckBox cb = new JCheckBox(materia);
+                checkBoxes.add(cb);
+                panelMaterias.add(cb);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar materias: " + ex.getMessage());
         }
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error al cargar materias: " + ex.getMessage());
+        
+        panelMaterias.revalidate();
+        panelMaterias.repaint();
     }
-    panelMaterias.revalidate();
-    panelMaterias.repaint();
-}
 
-   private void crearCarreraConMaterias() {
+    private void crearCarreraConMaterias() {
         String nombreCarrera = txtNombreCarrera.getText().trim();
         if (nombreCarrera.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Escribe un nombre para la carrera");
@@ -83,12 +76,9 @@ public class PanelCrearCarreraConMaterias extends JPanel {
             return;
         }
 
-        String sql = "CALL crear_carrera_con_materias(?, ?)";
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, nombreCarrera);
-            ps.setString(2, String.join(",", seleccionadas));
-            ps.executeUpdate();
+        try {
+            // ← USO DEL MÉTODO DE Base_De_Datos
+            basedatos.crearCarreraConMaterias(nombreCarrera, seleccionadas);
             JOptionPane.showMessageDialog(this, "✅ Carrera creada y materias asignadas");
             txtNombreCarrera.setText("");
             cargarTodasLasMaterias();

@@ -1,20 +1,25 @@
 package Vista.frm.Panel;
 
-import Clases.ConexionBD;
+import Clases.Base_De_Datos;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class PanelReportesAlumno extends JPanel {
+    
+    // ✅ INSTANCIA ESTÁTICA - No requiere pasar Base_De_Datos por constructor
+    private static final Base_De_Datos baseDatos = new Base_De_Datos();
+    
     private JTable tablaReportes;
     private DefaultTableModel modeloTabla;
-    private String usuarioActual;
+    private final String usuarioActual;
     
+    // ✅ CONSTRUCTOR SIN Base_De_Datos - Compatible con frmplataforma
     public PanelReportesAlumno(String usuarioActual) {
         this.usuarioActual = usuarioActual;
-        initComponentes();
+        initComponentes();  // Llama a nuestro método personalizado
         cargarReportes();
     }
     
@@ -43,7 +48,7 @@ public class PanelReportesAlumno extends JPanel {
         tablaReportes.setRowHeight(25);
         tablaReportes.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
         tablaReportes.getTableHeader().setBackground(new Color(192, 4, 29));
-        tablaReportes.getTableHeader().setForeground(Color.WHITE);
+        tablaReportes.getTableHeader().setForeground(Color.BLACK);
         
         // Configurar ancho de columnas
         tablaReportes.getColumnModel().getColumn(0).setPreferredWidth(150);
@@ -56,47 +61,31 @@ public class PanelReportesAlumno extends JPanel {
         scrollTabla.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
         
         add(scrollTabla, BorderLayout.CENTER);
+        // AjustesObjetos.ajustarTabla(tablaReportes);
     }
     
     private void cargarReportes() {
         modeloTabla.setRowCount(0);
         
-        String sql = "{CALL obtener_reportes_alumno_completos(?)}";
-        
-        try (Connection conn = ConexionBD.getConnection();
-             CallableStatement cs = conn.prepareCall(sql)) {
+        try {
+            // ✅ LLAMADA AL MÉTODO ESTÁTICO
+            List<Object[]> reportes = baseDatos.obtenerReportesAlumnoCompletos(usuarioActual);
             
-            cs.setString(1, usuarioActual);
-            ResultSet rs = cs.executeQuery();
-            
-            boolean tieneReportes = false;
-            while (rs.next()) {
-                tieneReportes = true;
-                Timestamp fecha = rs.getTimestamp("fecha");
-                String docente = rs.getString("docente");
-                String materia = rs.getString("materias");
-                String reporte = rs.getString("reporte");
-                
-                Object[] fila = {
-                    fecha != null ? new SimpleDateFormat("dd/MM/yyyy HH:mm").format(fecha) : "",
-                    docente != null ? docente : "N/A",
-                    materia != null ? materia : "N/A",
-                    reporte != null ? reporte : ""
-                };
+            // Llenar la tabla con los datos obtenidos
+            for (Object[] fila : reportes) {
                 modeloTabla.addRow(fila);
             }
             
-            if (!tieneReportes) {
-                modeloTabla.addRow(new Object[]{"No hay reportes registrados", "", "", ""});
-            }
-            
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, 
                 "❌ Error al cargar reportes: " + e.getMessage(), 
                 "Error de Conexión", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
+
+
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

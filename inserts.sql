@@ -67,6 +67,8 @@ select* from docentes;
 select*from materias;
 select*from alumnos;
 select*from Reportes;
-select*from usuarios;
-select*from carreras;
+select*from usuarios;	
+select*from administradores;
+select*from RegistroYControl;
 
+call id_materia_nombre2("Economía");

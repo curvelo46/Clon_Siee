@@ -1,15 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package Vista.frm.Panel;
 
-import Clases.ConexionBD;
+import Clases.Base_De_Datos;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.sql.*;
 import java.util.Enumeration;
+import java.util.List;
 
 public class PanelGestionMaterias extends JPanel {
 
@@ -20,6 +15,7 @@ public class PanelGestionMaterias extends JPanel {
     private JButton btnAsignar = new JButton("Asignar materia");
     private ButtonGroup grupoCarreras = new ButtonGroup();
     private JPanel panelRadios = new JPanel(new GridLayout(0, 1));
+    private Base_De_Datos basedatos = new Base_De_Datos();  // ← INSTANCIA
 
     public PanelGestionMaterias() {
         setLayout(new BorderLayout(10, 10));
@@ -63,50 +59,45 @@ public class PanelGestionMaterias extends JPanel {
 
     private void cargarDocentes() {
         comboDocentes.removeAllItems();
-        String sql = "CALL listado_docentes()";
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                comboDocentes.addItem(rs.getInt("id") + " - " +
-                                      rs.getString("nombre") + " " +
-                                      rs.getString("apellido"));
+        
+        try {
+            List<String[]> docentes = basedatos.listarDocentes();
+            for (String[] docente : docentes) {
+                comboDocentes.addItem(docente[0] + " - " + docente[1] + " " + docente[2]);
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error docentes: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar docentes", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void cargarMaterias() {    
-    comboMaterias.removeAllItems();
-    comboMaterias.addItem("Seleccione materia"); // ← texto en blanco
-    String carrera = getCarreraSeleccionada();
-    if (carrera == null) return;
+        comboMaterias.removeAllItems();
+        comboMaterias.addItem("Seleccione materia");
+        
+        String carrera = getCarreraSeleccionada();
+        if (carrera == null) return;
 
-    String sql = "CALL materias_por_carrera(?)";
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, carrera);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            comboMaterias.addItem(rs.getString("nombre"));
+        try {
+            List<String> materias = basedatos.listarMateriasPorCarrera(carrera);
+            for (String materia : materias) {
+                comboMaterias.addItem(materia);
+            }
+            comboMaterias.setSelectedIndex(0);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar materias", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
         }
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error materias: " + ex.getMessage());
     }
-    comboMaterias.setSelectedIndex(0); // deja el texto como placeholder
-    ((JLabel) comboMaterias.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER); // centrado (opcional)
-}
 
     private void cargarCarreras() {
         panelRadios.removeAll();
         grupoCarreras = new ButtonGroup();
-        String sql = "SELECT nombre FROM Carreras";
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                JRadioButton rb = new JRadioButton(rs.getString("nombre"));
+        
+        try {
+            List<String> carreras = basedatos.listarCarreras();
+            for (String carrera : carreras) {
+                JRadioButton rb = new JRadioButton(carrera);
                 grupoCarreras.add(rb);
                 panelRadios.add(rb);
             }
@@ -114,103 +105,60 @@ public class PanelGestionMaterias extends JPanel {
                 ((JRadioButton) grupoCarreras.getElements().nextElement()).setSelected(true);
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error carreras: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar carreras", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
-                // 👇 Actualización instantánea al cambiar de carrera
+
+        // Actualización instantánea al cambiar de carrera
         for (Enumeration<AbstractButton> buttons = grupoCarreras.getElements(); buttons.hasMoreElements();) {
             AbstractButton btn = buttons.nextElement();
             btn.addActionListener(e -> {
-                cargarMaterias();          // recarga el combo
-                comboMaterias.setSelectedIndex(-1); // (opcional) limpia selección previa
+                cargarMaterias();
+                comboMaterias.setSelectedIndex(-1);
             });
         }
     }
 
     private void crearMateria() {
-    String nombre = txtNombreMateria.getText().trim();
-    String carrera = getCarreraSeleccionada();
+        String nombre = txtNombreMateria.getText().trim();
+        String carrera = getCarreraSeleccionada();
 
-    if (nombre.isEmpty() || carrera == null) {
-        JOptionPane.showMessageDialog(this, "Escribe un nombre y selecciona una carrera");
-        return;
-    }
-
-    try (Connection conn = ConexionBD.getConnection()) {
-        conn.setAutoCommit(false);
-
-        // 1. Obtener id de la carrera seleccionada
-        int idCarrera = 0;
-        String sqlCarrera = "SELECT id FROM Carreras WHERE nombre = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sqlCarrera)) {
-            ps.setString(1, carrera);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) idCarrera = rs.getInt("id");
-        }
-
-        if (idCarrera == 0) {
-            JOptionPane.showMessageDialog(this, "Carrera no encontrada");
+        if (nombre.isEmpty() || carrera == null) {
+            JOptionPane.showMessageDialog(this, "Escribe un nombre y selecciona una carrera");
             return;
         }
 
-        // 2. Crear materia (ya con carrera_id)
-        String sqlCrear = "CALL crear_materia(?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sqlCrear)) {
-            ps.setString(1, nombre);
-            ps.setInt(2, idCarrera);
-            ps.executeUpdate();
+        try {
+            basedatos.crearMateria(nombre, carrera);
+            txtNombreMateria.setText("");
+            cargarMaterias();
+        } catch (Exception ex) {
+            // El mensaje ya se muestra en Base_De_Datos
         }
-
-        conn.commit();
-        JOptionPane.showMessageDialog(this, "Materia creada y asociada a " + carrera);
-        txtNombreMateria.setText("");
-        cargarMaterias();
-
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error al crear: " + ex.getMessage());
     }
-}
 
     private void asignarMateria() {
-    String materia = (String) comboMaterias.getSelectedItem();
-    String docente = (String) comboDocentes.getSelectedItem();
-    String carrera = getCarreraSeleccionada();
+        String materia = (String) comboMaterias.getSelectedItem();
+        String docente = (String) comboDocentes.getSelectedItem();
+        String carrera = getCarreraSeleccionada();
 
-    if (materia == null || docente == null || carrera == null) return;
+        if (materia == null || docente == null || carrera == null) return;
 
-    int idDocente = Integer.parseInt(docente.split(" - ")[0]);
-    int idMateria = 0;
+        int idDocente = Integer.parseInt(docente.split(" - ")[0]);
 
-    // obtener id materia **perteneciente a la carrera seleccionada**
-    String sqlId = "CALL id_materia_por_carrera(?, ?)";
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sqlId)) {
-        ps.setString(1, materia);
-        ps.setString(2, carrera);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) idMateria = rs.getInt("id");
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error al obtener id de materia: " + ex.getMessage());
-        return;
+        try {
+            int idMateria = basedatos.obtenerIdMateriaPorCarrera(materia, carrera);
+            if (idMateria == 0) {
+                JOptionPane.showMessageDialog(this, "Materia no encontrada en la carrera seleccionada", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            basedatos.asignarMateriaADocente(idDocente, idMateria);
+        } catch (Exception ex) {
+            // El mensaje ya se muestra en Base_De_Datos
+        }
     }
-
-    if (idMateria == 0) {
-        JOptionPane.showMessageDialog(this, "No se encontró la materia en la carrera seleccionada");
-        return;
-    }
-
-    // asignar docente – materia
-    String sqlAsig = "CALL asignar_m_a_p(?, ?)";
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sqlAsig)) {
-        ps.setInt(1, idDocente);
-        ps.setInt(2, idMateria);
-        ps.executeUpdate();
-        JOptionPane.showMessageDialog(this, "Materia asignada al docente");
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error al asignar: " + ex.getMessage());
-    }
-}
 
     public String getCarreraSeleccionada() {
         for (Enumeration<AbstractButton> buttons = grupoCarreras.getElements(); buttons.hasMoreElements();) {
@@ -219,8 +167,8 @@ public class PanelGestionMaterias extends JPanel {
         }
         return null;
     }
-    
-    
+
+  
     
     /**
      * This method is called from within the constructor to initialize the form.

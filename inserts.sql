@@ -22,6 +22,7 @@ VALUES
 INSERT INTO Alumnos (id) VALUES (1), (2);
 INSERT INTO Docentes (id) VALUES (3);
 INSERT INTO Administradores (id) VALUES (4);
+INSERT INTO RegistroYControl (id) VALUES (4);
 
 
 

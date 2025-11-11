@@ -1,13 +1,21 @@
 package Vista.frm.Panel;
 
-import Clases.Base_De_Datos;
+import Clases.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
 
 public class PanelReportesD extends JPanel {
     private final Base_De_Datos baseDatos;
@@ -22,11 +30,24 @@ public class PanelReportesD extends JPanel {
     private final JButton btnBuscar = new JButton("Buscar");
     private Map<String, Integer> alumnoIdMap = new HashMap<>();
     
+    
+    private final DefaultTableModel modeloTablaReportes = new DefaultTableModel(
+        new Object[]{"Fecha", "Estudiante", "Materia", "Reporte"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+    private final JTable tablaReportes = new JTable(modeloTablaReportes);
+    private final JScrollPane scrollTablaReportes = new JScrollPane(tablaReportes);
+    private TableRowSorter<DefaultTableModel> sorter;
+    
+    
     private JPanel jpCarreras = new JPanel();
     private ButtonGroup grupoCarreras = new ButtonGroup();
     private Map<String, Integer> carreraIdMap = new HashMap<>();
     
-    private static final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private static final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
     
     public PanelReportesD(Base_De_Datos baseDatos, String profesor) {
         this.baseDatos = baseDatos;
@@ -49,14 +70,24 @@ public class PanelReportesD extends JPanel {
         
         // Centro
         jpMaterias.setLayout(new BoxLayout(jpMaterias, BoxLayout.Y_AXIS));
+        jpMaterias.setLayout(new BoxLayout(jpMaterias, BoxLayout.Y_AXIS));
         jpMaterias.setBorder(BorderFactory.createTitledBorder("Materias"));
 
         JScrollPane scrollMaterias = new JScrollPane(jpMaterias);
+        
+        // Panel para materias y tabla de reportes
         JPanel centro = new JPanel(new BorderLayout());
         centro.add(scrollCarreras, BorderLayout.NORTH);
         centro.add(scrollMaterias, BorderLayout.CENTER);
+
+        scrollTablaReportes.setBorder(BorderFactory.createTitledBorder("Reportes de la Materia"));
+        scrollTablaReportes.setPreferredSize(new Dimension(600, 200));
+        centro.add(scrollTablaReportes, BorderLayout.SOUTH);
+        
         scrollMaterias.setPreferredSize(new Dimension(300, 100));
 
+        
+        
         // Sur
         JPanel sur = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -78,7 +109,10 @@ public class PanelReportesD extends JPanel {
         this.add(centro, BorderLayout.CENTER);
         this.add(sur, BorderLayout.SOUTH);
 
-        cargarCarrerasConMateriasDocente(); // Carga inicial sin alertas
+        sorter = new TableRowSorter<>(modeloTablaReportes);
+        tablaReportes.setRowSorter(sorter);
+
+        cargarCarrerasConMateriasDocente();
         configurarBusquedaDeAlumnos();
         configurarComboAlumnos();
         configurarBotonSubir();
@@ -97,6 +131,65 @@ public class PanelReportesD extends JPanel {
         return null;
     }
 
+    private void cargarReportesDeMateria() {
+        modeloTablaReportes.setRowCount(0); // Limpiar tabla
+        
+        String materia = getMateriaSeleccionada();
+        String carrera = getCarreraSeleccionada();
+        
+        if (materia == null || carrera == null) return;
+        
+        int idCarrera = carreraIdMap.get(carrera);
+        int docenteMateriaId = baseDatos.obtenerDocenteMateriaId(profesor, materia, idCarrera);
+        
+        if (docenteMateriaId == -1) return;
+        
+        // Obtener todos los reportes de esta materia
+        String sql = "call Reportes_para_Docente(?)";
+        
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, docenteMateriaId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Timestamp fecha = rs.getTimestamp("fecha");
+                String estudiante = rs.getString("estudiante");
+                String nombreMateria = rs.getString("materia");
+                String reporte = rs.getString("reporte");
+                
+                modeloTablaReportes.addRow(new Object[]{
+                    fecha != null ? sdf.format(fecha) : "",
+                    estudiante,
+                    nombreMateria,
+                    reporte
+                });
+            }
+            
+            // Aplicar filtro si hay un alumno seleccionado
+            aplicarFiltroAlumno();
+            
+        } catch (Exception e) {
+            System.err.println("Error al cargar reportes de materia: " + e.getMessage());
+        }
+    }
+
+    
+    private void aplicarFiltroAlumno() {
+        String alumnoSeleccionado = (String) comboAlumnos.getSelectedItem();
+        
+        if (alumnoSeleccionado == null || alumnoSeleccionado.equals("Sin coincidencias")) {
+            sorter.setRowFilter(null); // Mostrar todos
+        } else {
+            // Filtrar por la columna "Estudiante" (índice 1)
+            RowFilter<DefaultTableModel, Object> rf = RowFilter.regexFilter("(?i)" + alumnoSeleccionado, 1);
+            sorter.setRowFilter(rf);
+        }
+    }
+    
+    
+    
     private String getCarreraSeleccionada() {
         for (Component comp : jpCarreras.getComponents()) {
             if (comp instanceof JRadioButton) {
@@ -162,16 +255,13 @@ public class PanelReportesD extends JPanel {
     }
 
     // ✅ Sobrecarga conveniente para llamadas sin filtros (oculta alertas por defecto)
-    private void cargarAlumnos(String carrera, String filtro) {
-        cargarAlumnos(carrera, filtro, false);
-    }
-
+     
     private void cargarAlumnos() {
         String carrera = getCarreraSeleccionada();
         cargarAlumnos(carrera, null, false); // Sin alertas al inicio
     }
 
-    private void cargarMateriasPorCarrera(int idCarrera) {
+     private void cargarMateriasPorCarrera(int idCarrera) {
         jpMaterias.removeAll();
         ButtonGroup grupoMaterias = new ButtonGroup();
 
@@ -181,12 +271,16 @@ public class PanelReportesD extends JPanel {
             JRadioButton radio = new JRadioButton(materia);
             grupoMaterias.add(radio);
             jpMaterias.add(radio);
-            radio.addActionListener(e -> cargarAlumnos()); // Usa la versión sin alertas
+            radio.addActionListener(e -> {
+                cargarAlumnos(); 
+                cargarReportesDeMateria(); // NUEVO: Cargar reportes al cambiar materia
+            });
         }
         
         if (grupoMaterias.getButtonCount() > 0) {
             grupoMaterias.getElements().nextElement().setSelected(true);
-            cargarAlumnos(); // Sin alertas al cargar materias
+            cargarAlumnos();
+            cargarReportesDeMateria(); // NUEVO: Cargar reportes inicialmente
         }
         
         jpMaterias.revalidate();
@@ -221,7 +315,10 @@ public class PanelReportesD extends JPanel {
     }
 
     private void configurarComboAlumnos() {
-        comboAlumnos.addActionListener(e -> actualizarCedulaAlumno());
+        comboAlumnos.addActionListener(e -> {
+            actualizarCedulaAlumno();
+            aplicarFiltroAlumno(); // NUEVO: Filtrar tabla cuando se selecciona alumno
+        });
     }
 
     private void actualizarCedulaAlumno() {
@@ -236,45 +333,77 @@ public class PanelReportesD extends JPanel {
     }
 
     private void configurarBotonSubir() {
-        btnSubir.addActionListener(e -> {
-            String idText = txtIdAlumno.getText().trim();
-            String reporte = txtReporte.getText().trim();
-
-            if (idText.isEmpty() || reporte.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Complete todos los campos.");
-                return;
-            }
-
-            try {
-                String seleccion = (String) comboAlumnos.getSelectedItem();
-                if (seleccion == null || !alumnoIdMap.containsKey(seleccion)) {
-                    JOptionPane.showMessageDialog(this, "Seleccione un alumno válido.");
+        btnSubir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String reporte = txtReporte.getText().trim();
+                String alumno = (String) comboAlumnos.getSelectedItem();
+                
+                if (reporte.isEmpty()) {
+                    mostrarAdvertencia("El reporte no puede estar vacío");
                     return;
                 }
                 
-                int idAlumno = alumnoIdMap.get(seleccion);
-                int idDocente = baseDatos.obtenerIdDocenteDesdeUsuario(profesor);
-
-                if (!baseDatos.alumnoExisteEnTablaAlumnos(idAlumno)) {
-                    JOptionPane.showMessageDialog(this, "El alumno no está registrado en la tabla Alumnos.");
+                if (alumno == null || !alumnoIdMap.containsKey(alumno)) {
+                    mostrarAdvertencia("Seleccione un alumno válido");
                     return;
                 }
-
-                boolean exito = baseDatos.insertarReporte(idAlumno, reporte, idDocente);
                 
-                if (exito) {
-                    JOptionPane.showMessageDialog(this, "✅ Reporte guardado correctamente.");
-                    txtReporte.setText("");
-                } else {
-                    JOptionPane.showMessageDialog(this, "❌ Error al guardar el reporte.");
+                try {
+                    int idAlumno = alumnoIdMap.get(alumno);
+                    int idDocente = baseDatos.obtenerIdDocenteDesdeUsuario(profesor);
+                    
+                    String carrera = getCarreraSeleccionada();
+                    String materia = getMateriaSeleccionada();
+                    
+                    if (carrera == null || materia == null) {
+                        mostrarAdvertencia("Seleccione carrera y materia");
+                        return;
+                    }
+                    
+                    int idCarrera = carreraIdMap.get(carrera);
+                    int docenteMateriaId = baseDatos.obtenerDocenteMateriaId(profesor, materia, idCarrera);
+                    
+                    if (docenteMateriaId == -1) {
+                        mostrarError("No se pudo obtener la relación docente-materia");
+                        return;
+                    }
+                    
+                    if (!baseDatos.alumnoExisteEnTablaAlumnos(idAlumno)) {
+                        mostrarError("El alumno no está registrado correctamente");
+                        return;
+                    }
+                    
+                    boolean exito = baseDatos.insertarReporte(idAlumno, reporte, idDocente, docenteMateriaId);
+                    
+                    if (exito) {
+                        mostrarInformacion("✅ Reporte guardado correctamente");
+                        txtReporte.setText("");
+                        cargarReportesDeMateria(); // NUEVO: Recargar tabla después de guardar
+                    } else {
+                        mostrarError("❌ Error al guardar el reporte");
+                    }
+                    
+                } catch (Exception r ) {
+                    mostrarError("Error al procesar reporte: " + r.getMessage());
                 }
-                
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error al guardar reporte: " + ex.getMessage());
             }
         });
     }
 
+  private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void mostrarAdvertencia(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Advertencia", JOptionPane.WARNING_MESSAGE);
+    }
+    
+    private void mostrarInformacion(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje);
+    }
+    
+    
     private void configurarBusquedaDeAlumnos() {
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelBusqueda.add(new JLabel("Buscar alumno:"));
@@ -287,16 +416,48 @@ public class PanelReportesD extends JPanel {
         btnBuscar.addActionListener(e -> buscarAlumnoPorNombre());
     }
  
-    private void buscarAlumnoPorNombre() {
-        String carrera = getCarreraSeleccionada();
-        if (carrera == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione una carrera primero.");
-            return;
-        }
-
-        String texto = txtBuscar.getText().trim();
-        cargarAlumnos(carrera, texto, true); // ✅ Muestra alerta si no encuentra
+   private void buscarAlumnoPorNombre() {
+    String texto = txtBuscar.getText().trim();
+    if (texto.isEmpty()) {
+        mostrarAdvertencia("Ingrese un nombre o apellido para buscar.");
+        return;
     }
+    
+    // ✅ VALIDAR QUE HAYA MATERIA SELECCIONADA
+    String materia = getMateriaSeleccionada();
+    if (materia == null) {
+        mostrarAdvertencia("Seleccione una materia primero.");
+        return;
+    }
+    
+    // ✅ OBTENER LA CARRERA SELECCIONADA
+    String carrera = getCarreraSeleccionada();
+    if (carrera == null) {
+        mostrarAdvertencia("Seleccione una carrera primero.");
+        return;
+    }
+    
+    int idCarrera = carreraIdMap.get(carrera);
+    
+    // ✅ BUSCAR SOLO EN ESA MATERIA + CARRERA + DOCENTE
+    Map<String, Integer> estudiantes = 
+        baseDatos.buscarAlumnosPorMateriaCarreraDocente(profesor, materia, idCarrera, texto);
+    
+    comboAlumnos.removeAllItems();
+    alumnoIdMap.clear();
+    
+    if (estudiantes.isEmpty()) {
+        mostrarAdvertencia("No se encontraron estudiantes en '" + materia + "' con: " + texto);
+        return;
+    }
+    
+    for (Map.Entry<String, Integer> entry : estudiantes.entrySet()) {
+        comboAlumnos.addItem(entry.getKey());
+        alumnoIdMap.put(entry.getKey(), entry.getValue());
+    }
+    
+    comboAlumnos.setSelectedIndex(0);
+}
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

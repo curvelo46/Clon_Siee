@@ -1,6 +1,6 @@
 package Vista.frm.Panel;
 
-import Clases.Base_De_Datos;
+import Clases.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Enumeration;
@@ -15,7 +15,7 @@ public class PanelGestionMaterias extends JPanel {
     private JButton btnAsignar = new JButton("Asignar materia");
     private ButtonGroup grupoCarreras = new ButtonGroup();
     private JPanel panelRadios = new JPanel(new GridLayout(0, 1));
-    private Base_De_Datos basedatos = new Base_De_Datos();  // ← INSTANCIA
+    private Base_De_Datos basedatos = new Base_De_Datos();
 
     public PanelGestionMaterias() {
         setLayout(new BorderLayout(10, 10));
@@ -26,7 +26,6 @@ public class PanelGestionMaterias extends JPanel {
         add(crearPanelCarreras(), BorderLayout.SOUTH);
 
         cargarDocentes();
-        cargarMaterias();
         cargarCarreras();
     }
 
@@ -59,14 +58,14 @@ public class PanelGestionMaterias extends JPanel {
 
     private void cargarDocentes() {
         comboDocentes.removeAllItems();
-        
         try {
             List<String[]> docentes = basedatos.listarDocentes();
             for (String[] docente : docentes) {
                 comboDocentes.addItem(docente[0] + " - " + docente[1] + " " + docente[2]);
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error de sistema al cargar docentes", 
+            // Mostrar error solo si es un problema de sistema (no si la lista está vacía)
+            JOptionPane.showMessageDialog(this, "Error al cargar docentes: " + ex.getMessage(), 
                                         "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -74,18 +73,25 @@ public class PanelGestionMaterias extends JPanel {
     private void cargarMaterias() {    
         comboMaterias.removeAllItems();
         comboMaterias.addItem("Seleccione materia");
+        comboMaterias.setSelectedIndex(0);
         
         String carrera = getCarreraSeleccionada();
-        if (carrera == null) return;
+        if (carrera == null) {
+            comboMaterias.setEnabled(false);
+            return;
+        }
+        
+        comboMaterias.setEnabled(true);
 
         try {
             List<String> materias = basedatos.listarMateriasPorCarrera(carrera);
             for (String materia : materias) {
-                comboMaterias.addItem(materia);
+                if (materia != null && !materia.trim().isEmpty()) {
+                    comboMaterias.addItem(materia);
+                }
             }
-            comboMaterias.setSelectedIndex(0);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error de sistema al cargar materias", 
+            JOptionPane.showMessageDialog(this, "Error al cargar materias: " + ex.getMessage(), 
                                         "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -100,22 +106,20 @@ public class PanelGestionMaterias extends JPanel {
                 JRadioButton rb = new JRadioButton(carrera);
                 grupoCarreras.add(rb);
                 panelRadios.add(rb);
+                rb.addActionListener(e -> cargarMaterias());
             }
+            
             if (grupoCarreras.getButtonCount() > 0) {
                 ((JRadioButton) grupoCarreras.getElements().nextElement()).setSelected(true);
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error de sistema al cargar carreras", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        // Actualización instantánea al cambiar de carrera
-        for (Enumeration<AbstractButton> buttons = grupoCarreras.getElements(); buttons.hasMoreElements();) {
-            AbstractButton btn = buttons.nextElement();
-            btn.addActionListener(e -> {
                 cargarMaterias();
-                comboMaterias.setSelectedIndex(-1);
-            });
+            }
+            
+            panelRadios.revalidate();
+            panelRadios.repaint();
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar carreras: " + ex.getMessage(), 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -123,6 +127,7 @@ public class PanelGestionMaterias extends JPanel {
         String nombre = txtNombreMateria.getText().trim();
         String carrera = getCarreraSeleccionada();
 
+        // ⚠️ ÚNICA ALERTA DE VALIDACIÓN
         if (nombre.isEmpty() || carrera == null) {
             JOptionPane.showMessageDialog(this, "Escribe un nombre y selecciona una carrera");
             return;
@@ -132,8 +137,10 @@ public class PanelGestionMaterias extends JPanel {
             basedatos.crearMateria(nombre, carrera);
             txtNombreMateria.setText("");
             cargarMaterias();
+            // ✅ Éxito: Base_De_Datos maneja su propia alerta (no repetir)
         } catch (Exception ex) {
-            // El mensaje ya se muestra en Base_De_Datos
+            // ❌ Error: Base_De_Datos ya manejó la alerta (solo loguear)
+            System.err.println("Error en crearMateria: " + ex.getMessage());
         }
     }
 
@@ -142,21 +149,29 @@ public class PanelGestionMaterias extends JPanel {
         String docente = (String) comboDocentes.getSelectedItem();
         String carrera = getCarreraSeleccionada();
 
-        if (materia == null || docente == null || carrera == null) return;
-
-        int idDocente = Integer.parseInt(docente.split(" - ")[0]);
+        // ⚠️ ÚNICA ALERTA DE VALIDACIÓN
+        if (materia == null || materia.equals("Seleccione materia") || 
+            docente == null || carrera == null) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una materia válida, un docente y una carrera");
+            return;
+        }
 
         try {
+            int idDocente = Integer.parseInt(docente.split(" - ")[0]);
             int idMateria = basedatos.obtenerIdMateriaPorCarrera(materia, carrera);
+            
             if (idMateria == 0) {
+                // ⚠️ ÚNICA ALERTA DE VALIDACIÓN (no encontrado)
                 JOptionPane.showMessageDialog(this, "Materia no encontrada en la carrera seleccionada", 
                                             "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             basedatos.asignarMateriaADocente(idDocente, idMateria);
+            // ✅ Éxito: Base_De_Datos maneja su propia alerta (no repetir)
         } catch (Exception ex) {
-            // El mensaje ya se muestra en Base_De_Datos
+            // ❌ Error: Base_De_Datos ya manejó la alerta (solo loguear)
+            System.err.println("Error en asignarMateria: " + ex.getMessage());
         }
     }
 
@@ -168,7 +183,6 @@ public class PanelGestionMaterias extends JPanel {
         return null;
     }
 
-  
     
     /**
      * This method is called from within the constructor to initialize the form.

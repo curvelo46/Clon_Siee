@@ -14,6 +14,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
     private final JComboBox<String> comboAlumnos = new JComboBox<>();
     private final JTextField txtBuscar = new JTextField(15);
     private final JButton btnBuscar = new JButton("Buscar");
+    private String usernameAlumno;
     
     /* ---------- Repositorio de datos ---------- */
     private final Base_De_Datos repo = new Base_De_Datos(); 
@@ -30,9 +31,10 @@ public class PanelAlumnosPorCarrera extends JPanel {
         }
     };
 
+    // ✅ CORREGIDO: Ahora tiene 4 columnas en el orden correcto
     private final JTable tablaReportes = new JTable();
     private final DefaultTableModel modeloReportes = new DefaultTableModel(
-        new Object[]{"Reporte", "Docente", "Fecha"}, 0) {
+        new Object[]{"Fecha", "Docente", "Materia", "Reporte"}, 0) { // ✅ NUEVA COLUMNA "Materia"
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
@@ -43,7 +45,6 @@ public class PanelAlumnosPorCarrera extends JPanel {
 
     public PanelAlumnosPorCarrera() {
         AjustesObjetos.ajustarTabla(tablaNotas);
-        AjustesObjetos.ajustarTabla(tablaReportes);
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Seleccione una carrera y alumno"));
 
@@ -76,11 +77,12 @@ public class PanelAlumnosPorCarrera extends JPanel {
         JScrollPane scrollNotas = new JScrollPane(tablaNotas);
         scrollNotas.setBorder(BorderFactory.createTitledBorder("Notas por materia"));
 
-        /* --- nuevo contenedor para la tabla y su etiqueta --- */
+        /* --- contenedor para la tabla de notas y su etiqueta de promedio --- */
         JPanel panelNotasConPromedio = new JPanel(new BorderLayout());
         panelNotasConPromedio.add(scrollNotas, BorderLayout.CENTER);
         panelNotasConPromedio.add(lblPromedioGeneral, BorderLayout.SOUTH);
         
+        // ✅ Configurar tabla de reportes con el modelo corregido
         tablaReportes.setModel(modeloReportes);
         JScrollPane scrollReportes = new JScrollPane(tablaReportes);
         scrollReportes.setBorder(BorderFactory.createTitledBorder("Reportes del alumno"));
@@ -90,17 +92,26 @@ public class PanelAlumnosPorCarrera extends JPanel {
         splitCentral.setResizeWeight(0.5);
 
         JPanel panelCentral = new JPanel(new BorderLayout());
-        panelCentral.add(splitCentral, BorderLayout.CENTER);
+        panelCentral.add(splitCentral, BorderLayout.CENTER);        
 
         /* ---------- ensamblado ---------- */
         add(scrollRadios, BorderLayout.WEST);
         add(panelAlumnos, BorderLayout.NORTH);
-        add(panelCentral, BorderLayout.CENTER);
+        add(panelCentral, BorderLayout.CENTER);  
 
+        // ✨ Configurar listeners
         btnBuscar.addActionListener(e -> buscarAlumnoPorNombre());
         comboAlumnos.addActionListener(e -> {
             cargarNotasYPromedio();
-            cargarReportesDelAlumno();
+            // Forzar recarga de reportes al seleccionar alumno
+            String alumno = (String) comboAlumnos.getSelectedItem();
+            if (alumno != null && alumno.contains(" ")) {
+                String[] partes = alumno.split(" ", 2);
+                int idAlumno = repo.obtenerIdAlumnoPorNombre(partes[0], partes[1]);
+                if (idAlumno > 0) {
+                    cargarReportesDelAlumno(idAlumno);
+                }
+            }
         });
 
         cargarCarreras();
@@ -172,6 +183,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
     private void cargarNotasYPromedio() {
         modeloNotas.setRowCount(0);
         lblPromedioGeneral.setText("Promedio general: --");
+        modeloReportes.setRowCount(0); // Limpiar reportes también
 
         String alumno = (String) comboAlumnos.getSelectedItem();
         String carreraNombre = getCarreraSeleccionada();
@@ -188,39 +200,23 @@ public class PanelAlumnosPorCarrera extends JPanel {
         
         if (idAlumno == 0 || idCarrera == 0) return;
 
+        // Cargar notas
         List<Object[]> notas = repo.listarNotasPorAlumnoCarrera(idAlumno, idCarrera);
-        
         double sumaTotal = 0;
         int materias = 0;
 
         for (Object[] nota : notas) {
             modeloNotas.addRow(nota);
-            // ← CORREGIDO: Conversión segura que maneja cualquier tipo numérico
             Object promedioObj = nota[4];
             if (promedioObj != null) {
                 try {
-                    double promedio;
-                    if (promedioObj instanceof String) {
-                        // Si es String, limpiar y convertir
-                        String promedioStr = (String) promedioObj;
-                        promedioStr = promedioStr.replace(",", ".").trim(); // Reemplazar coma por punto
-                        if (!promedioStr.isEmpty()) {
-                            promedio = Double.parseDouble(promedioStr);
-                        } else {
-                            continue; // Saltar si está vacío
-                        }
-                    } else if (promedioObj instanceof Number) {
-                        // Si es Double, Float, Integer, etc.
-                        promedio = ((Number) promedioObj).doubleValue();
-                    } else {
-                        System.err.println("Tipo de dato inesperado en promedio: " + promedioObj.getClass());
-                        continue;
-                    }
-                    
+                    double promedio = promedioObj instanceof String ? 
+                        Double.parseDouble(((String) promedioObj).replace(",", ".")) : 
+                        ((Number) promedioObj).doubleValue();
                     sumaTotal += promedio;
                     materias++;
                 } catch (Exception ex) {
-                    System.err.println("Error al procesar promedio '" + promedioObj + "': " + ex.getMessage());
+                    System.err.println("Error al procesar promedio: " + ex.getMessage());
                 }
             }
         }
@@ -229,30 +225,37 @@ public class PanelAlumnosPorCarrera extends JPanel {
             double promedioGeneral = sumaTotal / materias;
             lblPromedioGeneral.setText("Promedio general: " + String.format("%.1f", promedioGeneral));
         }
+
+        // Cargar reportes del alumno
+        cargarReportesDelAlumno(idAlumno);
     }
-
-    /* -------------------- REPORTES -------------------- */
-    private void cargarReportesDelAlumno() {
-        modeloReportes.setRowCount(0);
-
-        String alumno = (String) comboAlumnos.getSelectedItem();
-        if (alumno == null || !alumno.contains(" ")) return;
-
-        String[] partes = alumno.split(" ", 2);
-        if (partes.length < 2) return;
-        String nombre = partes[0];
-        String apellido = partes[1];
-
-        int idAlumno = repo.obtenerIdAlumnoPorNombre(nombre, apellido);
-        if (idAlumno == 0) return;
-
-        List<Object[]> reportes = repo.obtenerReportesConDocente(idAlumno);
-        for (Object[] reporte : reportes) {
-            modeloReportes.addRow(reporte);
+    
+    /**
+     * ✅ Carga los reportes del alumno desde la base de datos
+     * @param idAlumno ID del alumno seleccionado
+     */
+    private void cargarReportesDelAlumno(int idAlumno) {
+        modeloReportes.setRowCount(0); // Limpiar tabla
+        
+        // Obtener username del alumno para el procedimiento
+        usernameAlumno = repo.obtenerUsernamePorIdAlumno(idAlumno);
+        if (usernameAlumno == null) {
+            modeloReportes.addRow(new Object[]{"Error: No se encontró el usuario", "", "", ""});
+            return;
+        }
+        
+        List<Object[]> reportes = repo.obtenerReportesAlumnoCompletos(usernameAlumno);
+        
+        if (reportes.isEmpty()) {
+            modeloReportes.addRow(new Object[]{"No hay reportes registrados", "", "", ""});
+        } else {
+            for (Object[] reporte : reportes) {
+                modeloReportes.addRow(reporte); // ✅ Ahora coincide con 4 columnas
+            }
         }
     }
-
-    /* -------------------- UTILS -------------------- */
+  
+    /* -------------------- UTILIDADES -------------------- */
     public String getAlumnoSeleccionado() {
         return (String) comboAlumnos.getSelectedItem();
     }
@@ -265,6 +268,8 @@ public class PanelAlumnosPorCarrera extends JPanel {
         }
         return null;
     }
+
+
 
 
     /**

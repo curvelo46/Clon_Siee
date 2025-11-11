@@ -32,7 +32,7 @@ public class PanelListaUsuarios extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         initComponentes();
         cargarRoles();
-        AjustesObjetos.ajustarTabla(tablaUsuarios);
+
     }
 
     private void initComponentes() {
@@ -99,6 +99,8 @@ public class PanelListaUsuarios extends JPanel {
             for (Object[] usuario : usuarios) {
                 modeloTabla.addRow(usuario);
             }
+            
+            AjustesObjetos.ajustarTabla(tablaUsuarios);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error de sistema al cargar usuarios", 
                                         "Error", JOptionPane.ERROR_MESSAGE);

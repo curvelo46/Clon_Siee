@@ -28,6 +28,7 @@ public class PanelListaEstudiantes extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         initComponentes();
         cargarMateriasDelDocente();
+        AjustesObjetos.ajustarTabla(tablaEstudiantes);
     }
 
     private void initComponentes() {

@@ -25,6 +25,7 @@ public class PanelMisNotas extends JPanel {
         
         initComponentes();
         cargarCarreras();
+        AjustesObjetos.ajustarTabla(tablaNotas);
     }
     
     private void initComponentes() {

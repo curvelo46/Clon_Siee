@@ -12,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import Vista.frm.Panel.PanelMatriculaAlumno;
+import Vista.frm.Panel.PanelGestionMaterias;
 import Vista.frm.Panel.*;
 import java.awt.BorderLayout;
 
@@ -586,7 +588,11 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
         lbModificarDatos.setText("Modificar Datos");
         RCModificarDatos.add(lbModificarDatos);
         lbModificarDatos.setBounds(50, 20, 150, 20);
-        
+        lbModificarDatos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbModificarDatosMouseClicked(evt);
+            }
+        });
 
         lbModificarDatosf.setText("jLabel4");
         RCModificarDatos.add(lbModificarDatosf);
@@ -606,6 +612,11 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
         lbListadoUsuarios.setForeground(new java.awt.Color(255, 255, 255));
         lbListadoUsuarios.setText("Listado de Usuarios");
         RCListadoUsuarios.add(lbListadoUsuarios);
+        lbListadoUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
+           public void mouseClicked(java.awt.event.MouseEvent evt) {
+               lbListadoUsuariosMouseClicked(evt);
+           }
+        });               
         lbListadoUsuarios.setBounds(50, 20, 150, 20);
 
         lblistausuariosf.setText("jLabel4");

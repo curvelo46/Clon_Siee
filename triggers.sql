@@ -1,4 +1,5 @@
-delimiter $$
+	delimiter $$
+
 CREATE TRIGGER trg_crear_user_contrasena
 BEFORE INSERT ON Usuarios
 FOR EACH ROW
@@ -28,17 +29,5 @@ BEGIN
         SET NEW.contrasena_hash = CONCAT(NEW.cc, inicial_nom, inicial_ape);
     END IF;
 END$$
-
-
-
-
-
-
-
-
-
-
-
-
 
 DELIMITER ;

@@ -18,7 +18,7 @@ CALL Cargos();
 CALL Listado_Materias();
 CALL listar_carreras();
 CALL obtener_roles_usuarios();
-CALL listar_usuarios_por_rol('alumno');
+CALL listar_usuarios_por_rol('alumno');	
 CALL listar_alumnos_por_carrera('Ingeniería de Sistemas');
 CALL listar_notas_docente_materia('laura@mail.com', 'Bases de Datos', 1);
 CALL listar_notas_por_alumno_carrera(1, 1);

@@ -454,28 +454,48 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
         return docentes;
     }
 
-    
+
+
+
+
+public String obtenerUsernamePorIdAlumno(int idAlumno) {
+        String sql = "call obtener_alumno_user(?)";
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, idAlumno);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getString("user_");
+        }
+    } catch (SQLException e) {
+        System.err.println("Error al obtener username del alumno: " + e.getMessage());
+    }
+    return null;
+}
+
     public List<String> listarMateriasPorCarrera(String carrera) {
-        List<String> materias = new ArrayList<>();
-        String sql = "CALL materias_por_carrera(?)";
+    List<String> materias = new ArrayList<>();
+    String sql = "CALL listar_nombres_materias_por_carrera_nombres(?)"; // NUEVO nombre
 
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, carrera);
-            ResultSet rs = ps.executeQuery();
+        ps.setString(1, carrera);
+        ResultSet rs = ps.executeQuery();
 
-            while (rs.next()) {
-                materias.add(rs.getString("nombre"));
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+        while (rs.next()) {
+            materias.add(rs.getString("materia_nombre"));
         }
 
-        return materias;
+    } catch (SQLException e) {
+        // Muestra el error REAL en lugar de un mensaje genérico
+        JOptionPane.showMessageDialog(null, "Error al cargar materias: " + e.getMessage(), 
+                                    "Error SQL", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace(); // Para ver el stack trace en consola
     }
+
+    return materias;
+}
 
     
     public int obtenerIdMateriaPorCarrera(String nombreMateria, String nombreCarrera) {
@@ -825,31 +845,39 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
 
 
     public List<Object[]> listarMateriasPorCarreraConDocente(String nombreCarrera) {
-        List<Object[]> materias = new ArrayList<>();
-        String sql = "CALL materias_por_carrera(?)";
+    List<Object[]> materias = new ArrayList<>();
+    String sql = "CALL listar_materias_por_carrera_con_docente(?)"; // Nuevo nombre
 
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, nombreCarrera);
-            ResultSet rs = ps.executeQuery();
+        ps.setString(1, nombreCarrera);
+        ResultSet rs = ps.executeQuery();
 
-            while (rs.next()) {
-                Object[] materia = {
-                    rs.getInt("docente_materia_id"),
-                    rs.getString("materia_nombre"),
-                    rs.getString("docente_nombre")
-                };
-                materias.add(materia);
+        while (rs.next()) {
+            // Manejar caso donde no hay docente asignado
+            String docenteNombre = rs.getString("docente_nombre");
+            if (docenteNombre == null) {
+                docenteNombre = "Sin docente asignado";
             }
 
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            Object[] materia = {
+                rs.getInt("docente_materia_id"),  // Puede ser 0 si es NULL
+                rs.getString("materia_nombre"),
+                docenteNombre
+            };
+            materias.add(materia);
         }
 
-        return materias;
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, 
+            "Error al cargar materias con docentes: " + e.getMessage(), 
+            "Error SQL", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace(); // Para depuración
     }
+
+    return materias;
+}
 
 
     public int obtenerIdAlumnoPorNombreCompleto(String nombreCompleto) {
@@ -1107,44 +1135,43 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
 
 
     public List<Object[]> obtenerReportesAlumnoCompletos(String usuarioActual) {
-        List<Object[]> reportes = new ArrayList<>();
-        String sql = "{CALL obtener_reportes_alumno_completos(?)}";
+    List<Object[]> reportes = new ArrayList<>();
+    String sql = "{CALL obtener_reportes_alumno_completos(?)}";
 
-        try (Connection conn = ConexionBD.getConnection();
-             CallableStatement cs = conn.prepareCall(sql)) {
+    try (Connection conn = ConexionBD.getConnection();
+         CallableStatement cs = conn.prepareCall(sql)) {
 
-            cs.setString(1, usuarioActual);
-            ResultSet rs = cs.executeQuery();
+        cs.setString(1, usuarioActual);
+        ResultSet rs = cs.executeQuery();
 
-            boolean tieneReportes = false;
-            while (rs.next()) {
-                tieneReportes = true;
-                Timestamp fecha = rs.getTimestamp("fecha");
-                String docente = rs.getString("docente");
-                String materia = rs.getString("materias");
-                String reporte = rs.getString("reporte");
+        boolean tieneReportes = false;
+        while (rs.next()) {
+            tieneReportes = true;
+            Timestamp fecha = rs.getTimestamp("fecha");
+            String docente = rs.getString("docente");
+            String materia = rs.getString("materias");
+            String reporte = rs.getString("reporte");
 
-                Object[] fila = {
-                    fecha != null ? new SimpleDateFormat("dd/MM/yyyy HH:mm").format(fecha) : "",
-                    docente != null ? docente : "N/A",
-                    materia != null ? materia : "N/A",
-                    reporte != null ? reporte : ""
-                };
-                reportes.add(fila);
-            }
-
-            if (!tieneReportes) {
-                reportes.add(new Object[]{"No hay reportes registrados", "", "", ""});
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error al obtener reportes del alumno: " + e.getMessage());
-            // Mismo comportamiento original: devolver lista vacía para que el panel maneje el mensaje
-            return new ArrayList<>();
+            Object[] fila = {
+                fecha != null ? new SimpleDateFormat("dd/MM/yyyy").format(fecha) : "", // ✅ SIN HORA
+                docente != null ? docente : "N/A",
+                materia != null ? materia : "N/A",
+                reporte != null ? reporte : ""
+            };
+            reportes.add(fila);
         }
 
-        return reportes;
+        if (!tieneReportes) {
+            reportes.add(new Object[]{"No hay reportes registrados", "", "", ""});
+        }
+
+    } catch (SQLException e) {
+        System.err.println("Error al obtener reportes del alumno: " + e.getMessage());
+        return new ArrayList<>();
     }
+
+    return reportes;
+}
 
 
     public int obtenerCarreraIdDesdeMateria(String materia) {
@@ -1258,20 +1285,49 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
     }
 
     
-    public boolean insertarReporte(int idAlumno, String reporte, int idDocente) {
-        String sql = "CALL insertar_reporte(?, ?, ?)";
-        try (Connection conn = ConexionBD.getConnection();
-             CallableStatement stmt = conn.prepareCall(sql)) {
-            stmt.setInt(1, idAlumno);
-            stmt.setString(2, reporte);
-            stmt.setInt(3, idDocente);
-            stmt.execute();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("Error al insertar reporte: " + e.getMessage());
-            return false;
+  public Map<String, Integer> buscarAlumnosPorMateriaCarreraDocente(
+        String usuarioDocente, String materia, int idCarrera, String filtro) {
+    Map<String, Integer> alumnos = new HashMap<>();
+    String sql = "CALL buscar_alumnos_por_materia_carrera_docente(?, ?, ?, ?)";
+    
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        
+        ps.setString(1, usuarioDocente);
+        ps.setString(2, materia);
+        ps.setInt(3, idCarrera);
+        ps.setString(4, filtro);
+        
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int id = rs.getInt("alumno_id");
+            String nombre = rs.getString("nombre");
+            String apellido = rs.getString("apellido");
+            String display = nombre + " " + apellido;
+            alumnos.put(display, id);
         }
+    } catch (SQLException e) {
+        System.err.println("Error al buscar alumnos específicos: " + e.getMessage());
     }
+    
+    return alumnos;
+}
+
+public boolean insertarReporte(int idAlumno, String reporte, int idDocente, int docenteMateriaId) {
+    String sql = "CALL insertar_reporte(?, ?, ?, ?)";
+    try (Connection conn = ConexionBD.getConnection();
+         CallableStatement stmt = conn.prepareCall(sql)) {
+        stmt.setInt(1, idAlumno);
+        stmt.setString(2, reporte);
+        stmt.setInt(3, idDocente);
+        stmt.setInt(4, docenteMateriaId);  // NUEVO PARÁMETRO
+        stmt.execute();
+        return true;
+    } catch (SQLException e) {
+        System.err.println("Error al insertar reporte: " + e.getMessage());
+        return false;
+    }
+}
 
    
     public Map<String, Integer> buscarAlumnosPorNombreCarrera(String carrera, String filtro) {

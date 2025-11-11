@@ -80,7 +80,7 @@
 
 
 	CREATE TABLE RegistroYControl (
-		id INT PRIMARY KEY,
+		id INT PRIMARY KEY,        
 		FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
 	);
 
@@ -91,6 +91,8 @@
 		reporte    TEXT NOT NULL,
 		fecha      DATETIME DEFAULT CURRENT_TIMESTAMP,
 		PRIMARY KEY (id_alumno, id_docente, fecha),
+        docente_materia_id INT,
+		FOREIGN KEY (docente_materia_id) REFERENCES Docente_Materias(id),
 		FOREIGN KEY (id_alumno)  REFERENCES Alumnos(id)  ON DELETE CASCADE,
 		FOREIGN KEY (id_docente) REFERENCES Docentes(id) ON DELETE CASCADE
 	);

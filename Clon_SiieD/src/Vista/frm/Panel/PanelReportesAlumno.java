@@ -1,5 +1,6 @@
 package Vista.frm.Panel;
 
+import Clases.AjustesObjetos;
 import Clases.Base_De_Datos;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -19,8 +20,9 @@ public class PanelReportesAlumno extends JPanel {
     // ✅ CONSTRUCTOR SIN Base_De_Datos - Compatible con frmplataforma
     public PanelReportesAlumno(String usuarioActual) {
         this.usuarioActual = usuarioActual;
-        initComponentes();  // Llama a nuestro método personalizado
+        initComponentes();  
         cargarReportes();
+        AjustesObjetos.ajustarTabla(tablaReportes);
     }
     
     private void initComponentes() {

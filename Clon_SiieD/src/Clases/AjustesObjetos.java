@@ -64,6 +64,20 @@ public abstract class AjustesObjetos {
 }
 
     public static void ajustarTabla(JTable table) {
+        
+        if (table.getRowCount() == 0) {
+        // Usa el ancho del encabezado como mínimo
+        TableColumnModel columnModel = table.getColumnModel();
+        for (int column = 0; column < table.getColumnCount(); column++) {
+            TableColumn tableColumn = columnModel.getColumn(column);
+            int headerWidth = table.getTableHeader().getDefaultRenderer()
+                .getTableCellRendererComponent(null, tableColumn.getHeaderValue(), 
+                    false, false, 0, 0).getPreferredSize().width;
+            tableColumn.setPreferredWidth(headerWidth + 10);
+        }
+        return;
+    }
+        
         TableColumnModel columnModel = table.getColumnModel();
         for (int column = 0; column < table.getColumnCount(); column++) {
             TableColumn tableColumn = columnModel.getColumn(column);

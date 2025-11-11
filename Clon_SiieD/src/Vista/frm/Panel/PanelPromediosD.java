@@ -1,5 +1,6 @@
 package Vista.frm.Panel;
 
+import Clases.AjustesObjetos;
 import Clases.Base_De_Datos;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -26,6 +27,7 @@ public class PanelPromediosD extends JPanel {
         initComponentes();
         cargarMateriasDelDocente();
         agregarFiltrosDesempeno();
+        AjustesObjetos.ajustarTabla(tablaNotas);
     }
 
     private void initComponentes() {

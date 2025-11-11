@@ -419,16 +419,29 @@ end//
 
 
 
-CREATE PROCEDURE materias_por_carrera(IN carrera_nombre VARCHAR(125))
+CREATE PROCEDURE listar_nombres_materias_por_carrera_nombres(IN carrera_nombre VARCHAR(125))
 BEGIN
-    SELECT dm.id AS docente_materia_id, m.nombre AS materia_nombre, 
-           CONCAT(u.nombre, ' ', u.apellido) AS docente_nombre 
-    FROM Docente_Materias dm
-    JOIN Materias m ON dm.materia_id = m.id 
-    JOIN Carreras c ON m.carrera_id = c.id 
-    JOIN Docentes d ON d.id = dm.docente_id
-    JOIN Usuarios u ON u.id = d.id 
-    WHERE c.nombre = carrera_nombre 
+    SELECT DISTINCT m.nombre AS materia_nombre
+    FROM Materias m
+    JOIN Carreras c ON c.id = m.carrera_id
+    WHERE c.nombre = carrera_nombre
+    ORDER BY m.nombre;
+END //
+
+CREATE PROCEDURE listar_materias_por_carrera_con_docente(
+    IN p_carrera_nombre VARCHAR(125)
+)
+BEGIN
+    SELECT 
+        dm.id AS docente_materia_id,
+        m.nombre AS materia_nombre,
+        CONCAT(u.nombre, ' ', u.apellido) AS docente_nombre
+    FROM Materias m
+    JOIN Carreras c ON c.id = m.carrera_id
+    LEFT JOIN Docente_Materias dm ON dm.materia_id = m.id
+    LEFT JOIN Docentes d ON d.id = dm.docente_id
+    LEFT JOIN Usuarios u ON u.id = d.id
+    WHERE c.nombre = p_carrera_nombre
     ORDER BY m.nombre, u.apellido, u.nombre;
 END //
 
@@ -537,11 +550,17 @@ END //
 
 
 -- Reportear a un alumno
-CREATE PROCEDURE insertar_reporte(IN p_id_alumno INT, IN p_reporte TEXT, IN p_id_docente INT)
+CREATE PROCEDURE insertar_reporte(
+    IN p_id_alumno INT, 
+    IN p_reporte TEXT, 
+    IN p_id_docente INT,
+    IN p_docente_materia_id INT  
+)
 BEGIN
-    INSERT INTO Reportes (id_alumno, id_docente, reporte, fecha)
-    VALUES (p_id_alumno, p_id_docente, p_reporte, NOW());
+    INSERT INTO Reportes (id_alumno, id_docente, reporte, fecha, docente_materia_id)
+    VALUES (p_id_alumno, p_id_docente, p_reporte, NOW(), p_docente_materia_id);
 END //
+
 
 
 CREATE PROCEDURE obtener_materias_docente_por_carrera(
@@ -678,25 +697,75 @@ BEGIN
 END //
 
 
+CREATE PROCEDURE buscar_alumnos_por_materia_carrera_docente(
+    IN p_docente_user VARCHAR(100),
+    IN p_materia_nombre VARCHAR(125),
+    IN p_carrera_id INT,
+    IN p_nombre VARCHAR(100)
+)
+begin
+    SELECT DISTINCT u.id AS alumno_id, u.nombre, u.apellido
+    FROM Usuarios u
+    JOIN Alumnos a ON a.id = u.id
+    JOIN Alumno_Materias am ON am.alumno_id = a.id
+    JOIN Docente_Materias dm ON dm.id = am.docente_materia_id
+    JOIN Materias m ON m.id = dm.materia_id
+    JOIN Docentes d ON d.id = dm.docente_id
+    JOIN Usuarios ud ON ud.id = d.id
+    JOIN Carreras c ON c.id = m.carrera_id
+    WHERE ud.user_ = p_docente_user
+      AND m.nombre = p_materia_nombre
+      AND c.id = p_carrera_id
+      AND (u.nombre LIKE CONCAT('%', p_nombre, '%') OR u.apellido LIKE CONCAT('%', p_nombre, '%'))
+    ORDER BY u.apellido, u.nombre;
+END //
+
+
+
+-- Procedimiento que devuelve la materia de un alumno con un docente específico
+CREATE PROCEDURE obtener_materia_alumno_en_carrera(
+    IN p_id_alumno INT,
+    IN p_docente_user VARCHAR(100),
+    IN p_id_carrera INT
+)
+BEGIN
+    SELECT DISTINCT m.nombre
+    FROM Alumno_Materias am
+    JOIN Alumnos a ON a.id = am.alumno_id
+    JOIN Docente_Materias dm ON dm.id = am.docente_materia_id
+    JOIN Materias m ON m.id = dm.materia_id
+    JOIN Docentes d ON d.id = dm.docente_id
+    JOIN Usuarios u ON u.id = d.id
+    WHERE a.id = p_id_alumno
+      AND u.user_ = p_docente_user
+      AND m.carrera_id = p_id_carrera
+    LIMIT 1;
+END //
+
+
+
+
+
+
+
 
 CREATE PROCEDURE obtener_reportes_alumno_completos(IN p_username_alumno VARCHAR(50))
 BEGIN
     SELECT 
         r.fecha,
         CONCAT(ud.nombre, ' ', ud.apellido) AS docente,
-        GROUP_CONCAT(DISTINCT m.nombre SEPARATOR ', ') AS materias,
+        m.nombre AS materias,  -- AHORA SOLO UNA MATERIA ESPECÍFICA
         r.reporte
     FROM Reportes r
     JOIN Docentes d ON d.id = r.id_docente
     JOIN Usuarios ud ON ud.id = d.id
     JOIN Alumnos a ON a.id = r.id_alumno
     JOIN Usuarios ua ON ua.id = a.id
-    LEFT JOIN Docente_Materias dm ON dm.docente_id = d.id
-    LEFT JOIN Materias m ON m.id = dm.materia_id
+    JOIN Docente_Materias dm ON dm.id = r.docente_materia_id  -- JOIN DIRECTO
+    JOIN Materias m ON m.id = dm.materia_id
     WHERE ua.user_ = p_username_alumno
-    GROUP BY r.fecha, r.id_docente, r.reporte
     ORDER BY r.fecha DESC;
-END//
+END //
 
 Create Procedure Listado_Materias()
 begin
@@ -881,8 +950,28 @@ BEGIN
     LIMIT 1;
 END //
 
+create procedure id_materia_nombre(in nombre varchar(200))
+begin 
+	SELECT id 
+    FROM materias 
+    WHERE nombre = nombre
+    LIMIT 1;
+end//
+
 
 create procedure Listar_Alumnos_sistema()
 begin
 SELECT CONCAT(nombre, ' ', apellido) AS nombre_completo FROM Usuarios WHERE cargo = 'alumno' ORDER BY nombre; 
+end//
+
+create procedure obtener_alumno_user(in id int)
+begin
+SELECT u.user_ FROM Usuarios u JOIN Alumnos a ON u.id = a.id WHERE a.id = id;
+end//
+
+create procedure Reportes_para_Docente(in id int)
+begin
+SELECT r.fecha, CONCAT(u.nombre, ' ', u.apellido) as estudiante, m.nombre as materia, r.reporte FROM Reportes r 
+JOIN Alumnos a ON a.id = r.id_alumno JOIN Usuarios u ON u.id = a.id 
+JOIN Docente_Materias dm ON dm.id = r.docente_materia_id JOIN Materias m ON m.id = dm.materia_id WHERE dm.id = id ORDER BY r.fecha DESC;
 end//

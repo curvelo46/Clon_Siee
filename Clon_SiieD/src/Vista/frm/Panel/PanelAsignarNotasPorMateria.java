@@ -46,7 +46,8 @@ public class PanelAsignarNotasPorMateria extends JPanel {
 
   public PanelAsignarNotasPorMateria(String profesor, Base_De_Datos basedatos) {
     this.profesor = profesor;
-    this.basedatos = basedatos; // ✅ Usa la instancia existente
+    this.basedatos = basedatos;
+    AjustesObjetos.ajustarTabla(tabla);
     tabla.setModel(modelo);
     initUI();
     cargarMateriasEnCombo();

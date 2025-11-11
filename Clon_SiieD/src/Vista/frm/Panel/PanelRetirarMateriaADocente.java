@@ -1,15 +1,15 @@
-package Vista.frm.Panel;
+        package Vista.frm.Panel;
 
 import Clases.Base_De_Datos;
-import Clases.ConexionBD;
+
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
+
 
 public class PanelRetirarMateriaADocente extends JPanel {
     // Instancia estática de Base_De_Datos

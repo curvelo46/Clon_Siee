@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import Vista.frm.Panel.PanelMatriculaAlumno;
 import Vista.frm.Panel.PanelGestionMaterias;
+
 import Vista.frm.Panel.*;
 import java.awt.BorderLayout;
 
@@ -429,7 +430,7 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         JpanelMenu.setBackground(new java.awt.Color(192, 4, 29));
-        JpanelMenu.setMinimumSize(new java.awt.Dimension(225, 465));
+        JpanelMenu.setMinimumSize(new java.awt.Dimension(300, 465));
         JpanelMenu.setLayout(null);
         getContentPane().add(JpanelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 190, 580));
 
@@ -536,7 +537,7 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
 
         lbListado.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbListado.setForeground(new java.awt.Color(255, 255, 255));
-        lbListado.setText("Listado de alumnos");
+        lbListado.setText("List alumnos");
         lbListado.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbListadoMouseClicked(evt);
@@ -610,7 +611,7 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
 
         lbListadoUsuarios.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbListadoUsuarios.setForeground(new java.awt.Color(255, 255, 255));
-        lbListadoUsuarios.setText("Listado de Usuarios");
+        lbListadoUsuarios.setText("List Usuarios");
         RCListadoUsuarios.add(lbListadoUsuarios);
         lbListadoUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
            public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -1236,16 +1237,18 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(JpanelMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jpanelLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jpanelLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jpanelMenuSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, 1020, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(JpanelMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
                         .addComponent(jtPestañas, javax.swing.GroupLayout.PREFERRED_SIZE, 1020, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );

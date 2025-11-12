@@ -28,7 +28,6 @@ public class PanelRegistroPersona extends JPanel {
     private final JButton btnRegistrar = new JButton("Registrar persona");
     private final JButton btnLimpiar = new JButton("Limpiar");
 
-    // Validaciones
     private static final Pattern LETRAS = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$");
     private static final Pattern CORREO = Pattern.compile("^[\\w._%+-]+@(gmail|hotmail|outlook|yahoo|unal|utp|poli)\\.com$", Pattern.CASE_INSENSITIVE);
     private static final Pattern NUMEROS = Pattern.compile("^\\d+$");
@@ -192,7 +191,6 @@ public class PanelRegistroPersona extends JPanel {
     cmbCarrera.removeAllItems();
     
     try {
-        // Llamada al método de Base_De_Datos
         List<String> carreras = baseDatos.cargarCarrerasRegistro();
         
         if (carreras.isEmpty()) {
@@ -245,7 +243,6 @@ public class PanelRegistroPersona extends JPanel {
     if (!validarCampos()) return;
 
     try {
-        // Obtener datos de los campos (igual que antes)
         String nom = txtNombre.getText().trim();
         String segNom = txtSegundoNombre.getText().trim();
         String ape = txtApellido.getText().trim();
@@ -265,7 +262,6 @@ public class PanelRegistroPersona extends JPanel {
             return;
         }
 
-        // Llamada al método de Base_De_Datos (ahora no maneja la conexión directamente)
         boolean exito = baseDatos.registrarPersonal(
             nom, segNom, ape, segApe, edad, tel, mail, dir, ced, gen, cargo, carrera
         );

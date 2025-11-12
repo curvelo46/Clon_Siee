@@ -1,6 +1,6 @@
 package Vista.frm.Panel;
 
-import Clases.Base_De_Datos;  // ← CAMBIO DE IMPORT
+import Clases.Base_De_Datos;  
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class PanelCrearCarreraConMaterias extends JPanel {
     private JButton btnCrear = new JButton("Crear carrera con materias seleccionadas");
     private JPanel panelMaterias = new JPanel(new GridLayout(0, 3, 5, 5));
     private List<JCheckBox> checkBoxes = new ArrayList<>();
-    private Base_De_Datos basedatos = new Base_De_Datos();  // ← NUEVA INSTANCIA
+    private Base_De_Datos basedatos = new Base_De_Datos();  
 
     public PanelCrearCarreraConMaterias() {
         setLayout(new BorderLayout(10, 10));
@@ -44,7 +44,6 @@ public class PanelCrearCarreraConMaterias extends JPanel {
         panelMaterias.removeAll();
 
         try {
-            // ← USO DEL MÉTODO DE Base_De_Datos
             List<String> materias = basedatos.listarTodasLasMaterias();
             for (String materia : materias) {
                 JCheckBox cb = new JCheckBox(materia);
@@ -77,7 +76,6 @@ public class PanelCrearCarreraConMaterias extends JPanel {
         }
 
         try {
-            // ← USO DEL MÉTODO DE Base_De_Datos
             basedatos.crearCarreraConMaterias(nombreCarrera, seleccionadas);
             JOptionPane.showMessageDialog(this, "✅ Carrera creada y materias asignadas");
             txtNombreCarrera.setText("");

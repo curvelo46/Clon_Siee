@@ -15,21 +15,21 @@ public class Base_De_Datos {
         String sql = "CALL obtener_cargo_usuario(?,?)";
         
         try (Connection con = ConexionBD.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+            PreparedStatement ps = con.prepareStatement(sql)) {
             
-            ps.setString(1, usuario);
-            ps.setString(2, contrasena);
+                ps.setString(1, usuario);
+                ps.setString(2, contrasena);
             
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("cargo");
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("cargo");
+                    }
                 }
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
-    }
+    }    
     
     
     public List<String> obtenerCargosPermitidos() {
@@ -37,8 +37,8 @@ public class Base_De_Datos {
         String sql = "{CALL Cargos()}";
         
         try (Connection conn = ConexionBD.getConnection();
-             CallableStatement cs = conn.prepareCall(sql);
-             ResultSet rs = cs.executeQuery()) {
+            CallableStatement cs = conn.prepareCall(sql);
+            ResultSet rs = cs.executeQuery()) {
             
             while (rs.next()) {
                 cargos.add(rs.getString("cargo"));
@@ -49,7 +49,7 @@ public class Base_De_Datos {
         }
         
         return new ArrayList<>(new LinkedHashSet<>(cargos));
-    }
+    }    
     
     
     public String obtenerSexoAlumno(String nombreUsuario) {
@@ -69,16 +69,15 @@ public class Base_De_Datos {
             e.printStackTrace();
         }
         return null;
-    }
-   
+    }   
+    
     
     public String obtenerMateriaDelDocente(String usuarioDocente) {
         String materia = null;
         String sql = "CALL obtener_materia_docente(?)";
 
         try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, usuarioDocente);
             ResultSet rs = stmt.executeQuery();
 
@@ -87,10 +86,8 @@ public class Base_De_Datos {
             }
 
         } catch (SQLException e) {
-
             System.err.println("Error al obtener materia del docente: " + e.getMessage());        
         }
-
         return materia;
     }
 
@@ -103,7 +100,7 @@ public class Base_De_Datos {
          PreparedStatement ps = conn.prepareStatement(sql)) {
         
         ps.setString(1, nombreMateria);
-        ps.setString(2, usernameDocente); // Usuario logueado
+        ps.setString(2, usernameDocente); 
         ResultSet rs = ps.executeQuery();
         
         if (rs.next()) {
@@ -121,8 +118,8 @@ public class Base_De_Datos {
         String sql = "CALL listar_carreras()";
         
         try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()) {
             
             while (rs.next()) {
                 carreras.add(rs.getString("nombre"));
@@ -131,7 +128,7 @@ public class Base_De_Datos {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return carreras;
     }
     
@@ -165,22 +162,20 @@ public class Base_De_Datos {
     
     
     public int obtenerIdAlumnoPorNombre(String nombre, String apellido) {
-    String sql = "CALL obtener_id_alumno_por_nombre_apellido(?, ?, ?)"; // 2 IN, 1 OUT
+    String sql = "CALL obtener_id_alumno_por_nombre_apellido(?, ?, ?)"; 
     
     try (Connection conn = ConexionBD.getConnection();
-         CallableStatement cs = conn.prepareCall(sql)) {  // ← Usa CallableStatement
+        CallableStatement cs = conn.prepareCall(sql)) {         
         
         cs.setString(1, nombre);
         cs.setString(2, apellido);
-        cs.registerOutParameter(3, Types.INTEGER);  // ← Registra el OUT parameter
+        cs.registerOutParameter(3, Types.INTEGER);  
+        cs.execute();  
         
-        cs.execute();  // ← Ejecuta el procedure
-        
-        return cs.getInt(3);  // ← Obtén el valor del parámetro OUT
+        return cs.getInt(3);
         
     } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                    "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         e.printStackTrace();
     }
     
@@ -208,49 +203,45 @@ public class Base_De_Datos {
         
         return 0;
     }
-    
-   
-    
 
-public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
-    List<Object[]> notas = new ArrayList<>();
-    String sql = "CALL listar_notas_por_alumno_carrera(?, ?)";
     
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        
-        ps.setInt(1, idAlumno);
-        ps.setInt(2, idCarrera);
-        
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                String materia = rs.getString("nombre_materia");
-                double c1 = rs.getDouble("corte1");
-                double c2 = rs.getDouble("corte2");
-                double c3 = rs.getDouble("corte3");
-                double prom = (c1 + c2 + c3) / 3.0;
-                
-                // Usar Locale.US para forzar punto decimal
-                notas.add(new Object[]{
-                    materia,
-                    String.format(Locale.US, "%.1f", c1),
-                    String.format(Locale.US, "%.1f", c2),
-                    String.format(Locale.US, "%.1f", c3),
-                    String.format(Locale.US, "%.1f", prom)
-                });
+    public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
+        List<Object[]> notas = new ArrayList<>();
+        String sql = "CALL listar_notas_por_alumno_carrera(?, ?)";
+
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idAlumno);
+            ps.setInt(2, idCarrera);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String materia = rs.getString("nombre_materia");
+                    double c1 = rs.getDouble("corte1");
+                    double c2 = rs.getDouble("corte2");
+                    double c3 = rs.getDouble("corte3");
+                    double prom = (c1 + c2 + c3) / 3.0;
+
+                    notas.add(new Object[]{
+                        materia,
+                        String.format(Locale.US, "%.1f", c1),
+                        String.format(Locale.US, "%.1f", c2),
+                        String.format(Locale.US, "%.1f", c3),
+                        String.format(Locale.US, "%.1f", prom)
+                    });
+                }
             }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-        
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                    "Error", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }
-    
-    return notas;
+
+        return notas;
 }
     
-   
+    
     public List<Object[]> obtenerReportesConDocente(int idAlumno) {
         List<Object[]> reportes = new ArrayList<>();
         String sql = "CALL obtener_reportes_con_docente(?)";
@@ -276,7 +267,7 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
         
         return reportes;
     }    
-
+    
     
     public List<String> obtenerMateriasDelDocente(String usuarioDocente) {
         List<String> materias = new ArrayList<>();
@@ -294,13 +285,11 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
 
         } catch (SQLException e) {
             System.err.println("Error al obtener materias del docente: " + e.getMessage());
-            // Opcional: throw new RuntimeException("Error al cargar materias", e);
         }
-
         return materias;
     }    
     
-   
+    
     public int obtenerCarreraIdPorMateria(int materiaId) {
         String sql = "{CALL obtener_carrera_de_materia(?)}";
         try (Connection conn = ConexionBD.getConnection();
@@ -333,7 +322,7 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
         }
         return -1;
     }
-
+    
     
     public List<Object[]> listarNotasDocenteMateria(String profesor, String materia, int carreraId) {
         List<Object[]> notas = new ArrayList<>();
@@ -363,7 +352,7 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
         return notas;
     }
 
-   
+    
     public void actualizarNotasBatch(List<Object[]> batchData) throws SQLException {
         String sql = "CALL actualizar_nota(?, ?, ?, ?)";
         Connection conn = null;
@@ -374,10 +363,10 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
             cs = conn.prepareCall(sql);
             
             for (Object[] data : batchData) {
-                cs.setInt(1, (Integer) data[0]); // alumnoId
-                cs.setInt(2, (Integer) data[1]); // corte
-                cs.setInt(3, (Integer) data[2]); // docenteMateriaId
-                cs.setDouble(4, (Double) data[3]); // nota
+                cs.setInt(1, (Integer) data[0]); 
+                cs.setInt(2, (Integer) data[1]); 
+                cs.setInt(3, (Integer) data[2]); 
+                cs.setDouble(4, (Double) data[3]); 
                 cs.addBatch();
             }
             
@@ -416,7 +405,7 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
         String sql = "CALL crear_carrera_con_materias(?, ?)";
 
         try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, nombreCarrera);
             ps.setString(2, String.join(",", materiasSeleccionadas));
@@ -424,11 +413,11 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
 
         } catch (SQLException e) {
             System.err.println("Error al crear carrera con materias: " + e.getMessage());
-            throw e; // Relanzar para que el panel maneje el mensaje
+            throw e; 
         }
     }
 
-
+    
     public List<String[]> listarDocentes() {
         List<String[]> docentes = new ArrayList<>();
         String sql = "CALL listado_docentes()";
@@ -447,63 +436,55 @@ public List<Object[]> listarNotasPorAlumnoCarrera(int idAlumno, int idCarrera) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return docentes;
     }
 
-
-
-
-
-public String obtenerUsernamePorIdAlumno(int idAlumno) {
+    
+    public String obtenerUsernamePorIdAlumno(int idAlumno) {
         String sql = "call obtener_alumno_user(?)";
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, idAlumno);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getString("user_");
+        try (Connection conn = ConexionBD.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idAlumno);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("user_");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener username del alumno: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        System.err.println("Error al obtener username del alumno: " + e.getMessage());
+        return null;
     }
-    return null;
-}
 
+    
     public List<String> listarMateriasPorCarrera(String carrera) {
-    List<String> materias = new ArrayList<>();
-    String sql = "CALL listar_nombres_materias_por_carrera_nombres(?)"; // NUEVO nombre
+        List<String> materias = new ArrayList<>();
+        String sql = "CALL listar_nombres_materias_por_carrera_nombres(?)"; 
 
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionBD.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, carrera);
+            ResultSet rs = ps.executeQuery();
 
-        ps.setString(1, carrera);
-        ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                materias.add(rs.getString("materia_nombre"));
+            }
 
-        while (rs.next()) {
-            materias.add(rs.getString("materia_nombre"));
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar materias: " + e.getMessage(),"Error SQL", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); 
         }
-
-    } catch (SQLException e) {
-        // Muestra el error REAL en lugar de un mensaje genérico
-        JOptionPane.showMessageDialog(null, "Error al cargar materias: " + e.getMessage(), 
-                                    "Error SQL", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace(); // Para ver el stack trace en consola
+        return materias;
     }
-
-    return materias;
-}
 
     
     public int obtenerIdMateriaPorCarrera(String nombreMateria, String nombreCarrera) {
         String sql = "CALL id_materia_por_carrera(?, ?)";
 
         try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
+            PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, nombreMateria);
             ps.setString(2, nombreCarrera);
             ResultSet rs = ps.executeQuery();
@@ -513,12 +494,11 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
         return 0;
     }
-      
+
     
     public void crearMateria(String nombre, String carrera) throws Exception {
         Connection conn = null;
@@ -527,13 +507,11 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             conn = ConexionBD.getConnection();
             conn.setAutoCommit(false);
 
-            // Obtener ID de la carrera
             int idCarrera = obtenerIdCarreraPorNombre(carrera);
             if (idCarrera == 0) {
                 throw new Exception("Carrera no encontrada");
             }
 
-            // Crear la materia
             String sql = "CALL crear_materia(?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, nombre);
@@ -542,8 +520,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
             conn.commit();
-            JOptionPane.showMessageDialog(null, "Materia creada correctamente", 
-                                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Materia creada correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
         } catch (Exception e) {
             if (conn != null) {
@@ -553,8 +530,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
                     // No se muestra en consola
                 }
             }
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
             throw e;
         } finally {
             if (conn != null) {
@@ -572,18 +548,16 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
         String sql = "CALL asignar_m_a_p(?, ?)";
 
         try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, idDocente);
             ps.setInt(2, idMateria);
             ps.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Materia asignada al docente correctamente", 
-                                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Materia asignada al docente correctamente","Éxito", JOptionPane.INFORMATION_MESSAGE);
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
             throw e;
         }
     }
@@ -604,8 +578,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return materias;
@@ -627,13 +600,12 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return 0;
     }
-
+ 
     
     public List<Object[]> listarEstudiantesPorDocenteMateria(String profesor, String materia, int idCarrera) {
     List<Object[]> estudiantes = new ArrayList<>();
@@ -655,7 +627,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
                 rs.getString("edad"),
                 rs.getString("telefono"),
                 rs.getString("correo"),
-                rs.getInt("id")  // ✅ IMPORTANTE: El ID debe estar al final
+                rs.getInt("id")
             };
             estudiantes.add(estudiante);
         }
@@ -717,8 +689,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
                 procedimiento = "{call actualizar_registro_control(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
                 break;
             default:
-                JOptionPane.showMessageDialog(null, "No se puede editar este tipo de usuario", 
-                                            "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No se puede editar este tipo de usuario","Error", JOptionPane.ERROR_MESSAGE);
                 return;
         }
 
@@ -742,8 +713,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
                 cs.executeUpdate();
                 conn.commit();
 
-                JOptionPane.showMessageDialog(null, "Usuario actualizado correctamente", 
-                                            "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Usuario actualizado correctamente","Éxito", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (SQLException e) {
             if (conn != null) {
@@ -753,8 +723,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
                     // No mostrar en consola
                 }
             }
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         } finally {
             if (conn != null) {
                 try {
@@ -780,8 +749,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return roles;
@@ -815,8 +783,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return usuarios;
@@ -836,8 +803,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return alumnos;
@@ -846,7 +812,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
 
     public List<Object[]> listarMateriasPorCarreraConDocente(String nombreCarrera) {
     List<Object[]> materias = new ArrayList<>();
-    String sql = "CALL listar_materias_por_carrera_con_docente(?)"; // Nuevo nombre
+    String sql = "CALL listar_materias_por_carrera_con_docente(?)"; 
 
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -855,14 +821,13 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
         ResultSet rs = ps.executeQuery();
 
         while (rs.next()) {
-            // Manejar caso donde no hay docente asignado
             String docenteNombre = rs.getString("docente_nombre");
             if (docenteNombre == null) {
                 docenteNombre = "Sin docente asignado";
             }
 
             Object[] materia = {
-                rs.getInt("docente_materia_id"),  // Puede ser 0 si es NULL
+                rs.getInt("docente_materia_id"),
                 rs.getString("materia_nombre"),
                 docenteNombre
             };
@@ -873,7 +838,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
         JOptionPane.showMessageDialog(null, 
             "Error al cargar materias con docentes: " + e.getMessage(), 
             "Error SQL", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace(); // Para depuración
+        e.printStackTrace(); 
     }
 
     return materias;
@@ -894,8 +859,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             idAlumno = cs.getInt(2);
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return idAlumno;
@@ -917,8 +881,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             resultado = cs.getInt(3);
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return resultado;
@@ -940,8 +903,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             resultado = cs.getInt(3);
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return resultado;
@@ -963,8 +925,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             cantidad = cs.getInt(3);
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return cantidad;
@@ -990,8 +951,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return carreras;
@@ -1013,8 +973,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return idAlumno;
@@ -1043,8 +1002,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(), 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error de sistema: " + e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return notas;
@@ -1080,11 +1038,10 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
 
         try {
             conn = ConexionBD.getConnection();
-            conn.setAutoCommit(false); // Iniciar transacción
+            conn.setAutoCommit(false);
 
             cs = conn.prepareCall(sql);
 
-            // Configurar parámetros (convertir cadenas vacías a null)
             cs.setString(1, nom);
             cs.setString(2, segNom.isEmpty() ? null : segNom);
             cs.setString(3, ape);
@@ -1096,15 +1053,15 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             cs.setString(9, ced);
             cs.setString(10, gen);
             cs.setString(11, cargo);
-            cs.setString(12, carrera); // Puede ser null para no-alumnos
+            cs.setString(12, carrera); 
 
             cs.execute();
-            conn.commit(); // ✅ Confirmar transacción
+            conn.commit(); 
 
             return true;
 
         } catch (SQLException ex) {
-            // ❌ Hacer rollback en caso de error
+            
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -1115,7 +1072,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             ex.printStackTrace();
             return false;
         } finally {
-            // Cerrar recursos
+            
             if (cs != null) {
                 try {
                     cs.close();
@@ -1153,7 +1110,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
             String reporte = rs.getString("reporte");
 
             Object[] fila = {
-                fecha != null ? new SimpleDateFormat("dd/MM/yyyy").format(fecha) : "", // ✅ SIN HORA
+                fecha != null ? new SimpleDateFormat("dd/MM/yyyy").format(fecha) : "", 
                 docente != null ? docente : "N/A",
                 materia != null ? materia : "N/A",
                 reporte != null ? reporte : ""
@@ -1190,6 +1147,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
         return 0;
     }
 
+    
     public java.util.List<String> obtenerMateriasDocentePorCarrera(String profesor, int idCarrera) {
     java.util.List<String> materias = new java.util.ArrayList<>();
     String sql = "CALL obtener_materias_docente_por_carrera(?, ?)";
@@ -1212,6 +1170,7 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
     return materias;
 }
 
+    
     public Map<String, Integer> obtenerCarrerasConMateriasDocente(String profesor) {
         Map<String, Integer> carreras = new HashMap<>();
         String sql = "CALL obtener_carreras_con_materias_docente(?)";
@@ -1235,7 +1194,6 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
     }
 
 
-    
     public boolean alumnoExisteEnTablaAlumnos(int idAlumno) {
         String sql = "call  alumno_existente(?)";
         try (Connection conn = ConexionBD.getConnection();
@@ -1285,49 +1243,50 @@ public String obtenerUsernamePorIdAlumno(int idAlumno) {
     }
 
     
-  public Map<String, Integer> buscarAlumnosPorMateriaCarreraDocente(
+    public Map<String, Integer> buscarAlumnosPorMateriaCarreraDocente(
         String usuarioDocente, String materia, int idCarrera, String filtro) {
-    Map<String, Integer> alumnos = new HashMap<>();
-    String sql = "CALL buscar_alumnos_por_materia_carrera_docente(?, ?, ?, ?)";
-    
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        
-        ps.setString(1, usuarioDocente);
-        ps.setString(2, materia);
-        ps.setInt(3, idCarrera);
-        ps.setString(4, filtro);
-        
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            int id = rs.getInt("alumno_id");
-            String nombre = rs.getString("nombre");
-            String apellido = rs.getString("apellido");
-            String display = nombre + " " + apellido;
-            alumnos.put(display, id);
-        }
-    } catch (SQLException e) {
-        System.err.println("Error al buscar alumnos específicos: " + e.getMessage());
-    }
-    
-    return alumnos;
-}
+        Map<String, Integer> alumnos = new HashMap<>();
+        String sql = "CALL buscar_alumnos_por_materia_carrera_docente(?, ?, ?, ?)";
 
-public boolean insertarReporte(int idAlumno, String reporte, int idDocente, int docenteMateriaId) {
-    String sql = "CALL insertar_reporte(?, ?, ?, ?)";
-    try (Connection conn = ConexionBD.getConnection();
-         CallableStatement stmt = conn.prepareCall(sql)) {
-        stmt.setInt(1, idAlumno);
-        stmt.setString(2, reporte);
-        stmt.setInt(3, idDocente);
-        stmt.setInt(4, docenteMateriaId);  // NUEVO PARÁMETRO
-        stmt.execute();
-        return true;
-    } catch (SQLException e) {
-        System.err.println("Error al insertar reporte: " + e.getMessage());
-        return false;
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, usuarioDocente);
+            ps.setString(2, materia);
+            ps.setInt(3, idCarrera);
+            ps.setString(4, filtro);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("alumno_id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String display = nombre + " " + apellido;
+                alumnos.put(display, id);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al buscar alumnos específicos: " + e.getMessage());
+        }
+
+        return alumnos;
     }
-}
+
+    
+    public boolean insertarReporte(int idAlumno, String reporte, int idDocente, int docenteMateriaId) {
+        String sql = "CALL insertar_reporte(?, ?, ?, ?)";
+        try (Connection conn = ConexionBD.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+            stmt.setInt(1, idAlumno);
+            stmt.setString(2, reporte);
+            stmt.setInt(3, idDocente);
+            stmt.setInt(4, docenteMateriaId);
+            stmt.execute();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Error al insertar reporte: " + e.getMessage());
+            return false;
+        }
+    }
 
    
     public Map<String, Integer> buscarAlumnosPorNombreCarrera(String carrera, String filtro) {
@@ -1360,182 +1319,170 @@ public boolean insertarReporte(int idAlumno, String reporte, int idDocente, int 
         return alumnos;
     }
 
-// ========== MÉTODOS PARA PANEL RETIRAR MATERIA A DOCENTE ==========
-
-
-public List<String> obtenerMateriasDocentePorId(int idDocente) {
-    List<String> materias = new ArrayList<>();
-    String sql = "CALL obtener_materias_docente_por_id(?)";
     
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        
-        ps.setInt(1, idDocente);
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                materias.add(rs.getString("materia"));
+    // ========== MÉTODOS PARA PANEL RETIRAR MATERIA A DOCENTE ==========
+    public List<String> obtenerMateriasDocentePorId(int idDocente) {
+        List<String> materias = new ArrayList<>();
+        String sql = "CALL obtener_materias_docente_por_id(?)";
+
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idDocente);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    materias.add(rs.getString("materia"));
+                }
             }
-        }
-        
-    } catch (SQLException e) {
-        System.err.println("Error al obtener materias del docente: " + e.getMessage());
-    }
-    
-    return materias;
-}
 
-/**
- * Busca docentes por nombre o apellido
- * @param texto Texto de búsqueda
- * @return Mapa con key = nombre completo del docente, value = ID del docente
- */
-public Map<String, Integer> buscarDocentesPorNombre(String texto) {
-    Map<String, Integer> docentes = new HashMap<>();
-    String sql = "CALL buscar_docentes_por_nombre(?)";
+        } catch (SQLException e) {
+            System.err.println("Error al obtener materias del docente: " + e.getMessage());
+        }
+
+        return materias;
+    }
+
     
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        
-        ps.setString(1, texto);
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String nombre = rs.getString("nombre");
-                String apellido = rs.getString("apellido");
-                String display = nombre + " " + apellido;
-                docentes.put(display, id);
+    public Map<String, Integer> buscarDocentesPorNombre(String texto) {
+        Map<String, Integer> docentes = new HashMap<>();
+        String sql = "CALL buscar_docentes_por_nombre(?)";
+
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, texto);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String nombre = rs.getString("nombre");
+                    String apellido = rs.getString("apellido");
+                    String display = nombre + " " + apellido;
+                    docentes.put(display, id);
+                }
             }
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar docentes: " + e.getMessage());
         }
-        
-    } catch (SQLException e) {
-        System.err.println("Error al buscar docentes: " + e.getMessage());
-    }
-    
-    return docentes;
-}
 
-/**
- * Elimina la asignación de una materia a un docente
- * @param idDocente ID del docente
- * @param materia Nombre de la materia
- * @return true si se eliminó exitosamente, false si hubo error
- */
-public boolean eliminarAsignacionDocenteMateria(int idDocente, String materia) {
-    String sql = "{CALL eliminar_asignacion_docente_materia(?, ?)}";
-    Connection conn = null;
-    CallableStatement cs = null;
+        return docentes;
+    }
+
     
-    try {
-        conn = ConexionBD.getConnection();
-        conn.setAutoCommit(false);
-        
-        cs = conn.prepareCall(sql);
-        cs.setInt(1, idDocente);
-        cs.setString(2, materia);
-        cs.execute();
-        
-        conn.commit();
-        return true;
-        
-    } catch (SQLException e) {
-        String msg = e.getMessage().toLowerCase();
-        
-        if (msg.contains("no se encontró")) {
-            JOptionPane.showMessageDialog(null, 
-                "La asignación no existe. Verifica que el docente tenga esa materia.", 
-                "No encontrado", JOptionPane.WARNING_MESSAGE);
-        } else if (msg.contains("foreign key") || msg.contains("constraint")) {
-            JOptionPane.showMessageDialog(null, 
-                "No se puede eliminar: hay datos dependientes (reportes, alumnos).\n" +
-                "Error: " + e.getMessage(), 
-                "Error de Integridad", JOptionPane.ERROR_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(null, 
-                "Error SQL: " + e.getMessage(), 
-                "Error", JOptionPane.ERROR_MESSAGE);
+    public boolean eliminarAsignacionDocenteMateria(int idDocente, String materia) {
+        String sql = "{CALL eliminar_asignacion_docente_materia(?, ?)}";
+        Connection conn = null;
+        CallableStatement cs = null;
+
+        try {
+            conn = ConexionBD.getConnection();
+            conn.setAutoCommit(false);
+
+            cs = conn.prepareCall(sql);
+            cs.setInt(1, idDocente);
+            cs.setString(2, materia);
+            cs.execute();
+
+            conn.commit();
+            return true;
+
+        } catch (SQLException e) {
+            String msg = e.getMessage().toLowerCase();
+
+            if (msg.contains("no se encontró")) {
+                JOptionPane.showMessageDialog(null, 
+                    "La asignación no existe. Verifica que el docente tenga esa materia.", 
+                    "No encontrado", JOptionPane.WARNING_MESSAGE);
+            } else if (msg.contains("foreign key") || msg.contains("constraint")) {
+                JOptionPane.showMessageDialog(null, 
+                    "No se puede eliminar: hay datos dependientes (reportes, alumnos).\n" +
+                    "Error: " + e.getMessage(), 
+                    "Error de Integridad", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, 
+                    "Error SQL: " + e.getMessage(), 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+            return false;
+
+        } finally {
+            if (cs != null) try { cs.close(); } catch (SQLException e) {}
+            if (conn != null) try { conn.close(); } catch (SQLException e) {}
         }
-        
-        if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
-        return false;
-        
-    } finally {
-        if (cs != null) try { cs.close(); } catch (SQLException e) {}
-        if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
-}
- 
-// Agregar estos métodos a la clase Base_De_Datos
-
-public List<Object[]> obtenerMateriasDocenteConCarrera(int idDocente) {
-    List<Object[]> materias = new ArrayList<>();
-    String sql = "CALL obtener_materias_docente_con_carrera(?)";
-    
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        
-        ps.setInt(1, idDocente);
-        ResultSet rs = ps.executeQuery();
-        
-        while (rs.next()) {
-            Object[] materia = {
-                rs.getString("materia_nombre"),
-                rs.getString("carrera_nombre"),
-                rs.getInt("docente_materia_id")
-            };
-            materias.add(materia);
-        }
-    } catch (SQLException e) {
-        System.err.println("Error al obtener materias con carrera: " + e.getMessage());
-    }
-    
-    return materias;
-}
-
-public boolean reemplazarDocenteEnMateria(int docenteMateriaId, int nuevoDocenteId) {
-    String sql = "CALL reemplazar_docente_en_materia(?, ?)";
-    try (Connection conn = ConexionBD.getConnection();
-         CallableStatement cs = conn.prepareCall(sql)) {
-        
-        cs.setInt(1, docenteMateriaId);
-        cs.setInt(2, nuevoDocenteId);
-        cs.execute();
-        return true;
-        
-    } catch (SQLException e) {
-        System.err.println("Error al reemplazar docente: " + e.getMessage());
-        return false;
-    }
-}
-
  
 
-public void actualizarUsuarioConRol(int usuarioId, String cedula, String nombre, 
-    String segundoNombre, String apellido, String segundoApellido, 
-    int edad, String telefono, String correo, String direccion, String cargo) {
-    
-    String sql = "{CALL actualizar_usuario_con_rol(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-    
-    try (Connection conn = ConexionBD.getConnection();
-         CallableStatement cs = conn.prepareCall(sql)) {
-        
-        cs.setInt(1, usuarioId);
-        cs.setString(2, cedula);
-        cs.setString(3, nombre);
-        cs.setString(4, segundoNombre);
-        cs.setString(5, apellido);
-        cs.setString(6, segundoApellido);
-        cs.setInt(7, edad);
-        cs.setString(8, telefono);
-        cs.setString(9, correo);
-        cs.setString(10, direccion);
-        cs.setString(11, cargo);
-        
-        cs.execute();
-        
-    } catch (SQLException e) {
-        throw new RuntimeException("Error al actualizar usuario con rol: " + e.getMessage(), e);
-    }
-}
+    public List<Object[]> obtenerMateriasDocenteConCarrera(int idDocente) {
+        List<Object[]> materias = new ArrayList<>();
+        String sql = "CALL obtener_materias_docente_con_carrera(?)";
 
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idDocente);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Object[] materia = {
+                    rs.getString("materia_nombre"),
+                    rs.getString("carrera_nombre"),
+                    rs.getInt("docente_materia_id")
+                };
+                materias.add(materia);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener materias con carrera: " + e.getMessage());
+        }
+
+        return materias;
+    }
+
+    
+    public boolean reemplazarDocenteEnMateria(int docenteMateriaId, int nuevoDocenteId) {
+        String sql = "CALL reemplazar_docente_en_materia(?, ?)";
+        try (Connection conn = ConexionBD.getConnection();
+             CallableStatement cs = conn.prepareCall(sql)) {
+
+            cs.setInt(1, docenteMateriaId);
+            cs.setInt(2, nuevoDocenteId);
+            cs.execute();
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("Error al reemplazar docente: " + e.getMessage());
+            return false;
+        }
+    }
+
+ 
+    public void actualizarUsuarioConRol(int usuarioId, String cedula, String nombre, 
+        String segundoNombre, String apellido, String segundoApellido, 
+        int edad, String telefono, String correo, String direccion, String cargo) {
+
+        String sql = "{CALL actualizar_usuario_con_rol(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+
+        try (Connection conn = ConexionBD.getConnection();
+             CallableStatement cs = conn.prepareCall(sql)) {
+
+            cs.setInt(1, usuarioId);
+            cs.setString(2, cedula);
+            cs.setString(3, nombre);
+            cs.setString(4, segundoNombre);
+            cs.setString(5, apellido);
+            cs.setString(6, segundoApellido);
+            cs.setInt(7, edad);
+            cs.setString(8, telefono);
+            cs.setString(9, correo);
+            cs.setString(10, direccion);
+            cs.setString(11, cargo);
+
+            cs.execute();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al actualizar usuario con rol: " + e.getMessage(), e);
+        }
+    }
 
 }

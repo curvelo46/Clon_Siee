@@ -35,7 +35,7 @@ public class PanelRetirarMateriaADocente extends JPanel {
     
     private JTable tablaMaterias; // Tabla para mostrar materias del docente actual
     private DefaultTableModel modeloTablaMaterias;
-    private final Map<Integer, Integer> docenteMateriaIdMap = new HashMap<>(); // <rowIndex, docenteMateriaId>
+    private final Map<Integer, Integer> docenteMateriaIdMap = new HashMap<>(); 
     
     private final JTextField txtBuscarDocenteRemplazo = new JTextField(15);
     private final JButton btnBuscarDocenteRemplazo = new JButton("Buscar");

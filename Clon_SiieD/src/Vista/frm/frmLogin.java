@@ -117,7 +117,7 @@ public class frmLogin extends javax.swing.JFrame {
         
         // Hacer el título clickeable
         EfectoClick.aplicarLabel(jLabel1, () -> {
-            // Acción para "CBN"
+            
             java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
             try {
                 desktop.browse(new java.net.URI("https://cbn.edu.co/"));
@@ -128,7 +128,7 @@ public class frmLogin extends javax.swing.JFrame {
         
         // Hacer el subtítulo clickeable
         EfectoClick.aplicarLabel(jLabel4, () -> {
-            // Acción para "Lideres en educacion"
+            
             JOptionPane.showMessageDialog(this, "Misión: Formar líderes con excelencia académica", "Acerca de", JOptionPane.INFORMATION_MESSAGE);
         });
     }
@@ -137,8 +137,8 @@ public class frmLogin extends javax.swing.JFrame {
     
     
     private void btnSecionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSecionActionPerformed
-        // TODO add your handling code here:
-         String usuario = txtUsuario.getText().trim();
+        
+        String usuario = txtUsuario.getText().trim();
         String contraseña = new String(txtContraseña.getPassword());
 
         if (usuario.isEmpty() || contraseña.isEmpty()) {
@@ -180,14 +180,12 @@ public class frmLogin extends javax.swing.JFrame {
     
    
     private void txtContraseñaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContraseñaKeyPressed
-        // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             btnSecion.doClick();
         }
     }//GEN-LAST:event_txtContraseñaKeyPressed
 
     private void txtUsuarioKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUsuarioKeyPressed
-        // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             btnSecion.doClick();
         }

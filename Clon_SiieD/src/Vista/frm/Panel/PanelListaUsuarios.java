@@ -81,8 +81,7 @@ public class PanelListaUsuarios extends JPanel {
             panelRoles.revalidate();
             panelRoles.repaint();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error de sistema al cargar roles", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar roles","Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -102,8 +101,7 @@ public class PanelListaUsuarios extends JPanel {
             
             AjustesObjetos.ajustarTabla(tablaUsuarios);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error de sistema al cargar usuarios", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar usuarios","Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

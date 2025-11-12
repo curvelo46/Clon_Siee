@@ -132,7 +132,7 @@ public class PanelReportesD extends JPanel {
     }
 
     private void cargarReportesDeMateria() {
-        modeloTablaReportes.setRowCount(0); // Limpiar tabla
+        modeloTablaReportes.setRowCount(0); 
         
         String materia = getMateriaSeleccionada();
         String carrera = getCarreraSeleccionada();
@@ -144,7 +144,6 @@ public class PanelReportesD extends JPanel {
         
         if (docenteMateriaId == -1) return;
         
-        // Obtener todos los reportes de esta materia
         String sql = "call Reportes_para_Docente(?)";
         
         try (Connection conn = ConexionBD.getConnection();
@@ -167,7 +166,6 @@ public class PanelReportesD extends JPanel {
                 });
             }
             
-            // Aplicar filtro si hay un alumno seleccionado
             aplicarFiltroAlumno();
             
         } catch (Exception e) {
@@ -180,14 +178,13 @@ public class PanelReportesD extends JPanel {
         String alumnoSeleccionado = (String) comboAlumnos.getSelectedItem();
         
         if (alumnoSeleccionado == null || alumnoSeleccionado.equals("Sin coincidencias")) {
-            sorter.setRowFilter(null); // Mostrar todos
+            sorter.setRowFilter(null); 
         } else {
             // Filtrar por la columna "Estudiante" (índice 1)
             RowFilter<DefaultTableModel, Object> rf = RowFilter.regexFilter("(?i)" + alumnoSeleccionado, 1);
             sorter.setRowFilter(rf);
         }
     }
-    
     
     
     private String getCarreraSeleccionada() {
@@ -202,7 +199,6 @@ public class PanelReportesD extends JPanel {
         return null;
     }
 
-    // ✅ NUEVO: Método único con control de alertas
     private void cargarAlumnos(String carrera, String filtro, boolean mostrarAlertas) {
         String materia = getMateriaSeleccionada();
         if (materia == null) return;
@@ -254,11 +250,10 @@ public class PanelReportesD extends JPanel {
         }
     }
 
-    // ✅ Sobrecarga conveniente para llamadas sin filtros (oculta alertas por defecto)
      
     private void cargarAlumnos() {
         String carrera = getCarreraSeleccionada();
-        cargarAlumnos(carrera, null, false); // Sin alertas al inicio
+        cargarAlumnos(carrera, null, false); 
     }
 
      private void cargarMateriasPorCarrera(int idCarrera) {
@@ -273,14 +268,14 @@ public class PanelReportesD extends JPanel {
             jpMaterias.add(radio);
             radio.addActionListener(e -> {
                 cargarAlumnos(); 
-                cargarReportesDeMateria(); // NUEVO: Cargar reportes al cambiar materia
+                cargarReportesDeMateria(); 
             });
         }
         
         if (grupoMaterias.getButtonCount() > 0) {
             grupoMaterias.getElements().nextElement().setSelected(true);
             cargarAlumnos();
-            cargarReportesDeMateria(); // NUEVO: Cargar reportes inicialmente
+            cargarReportesDeMateria(); 
         }
         
         jpMaterias.revalidate();
@@ -301,7 +296,7 @@ public class PanelReportesD extends JPanel {
             grupoCarreras.add(rb);
             jpCarreras.add(rb);
             carreraIdMap.put(nombre, id);
-            rb.addActionListener(e -> cargarMateriasPorCarrera(id)); // Sin alertas al cambiar carrera
+            rb.addActionListener(e -> cargarMateriasPorCarrera(id)); 
         }
         
         if (grupoCarreras.getButtonCount() > 0) {
@@ -317,7 +312,7 @@ public class PanelReportesD extends JPanel {
     private void configurarComboAlumnos() {
         comboAlumnos.addActionListener(e -> {
             actualizarCedulaAlumno();
-            aplicarFiltroAlumno(); // NUEVO: Filtrar tabla cuando se selecciona alumno
+            aplicarFiltroAlumno();
         });
     }
 
@@ -379,7 +374,7 @@ public class PanelReportesD extends JPanel {
                     if (exito) {
                         mostrarInformacion("✅ Reporte guardado correctamente");
                         txtReporte.setText("");
-                        cargarReportesDeMateria(); // NUEVO: Recargar tabla después de guardar
+                        cargarReportesDeMateria();
                     } else {
                         mostrarError("❌ Error al guardar el reporte");
                     }
@@ -391,7 +386,7 @@ public class PanelReportesD extends JPanel {
         });
     }
 
-  private void mostrarError(String mensaje) {
+    private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -439,9 +434,7 @@ public class PanelReportesD extends JPanel {
     
     int idCarrera = carreraIdMap.get(carrera);
     
-    // ✅ BUSCAR SOLO EN ESA MATERIA + CARRERA + DOCENTE
-    Map<String, Integer> estudiantes = 
-        baseDatos.buscarAlumnosPorMateriaCarreraDocente(profesor, materia, idCarrera, texto);
+    Map<String, Integer> estudiantes = baseDatos.buscarAlumnosPorMateriaCarreraDocente(profesor, materia, idCarrera, texto);
     
     comboAlumnos.removeAllItems();
     alumnoIdMap.clear();

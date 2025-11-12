@@ -133,7 +133,6 @@ public class PanelMatriculaAlumno extends JPanel {
                 return;
             }
 
-            // Crear checkboxes para cada materia
             for (Object[] materia : materias) {
                 agregarCheckboxMateria(materia);
             }
@@ -334,7 +333,7 @@ public class PanelMatriculaAlumno extends JPanel {
         lblInfo.setText(mensaje.toString().replace("\n", " | "));
     }
 
-    // ===== MÉTODOS GENERADOS POR IDE =====
+    
 
     /**
      * This method is called from within the constructor to initialize the form.

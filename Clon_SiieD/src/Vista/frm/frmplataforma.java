@@ -25,38 +25,38 @@ public class frmplataforma extends javax.swing.JFrame {
     private final Base_De_Datos baseDatos;
     private String usuarioActual; 
     
-public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
-    miinitComponents();
+    public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
+        miinitComponents();
     
-    this.usuarioActual = usuario;
-    btnSalir.setVisible(false);
-    this.baseDatos = basedato;
-    Cargos = Cargo;
+        this.usuarioActual = usuario;
+        btnSalir.setVisible(false);
+        this.baseDatos = basedato;
+        Cargos = Cargo;
+
+        // LIMPIAR y reconfigurar JpanelMenu
+        JpanelMenu.removeAll();
+        JpanelMenu.setLayout(new CardLayout());
+
+        setTitle("Siie administrativo");
+        setSize(1224, 717);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        this.getContentPane().setBackground(new Color(240, 244, 248));
+
+        // Reconfigurar todos los paneles de menú para que usen BorderLayout
+        reconfigurarPanelMenu(AMaterias, lbCrearMateriaf, lbCrearMateria);
+        reconfigurarPanelMenu(ACrearCarrera, lbCrearcarreraF, lbCrearCarrera);
+        reconfigurarPanelMenu(AReporteAcademico, lbReportesA, lbReporteAA);
+        reconfigurarPanelMenu(AQuitar, lbQuitarMateriaf, lbQuitarMateria);
+        reconfigurarPanelMenu(RCListadoUsuarios, lblistausuariosf, lbListadoUsuarios);
+        reconfigurarPanelMenu(RCRegistro, lbRegistros, lbRegistro);
+        reconfigurarPanelMenu(RCModificarDatos, lbModificarDatosf, lbModificarDatos);
+        reconfigurarPanelMenu(DListadosAlumnos, lbFOTO, lbListado);
+        reconfigurarPanelMenu(DNotasAlumnos, lbNotas, lbANotas);
+        reconfigurarPanelMenu(DReportes, lbReportes, lbReporteAD);
+        reconfigurarPanelMenu(Ddesempeño, lbDesempeño, lbListado2);
     
-    // LIMPIAR y reconfigurar JpanelMenu
-    JpanelMenu.removeAll();
-    JpanelMenu.setLayout(new CardLayout());
-    
-    setTitle("Siie administrativo");
-    setSize(1224, 717);
-    setResizable(false);
-    setLocationRelativeTo(null);
-    this.getContentPane().setBackground(new Color(240, 244, 248));
-    
-    // Reconfigurar todos los paneles de menú para que usen BorderLayout
-    reconfigurarPanelMenu(AMaterias, lbCrearMateriaf, lbCrearMateria);
-    reconfigurarPanelMenu(ACrearCarrera, lbCrearcarreraF, lbCrearCarrera);
-    reconfigurarPanelMenu(AReporteAcademico, lbReportesA, lbReporteAA);
-    reconfigurarPanelMenu(AQuitar, lbQuitarMateriaf, lbQuitarMateria);
-    reconfigurarPanelMenu(RCListadoUsuarios, lblistausuariosf, lbListadoUsuarios);
-    reconfigurarPanelMenu(RCRegistro, lbRegistros, lbRegistro);
-    reconfigurarPanelMenu(RCModificarDatos, lbModificarDatosf, lbModificarDatos);
-    reconfigurarPanelMenu(DListadosAlumnos, lbFOTO, lbListado);
-    reconfigurarPanelMenu(DNotasAlumnos, lbNotas, lbANotas);
-    reconfigurarPanelMenu(DReportes, lbReportes, lbReporteAD);
-    reconfigurarPanelMenu(Ddesempeño, lbDesempeño, lbListado2);
-    
-    // Aplicar efectos hover a paneles
+        // Aplicar efectos hover a paneles
         new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DListadosAlumnos);
         new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DNotasAlumnos);
         new EfectoHoverPanel(new Color(250,217,124), Color.black).aplicarEfecto(DReportes);
@@ -88,12 +88,11 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
         aplicarHoverLabel(lbModificarDatos);
         aplicarHoverLabel(lbListado2);   
 
-        // ====== NUEVO: Actualizar foto de perfil según género ======
+        // ====== Actualizar foto de perfil según género ======
         actualizarFotoPerfilPorGenero();
 
-        // ====== NUEVO: Aplicar hover a labels de estudiante ======
-        // (Se aplicará después de crear los paneles de estudiante)
-
+        
+        // ====== Aplicar hover a labels de estudiante ======
         AjustesObjetos.ajustarImagen(lbFOTO,"src\\imagenes\\Listados.png" );
         AjustesObjetos.ajustarImagen(lbCbn, "src\\imagenes\\Corporacion-Bolivariana-del-Norte-CBN.png");
         AjustesObjetos.ajustarImagen(lbNotas, "src\\imagenes\\Notas.png");
@@ -300,7 +299,7 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
         }
     }
     
-    // ====== MÉTODO NUEVO: Actualizar foto según género ======
+    // ====== Actualizar foto según género ======
     private void actualizarFotoPerfilPorGenero() {
         String genero = baseDatos.obtenerSexoAlumno(usuarioActual);
         String rutaImagen;
@@ -318,24 +317,20 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
 
     
     private void reconfigurarPanelMenu(JPanel panel, JLabel icono, JLabel texto) {
-    // Quitar el layout null y usar BorderLayout
-    panel.setLayout(new BorderLayout());
-    
-    // Configurar tamaño fijo y alineación
-    panel.setPreferredSize(new Dimension(190, 60));
-    panel.setMinimumSize(new Dimension(190, 60));
-    panel.setMaximumSize(new Dimension(190, 60));
-    panel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-    
-    // Limpiar componentes existentes y reañadirlos con BorderLayout
-    panel.removeAll();
-    icono.setPreferredSize(new Dimension(60, 60));
-    panel.add(icono, BorderLayout.WEST);
-    panel.add(texto, BorderLayout.CENTER);
-    
-    // Asegurar que el fondo sea consistente
-    panel.setBackground(new Color(192, 4, 29));
-}
+        panel.setLayout(new BorderLayout());
+
+        panel.setPreferredSize(new Dimension(190, 60));
+        panel.setMinimumSize(new Dimension(190, 60));
+        panel.setMaximumSize(new Dimension(190, 60));
+        panel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+
+        panel.removeAll();
+        icono.setPreferredSize(new Dimension(60, 60));
+        panel.add(icono, BorderLayout.WEST);
+        panel.add(texto, BorderLayout.CENTER);
+
+        panel.setBackground(new Color(192, 4, 29));
+    }
     
     
     private void aplicarHoverLabel(JLabel label) {
@@ -367,16 +362,8 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
         sep.setAlignmentX(LEFT_ALIGNMENT);
         return sep;
     }
-
-    // ... resto del código ...
-
-        
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     
+
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
@@ -889,10 +876,6 @@ public frmplataforma(Base_De_Datos basedato, String Cargo, String usuario) {
         login.setVisible(true);
         this.dispose();
     }                                        
-
-    /**
-     * @param args the command line arguments
-     */
 
     /**
      * This method is called from within the constructor to initialize the form.

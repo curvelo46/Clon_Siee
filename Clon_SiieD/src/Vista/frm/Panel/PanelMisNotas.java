@@ -120,71 +120,69 @@ public class PanelMisNotas extends JPanel {
     }
     
     private void cargarNotas() {
-    modeloTabla.setRowCount(0);
-    
-    if (!comboCarreras.isEnabled() || comboCarreras.getItemCount() == 0) {
-        lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
-        return;
-    }
-    
-    String carreraSeleccionada = (String) comboCarreras.getSelectedItem();
-    if (carreraSeleccionada == null || carreraSeleccionada.isEmpty()) {
-        lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
-        return;
-    }
-    
-    Integer carreraId = carreraMap.get(carreraSeleccionada);
-    if (carreraId == null) {
-        // ✅ MENSAJE CORREGIDO: De "ID de carrera no encontrado" a "Materias no registrada (aun)"
-        JOptionPane.showMessageDialog(this, "Materias no asignada (aun)", 
-                                    "Información", JOptionPane.INFORMATION_MESSAGE);
-        lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
-        return;
-    }
-    
-    int alumnoId = baseDatos.obtenerIdAlumnoPorUsername(usuarioActual);
-    if (alumnoId == -1) {
-        JOptionPane.showMessageDialog(this, "Error de sistema: No se pudo identificar al alumno", 
-                                    "Error", JOptionPane.ERROR_MESSAGE);
-        lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
-        return;
-    }
-    
-    try {
-        List<Object[]> notas = baseDatos.listarNotasPorAlumnoCarrera(alumnoId, carreraId);
-        
-        if (notas.isEmpty()) {
-            // ✅ También se puede cambiar este mensaje si lo prefieres:
-            modeloTabla.addRow(new Object[]{"Materias no registrada (aun)", "-", "-", "-", "-"});
+        modeloTabla.setRowCount(0);
+
+        if (!comboCarreras.isEnabled() || comboCarreras.getItemCount() == 0) {
             lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
             return;
         }
-        
-        double sumaPromedios = 0;
-        int cantidadMaterias = 0;
-        
-        for (Object[] nota : notas) {
-            String materia = (String) nota[0];
-            String c1 = (String) nota[1];
-            String c2 = (String) nota[2];
-            String c3 = (String) nota[3];
-            String promedio = (String) nota[4];
-            
-            modeloTabla.addRow(new Object[]{materia, c1, c2, c3, promedio});
-            
-            sumaPromedios += Double.parseDouble(promedio);
-            cantidadMaterias++;
+
+        String carreraSeleccionada = (String) comboCarreras.getSelectedItem();
+        if (carreraSeleccionada == null || carreraSeleccionada.isEmpty()) {
+            lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+            return;
         }
-        
-        double promedioGeneral = cantidadMaterias > 0 ? sumaPromedios / cantidadMaterias : 0;
-        lbPromedioGeneral.setText(String.format(Locale.US, "Promedio General del Estudiante: %.1f", promedioGeneral));
-        
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error al cargar notas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-        lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+
+        Integer carreraId = carreraMap.get(carreraSeleccionada);
+        if (carreraId == null) {
+            JOptionPane.showMessageDialog(this, "Materias no asignada (aun)", 
+                                        "Información", JOptionPane.INFORMATION_MESSAGE);
+            lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+            return;
+        }
+
+        int alumnoId = baseDatos.obtenerIdAlumnoPorUsername(usuarioActual);
+        if (alumnoId == -1) {
+            JOptionPane.showMessageDialog(this, "Error de sistema: No se pudo identificar al alumno", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+            lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+            return;
+        }
+
+        try {
+            List<Object[]> notas = baseDatos.listarNotasPorAlumnoCarrera(alumnoId, carreraId);
+
+            if (notas.isEmpty()) {
+                modeloTabla.addRow(new Object[]{"Materias no registrada (aun)", "-", "-", "-", "-"});
+                lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+                return;
+            }
+
+            double sumaPromedios = 0;
+            int cantidadMaterias = 0;
+
+            for (Object[] nota : notas) {
+                String materia = (String) nota[0];
+                String c1 = (String) nota[1];
+                String c2 = (String) nota[2];
+                String c3 = (String) nota[3];
+                String promedio = (String) nota[4];
+
+                modeloTabla.addRow(new Object[]{materia, c1, c2, c3, promedio});
+
+                sumaPromedios += Double.parseDouble(promedio);
+                cantidadMaterias++;
+            }
+
+            double promedioGeneral = cantidadMaterias > 0 ? sumaPromedios / cantidadMaterias : 0;
+            lbPromedioGeneral.setText(String.format(Locale.US, "Promedio General del Estudiante: %.1f", promedioGeneral));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar notas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+        }
     }
-}
     
  
 

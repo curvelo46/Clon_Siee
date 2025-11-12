@@ -27,14 +27,14 @@ public class PanelAlumnosPorCarrera extends JPanel {
         new Object[]{"Materia", "Corte 1", "Corte 2", "Corte 3", "Promedio"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            return false; // 🔒 No editable
+            return false; 
         }
     };
 
-    // ✅ CORREGIDO: Ahora tiene 4 columnas en el orden correcto
+    
     private final JTable tablaReportes = new JTable();
     private final DefaultTableModel modeloReportes = new DefaultTableModel(
-        new Object[]{"Fecha", "Docente", "Materia", "Reporte"}, 0) { // ✅ NUEVA COLUMNA "Materia"
+        new Object[]{"Fecha", "Docente", "Materia", "Reporte"}, 0) { 
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
@@ -82,7 +82,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
         panelNotasConPromedio.add(scrollNotas, BorderLayout.CENTER);
         panelNotasConPromedio.add(lblPromedioGeneral, BorderLayout.SOUTH);
         
-        // ✅ Configurar tabla de reportes con el modelo corregido
+        // ✅ Configurar tabla de reportes
         tablaReportes.setModel(modeloReportes);
         JScrollPane scrollReportes = new JScrollPane(tablaReportes);
         scrollReportes.setBorder(BorderFactory.createTitledBorder("Reportes del alumno"));
@@ -103,7 +103,6 @@ public class PanelAlumnosPorCarrera extends JPanel {
         btnBuscar.addActionListener(e -> buscarAlumnoPorNombre());
         comboAlumnos.addActionListener(e -> {
             cargarNotasYPromedio();
-            // Forzar recarga de reportes al seleccionar alumno
             String alumno = (String) comboAlumnos.getSelectedItem();
             if (alumno != null && alumno.contains(" ")) {
                 String[] partes = alumno.split(" ", 2);
@@ -122,7 +121,6 @@ public class PanelAlumnosPorCarrera extends JPanel {
     private void cargarCarreras() {
         panelRadios.removeAll();
         grupoCarreras.clearSelection();
-
         List<String> carreras = repo.listarCarreras();
         
         if (carreras.isEmpty()) {
@@ -154,10 +152,10 @@ public class PanelAlumnosPorCarrera extends JPanel {
         panelRadios.repaint();
     }
 
+    
     /* -------------------- ALUMNOS -------------------- */
     private void cargarAlumnosPorCarrera(String carrera, String filtro) {
         comboAlumnos.removeAllItems();
-
         List<String> alumnos = repo.listarAlumnosPorCarrera(carrera, filtro);
         
         if (alumnos.isEmpty()) {
@@ -179,11 +177,12 @@ public class PanelAlumnosPorCarrera extends JPanel {
         cargarAlumnosPorCarrera(carrera, texto);
     }
 
+    
     /* -------------------- NOTAS -------------------- */
     private void cargarNotasYPromedio() {
         modeloNotas.setRowCount(0);
         lblPromedioGeneral.setText("Promedio general: --");
-        modeloReportes.setRowCount(0); // Limpiar reportes también
+        modeloReportes.setRowCount(0); 
 
         String alumno = (String) comboAlumnos.getSelectedItem();
         String carreraNombre = getCarreraSeleccionada();
@@ -230,14 +229,10 @@ public class PanelAlumnosPorCarrera extends JPanel {
         cargarReportesDelAlumno(idAlumno);
     }
     
-    /**
-     * ✅ Carga los reportes del alumno desde la base de datos
-     * @param idAlumno ID del alumno seleccionado
-     */
+    /* ✅ Carga los reportes del alumno desde la base de datos */
     private void cargarReportesDelAlumno(int idAlumno) {
-        modeloReportes.setRowCount(0); // Limpiar tabla
+        modeloReportes.setRowCount(0); 
         
-        // Obtener username del alumno para el procedimiento
         usernameAlumno = repo.obtenerUsernamePorIdAlumno(idAlumno);
         if (usernameAlumno == null) {
             modeloReportes.addRow(new Object[]{"Error: No se encontró el usuario", "", "", ""});
@@ -250,7 +245,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
             modeloReportes.addRow(new Object[]{"No hay reportes registrados", "", "", ""});
         } else {
             for (Object[] reporte : reportes) {
-                modeloReportes.addRow(reporte); // ✅ Ahora coincide con 4 columnas
+                modeloReportes.addRow(reporte); 
             }
         }
     }

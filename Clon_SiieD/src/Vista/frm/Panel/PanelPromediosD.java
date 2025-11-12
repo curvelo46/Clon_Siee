@@ -5,7 +5,6 @@ import Clases.Base_De_Datos;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Enumeration;
 import java.util.List;
 
 public class PanelPromediosD extends JPanel {
@@ -156,8 +155,7 @@ public class PanelPromediosD extends JPanel {
             }
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error de sistema al cargar tabla", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar tabla", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         tablaNotas.setModel(modelo);

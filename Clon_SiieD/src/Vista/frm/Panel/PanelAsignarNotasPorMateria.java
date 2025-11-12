@@ -32,6 +32,7 @@ public class PanelAsignarNotasPorMateria extends JPanel {
     private final JLabel lbMateria = new JLabel("Materia: Seleccione una materia");
     private final JLabel lbPromedio = new JLabel("Promedio del grupo: 0.0");
     private final JTable tabla = new JTable();
+    
     private final DefaultTableModel modelo = new DefaultTableModel(
             new Object[]{"ID", "Estudiante", "Corte 1", "Corte 2", "Corte 3", "Promedio", "C1_Edit", "C2_Edit", "C3_Edit"}, 0) {
         @Override
@@ -44,24 +45,24 @@ public class PanelAsignarNotasPorMateria extends JPanel {
         }
     };
 
-  public PanelAsignarNotasPorMateria(String profesor, Base_De_Datos basedatos) {
-    this.profesor = profesor;
-    this.basedatos = basedatos;
-    AjustesObjetos.ajustarTabla(tabla);
-    tabla.setModel(modelo);
-    initUI();
-    cargarMateriasEnCombo();
-    configurarCombo();
-    configurarBotonGuardar();
-    configurarEditorDeNotas();
-    ocultarColumnasDesdeInicio();
-    AjustesObjetos.ajustarTabla(tabla);
-    modelo.addTableModelListener(e -> {
-        if (e.getType() == TableModelEvent.UPDATE && e.getColumn() >= 2 && e.getColumn() <= 4) {
-            filasEditadas.add(e.getFirstRow());
-        }
-    });
-}
+    public PanelAsignarNotasPorMateria(String profesor, Base_De_Datos basedatos) {
+        this.profesor = profesor;
+        this.basedatos = basedatos;
+        AjustesObjetos.ajustarTabla(tabla);
+        tabla.setModel(modelo);
+        initUI();
+        cargarMateriasEnCombo();
+        configurarCombo();
+        configurarBotonGuardar();
+        configurarEditorDeNotas();
+        ocultarColumnasDesdeInicio();
+        AjustesObjetos.ajustarTabla(tabla);
+        modelo.addTableModelListener(e -> {
+            if (e.getType() == TableModelEvent.UPDATE && e.getColumn() >= 2 && e.getColumn() <= 4) {
+                filasEditadas.add(e.getFirstRow());
+            }
+        });
+    }
 
     private void initUI() {
         setLayout(new BorderLayout());
@@ -216,7 +217,6 @@ public class PanelAsignarNotasPorMateria extends JPanel {
                 JOptionPane.showMessageDialog(this, 
                     "✅ NOTAS GUARDADAS EXITOSAMENTE\nCorte: " + corteSeleccionado);
                 
-                // Incrementa corte para el siguiente ciclo
                 corteSeleccionado++;
                 if (corteSeleccionado > 3) {
                     JOptionPane.showMessageDialog(this, 
@@ -351,9 +351,6 @@ public class PanelAsignarNotasPorMateria extends JPanel {
             tabla.getColumnModel().getColumn(c).setPreferredWidth(0);
         }
     }
-
- 
-
     
     // <editor-fold defaultstate="collapsed" desc="Generated*/
     @SuppressWarnings("unchecked")

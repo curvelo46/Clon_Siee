@@ -135,8 +135,9 @@ public class PanelMisNotas extends JPanel {
     
     Integer carreraId = carreraMap.get(carreraSeleccionada);
     if (carreraId == null) {
-        JOptionPane.showMessageDialog(this, "Error de sistema: No se encontró el ID de la carrera", 
-                                    "Error", JOptionPane.ERROR_MESSAGE);
+        // ✅ MENSAJE CORREGIDO: De "ID de carrera no encontrado" a "Materias no registrada (aun)"
+        JOptionPane.showMessageDialog(this, "Materias no asignada (aun)", 
+                                    "Información", JOptionPane.INFORMATION_MESSAGE);
         lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
         return;
     }
@@ -153,7 +154,8 @@ public class PanelMisNotas extends JPanel {
         List<Object[]> notas = baseDatos.listarNotasPorAlumnoCarrera(alumnoId, carreraId);
         
         if (notas.isEmpty()) {
-            modeloTabla.addRow(new Object[]{"No hay registros de notas", "-", "-", "-", "-"});
+            // ✅ También se puede cambiar este mensaje si lo prefieres:
+            modeloTabla.addRow(new Object[]{"Materias no registrada (aun)", "-", "-", "-", "-"});
             lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
             return;
         }
@@ -170,7 +172,6 @@ public class PanelMisNotas extends JPanel {
             
             modeloTabla.addRow(new Object[]{materia, c1, c2, c3, promedio});
             
-            // Parsear usando Double.parseDouble (ahora siempre con punto)
             sumaPromedios += Double.parseDouble(promedio);
             cantidadMaterias++;
         }

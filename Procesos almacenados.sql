@@ -114,17 +114,94 @@ BEGIN
     WHERE u.user_ = nombre_docente;
 END //
 
+
+
+
+CREATE PROCEDURE actualizar_usuario_con_rol(
+    IN p_id INT, 
+    IN p_cc VARCHAR(20), 
+    IN p_nombre VARCHAR(125),
+    IN p_segundo_nombre VARCHAR(125), 
+    IN p_apellido VARCHAR(125),
+    IN p_segundo_apellido VARCHAR(125), 
+    IN p_edad INT,
+    IN p_telefono VARCHAR(50), 
+    IN p_correo VARCHAR(125), 
+    IN p_direccion VARCHAR(150),
+    IN p_cargo VARCHAR(50)
+)
+BEGIN
+    DECLARE v_cargo_actual VARCHAR(50);
+    
+    -- Obtener cargo actual del usuario
+    SELECT cargo INTO v_cargo_actual FROM Usuarios WHERE id = p_id;
+    
+    -- Actualizar datos básicos y nuevo cargo
+    UPDATE Usuarios SET
+        cc = CAST(p_cc AS UNSIGNED), 
+        nombre = p_nombre,
+        segundo_nombre = p_segundo_nombre, 
+        apellido = p_apellido,
+        segundo_apellido = p_segundo_apellido, 
+        edad = p_edad,
+        telefono = p_telefono, 
+        correo = p_correo, 
+        direccion = p_direccion,
+        cargo = p_cargo
+    WHERE id = p_id;
+    
+    -- Si cambió el cargo, actualizar tablas de roles
+    IF v_cargo_actual != p_cargo THEN
+        -- Eliminar de tabla anterior
+        CASE v_cargo_actual
+            WHEN 'alumno' THEN DELETE FROM Alumnos WHERE id = p_id;
+            WHEN 'docente' THEN DELETE FROM Docentes WHERE id = p_id;
+            WHEN 'administrador' THEN DELETE FROM Administradores WHERE id = p_id;
+            WHEN 'registro y control' THEN DELETE FROM RegistroYControl WHERE id = p_id;
+        END CASE;
+        
+        -- Insertar en nueva tabla de rol
+        CASE p_cargo
+            WHEN 'alumno' THEN INSERT INTO Alumnos (id) VALUES (p_id);
+            WHEN 'docente' THEN INSERT INTO Docentes (id) VALUES (p_id);
+            WHEN 'administrador' THEN INSERT INTO Administradores (id) VALUES (p_id);
+            WHEN 'registro y control' THEN INSERT INTO RegistroYControl (id) VALUES (p_id);
+        END CASE;
+    END IF;
+END //
+
+
+
+
 CREATE PROCEDURE eliminar_asignacion_docente_materia(
     IN p_docente_id INT,
     IN p_materia_nombre VARCHAR(125)
 )
 BEGIN
-    DELETE dm
+    DECLARE v_docente_materia_id INT;
+    DECLARE v_materia_id INT;
+    
+    -- Obtener IDs
+    SELECT dm.id, dm.materia_id INTO v_docente_materia_id, v_materia_id
     FROM Docente_Materias dm
     JOIN Materias m ON m.id = dm.materia_id
     WHERE dm.docente_id = p_docente_id
-      AND m.nombre = p_materia_nombre;
+      AND m.nombre = p_materia_nombre
+    LIMIT 1;
+    
+    IF v_docente_materia_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'No se encontró la asignación de esta materia al docente';
+    END IF;
+    
+    -- ELIMINAR EN ORDEN CORRECTO (lo más importante primero)
+    DELETE FROM Reportes WHERE docente_materia_id = v_docente_materia_id;
+    DELETE FROM Alumno_Materias WHERE docente_materia_id = v_docente_materia_id;
+    DELETE FROM Docente_Materias WHERE id = v_docente_materia_id;
+    
 END //
+
+
 
 
 
@@ -975,3 +1052,51 @@ SELECT r.fecha, CONCAT(u.nombre, ' ', u.apellido) as estudiante, m.nombre as mat
 JOIN Alumnos a ON a.id = r.id_alumno JOIN Usuarios u ON u.id = a.id 
 JOIN Docente_Materias dm ON dm.id = r.docente_materia_id JOIN Materias m ON m.id = dm.materia_id WHERE dm.id = id ORDER BY r.fecha DESC;
 end//
+
+
+
+-- Obtener materias de un docente con nombre de carrera
+DELIMITER //
+CREATE PROCEDURE obtener_materias_docente_con_carrera(IN p_docente_id INT)
+BEGIN
+    SELECT 
+        m.nombre AS materia_nombre,
+        c.nombre AS carrera_nombre,
+        dm.id AS docente_materia_id
+    FROM Docente_Materias dm
+    JOIN Materias m ON m.id = dm.materia_id
+    JOIN Carreras c ON c.id = m.carrera_id
+    WHERE dm.docente_id = p_docente_id
+    ORDER BY c.nombre, m.nombre;
+END //
+
+-- Reemplazar docente en una materia específica (conserva alumnos y notas)
+DELIMITER //
+CREATE PROCEDURE reemplazar_docente_en_materia(
+    IN p_docente_materia_id INT,
+    IN p_nuevo_docente_id INT
+)
+BEGIN
+    DECLARE v_materia_id INT;
+    DECLARE v_count INT;
+    
+    -- Obtener materia_id
+    SELECT materia_id INTO v_materia_id 
+    FROM Docente_Materias 
+    WHERE id = p_docente_materia_id;
+    
+    -- Verificar si el nuevo docente ya tiene esta materia
+    SELECT COUNT(*) INTO v_count
+    FROM Docente_Materias
+    WHERE docente_id = p_nuevo_docente_id 
+      AND materia_id = v_materia_id;
+    
+    IF v_count > 0 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'El docente ya tiene asignada esta materia';
+    ELSE
+        UPDATE Docente_Materias
+        SET docente_id = p_nuevo_docente_id
+        WHERE id = p_docente_materia_id;
+    END IF;
+END //

@@ -73,5 +73,9 @@ select*from carreras;
 select*from administradores;
 select*from RegistroYControl;
 
-call id_materia_nombre("Economía");
+
+ 
+ 
+ 
+ 
  

@@ -1421,22 +1421,121 @@ public Map<String, Integer> buscarDocentesPorNombre(String texto) {
  * @return true si se eliminó exitosamente, false si hubo error
  */
 public boolean eliminarAsignacionDocenteMateria(int idDocente, String materia) {
-    String sql = "CALL eliminar_asignacion_docente_materia(?, ?)";
+    String sql = "{CALL eliminar_asignacion_docente_materia(?, ?)}";
+    Connection conn = null;
+    CallableStatement cs = null;
+    
+    try {
+        conn = ConexionBD.getConnection();
+        conn.setAutoCommit(false);
+        
+        cs = conn.prepareCall(sql);
+        cs.setInt(1, idDocente);
+        cs.setString(2, materia);
+        cs.execute();
+        
+        conn.commit();
+        return true;
+        
+    } catch (SQLException e) {
+        String msg = e.getMessage().toLowerCase();
+        
+        if (msg.contains("no se encontró")) {
+            JOptionPane.showMessageDialog(null, 
+                "La asignación no existe. Verifica que el docente tenga esa materia.", 
+                "No encontrado", JOptionPane.WARNING_MESSAGE);
+        } else if (msg.contains("foreign key") || msg.contains("constraint")) {
+            JOptionPane.showMessageDialog(null, 
+                "No se puede eliminar: hay datos dependientes (reportes, alumnos).\n" +
+                "Error: " + e.getMessage(), 
+                "Error de Integridad", JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, 
+                "Error SQL: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+        return false;
+        
+    } finally {
+        if (cs != null) try { cs.close(); } catch (SQLException e) {}
+        if (conn != null) try { conn.close(); } catch (SQLException e) {}
+    }
+}
+ 
+// Agregar estos métodos a la clase Base_De_Datos
+
+public List<Object[]> obtenerMateriasDocenteConCarrera(int idDocente) {
+    List<Object[]> materias = new ArrayList<>();
+    String sql = "CALL obtener_materias_docente_con_carrera(?)";
+    
+    try (Connection conn = ConexionBD.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        
+        ps.setInt(1, idDocente);
+        ResultSet rs = ps.executeQuery();
+        
+        while (rs.next()) {
+            Object[] materia = {
+                rs.getString("materia_nombre"),
+                rs.getString("carrera_nombre"),
+                rs.getInt("docente_materia_id")
+            };
+            materias.add(materia);
+        }
+    } catch (SQLException e) {
+        System.err.println("Error al obtener materias con carrera: " + e.getMessage());
+    }
+    
+    return materias;
+}
+
+public boolean reemplazarDocenteEnMateria(int docenteMateriaId, int nuevoDocenteId) {
+    String sql = "CALL reemplazar_docente_en_materia(?, ?)";
     try (Connection conn = ConexionBD.getConnection();
          CallableStatement cs = conn.prepareCall(sql)) {
         
-        cs.setInt(1, idDocente);
-        cs.setString(2, materia);
+        cs.setInt(1, docenteMateriaId);
+        cs.setInt(2, nuevoDocenteId);
         cs.execute();
         return true;
         
     } catch (SQLException e) {
-        System.err.println("Error al eliminar asignación: " + e.getMessage());
+        System.err.println("Error al reemplazar docente: " + e.getMessage());
         return false;
     }
 }
+
  
 
-
+public void actualizarUsuarioConRol(int usuarioId, String cedula, String nombre, 
+    String segundoNombre, String apellido, String segundoApellido, 
+    int edad, String telefono, String correo, String direccion, String cargo) {
     
+    String sql = "{CALL actualizar_usuario_con_rol(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+    
+    try (Connection conn = ConexionBD.getConnection();
+         CallableStatement cs = conn.prepareCall(sql)) {
+        
+        cs.setInt(1, usuarioId);
+        cs.setString(2, cedula);
+        cs.setString(3, nombre);
+        cs.setString(4, segundoNombre);
+        cs.setString(5, apellido);
+        cs.setString(6, segundoApellido);
+        cs.setInt(7, edad);
+        cs.setString(8, telefono);
+        cs.setString(9, correo);
+        cs.setString(10, direccion);
+        cs.setString(11, cargo);
+        
+        cs.execute();
+        
+    } catch (SQLException e) {
+        throw new RuntimeException("Error al actualizar usuario con rol: " + e.getMessage(), e);
+    }
+}
+
+
 }

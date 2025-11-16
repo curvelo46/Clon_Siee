@@ -20,6 +20,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
     private final Base_De_Datos repo = new Base_De_Datos(); 
     private final AjustesObjetos ajustes = new AjustesObjetos(){}; 
 
+    
     /* ---------- Tablas y modelos ---------- */
     private final JTable tablaNotas = new JTable();
     private final DefaultTableModel modeloNotas = new DefaultTableModel(
@@ -41,8 +42,10 @@ public class PanelAlumnosPorCarrera extends JPanel {
     };
 
     private final JLabel lblPromedioGeneral = new JLabel("Promedio general: --");
+    
+    
     /* ====== BOTÓN ELIMINAR REPORTE ====== */
-    private final JButton btnEliminarReporte = new JButton("🗑️ Eliminar Reporte");
+    private final JButton btnEliminarReporte = new JButton(" Eliminar Reporte");
 
     public PanelAlumnosPorCarrera() {
         AjustesObjetos.ajustarTabla(tablaNotas);
@@ -55,6 +58,8 @@ public class PanelAlumnosPorCarrera extends JPanel {
         JScrollPane scrollRadios = new JScrollPane(panelRadios);
         scrollRadios.setPreferredSize(new Dimension(250, 200));
 
+        
+        
         /* ---------- Panel superior: búsqueda y combo ---------- */
         JPanel panelAlumnos = new JPanel(new BorderLayout());
         panelAlumnos.setBorder(BorderFactory.createTitledBorder("Alumnos"));
@@ -73,25 +78,32 @@ public class PanelAlumnosPorCarrera extends JPanel {
         norte.add(panelCombo);
         panelAlumnos.add(norte, BorderLayout.NORTH);
 
+        
+        
         /* ---------- Centro: notas + reportes ---------- */
         tablaNotas.setModel(modeloNotas);
         JScrollPane scrollNotas = new JScrollPane(tablaNotas);
         scrollNotas.setBorder(BorderFactory.createTitledBorder("Notas por materia"));
 
+        
         /* --- contenedor para la tabla de notas y su etiqueta de promedio --- */
         JPanel panelNotasConPromedio = new JPanel(new BorderLayout());
         panelNotasConPromedio.add(scrollNotas, BorderLayout.CENTER);
         panelNotasConPromedio.add(lblPromedioGeneral, BorderLayout.SOUTH);
         
+        
         // ✅ Configurar tabla de reportes
         tablaReportes.setModel(modeloReportes);
+        
         
         // OCULTAR LA COLUMNA ID (primera columna)
         tablaReportes.removeColumn(tablaReportes.getColumnModel().getColumn(0));
         
+        
         JScrollPane scrollReportes = new JScrollPane(tablaReportes);
         scrollReportes.setBorder(BorderFactory.createTitledBorder("Reportes del alumno"));
 
+        
         /* ====== PANEL BOTÓN ELIMINAR ====== */
         JPanel panelBotonEliminar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         panelBotonEliminar.add(btnEliminarReporte);
@@ -107,13 +119,15 @@ public class PanelAlumnosPorCarrera extends JPanel {
         
         JPanel panelCentral = new JPanel(new BorderLayout());
         panelCentral.add(splitCentral, BorderLayout.CENTER);        
-        panelCentral.add(panelBotonEliminar, BorderLayout.SOUTH); // Agregar botón al sur
+        panelCentral.add(panelBotonEliminar, BorderLayout.SOUTH); 
 
+        
         /* ---------- ensamblado ---------- */
         add(scrollRadios, BorderLayout.WEST);
         add(panelAlumnos, BorderLayout.NORTH);
         add(panelCentral, BorderLayout.CENTER);  
 
+        
         // ✨ Configurar listeners
         btnBuscar.addActionListener(e -> buscarAlumnoPorNombre());
         comboAlumnos.addActionListener(e -> {
@@ -128,6 +142,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
             }
         });
 
+        
         /* ====== LISTENER BOTÓN ELIMINAR ====== */
         btnEliminarReporte.addActionListener(e -> eliminarReporteSeleccionado());
 
@@ -140,6 +155,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
         splitCentral.setMaximumSize(new Dimension(940, 450));
     }
 
+    
     /* -------------------- CARRERAS -------------------- */
     private void cargarCarreras() {
         panelRadios.removeAll();
@@ -176,6 +192,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
         panelRadios.repaint();
     }
 
+    
     /* -------------------- ALUMNOS -------------------- */
     private void cargarAlumnosPorCarrera(String carrera, String filtro) {
         comboAlumnos.removeAllItems();
@@ -190,6 +207,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
         }
     }
 
+    
     private void buscarAlumnoPorNombre() {
         String carrera = getCarreraSeleccionada();
         if (carrera == null) {
@@ -200,6 +218,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
         cargarAlumnosPorCarrera(carrera, texto);
     }
 
+    
     /* -------------------- NOTAS -------------------- */
     private void cargarNotasYPromedio() {
         modeloNotas.setRowCount(0);
@@ -247,11 +266,11 @@ public class PanelAlumnosPorCarrera extends JPanel {
             lblPromedioGeneral.setText("Promedio general: " + String.format("%.1f", promedioGeneral));
         }
 
-        // Cargar reportes del alumno
+    
         cargarReportesDelAlumno(idAlumno);
     }
     
-    /* ✅ Carga los reportes del alumno desde la base de datos */
+    
     private void cargarReportesDelAlumno(int idAlumno) {
         modeloReportes.setRowCount(0); 
         
@@ -262,7 +281,7 @@ public class PanelAlumnosPorCarrera extends JPanel {
         }
         
         // ====== IMPORTANTE: Método debe devolver ID como primer elemento ======
-        List<Object[]> reportes = repo.obtenerReportesAlumnoConId(usernameAlumno); // Nuevo método
+        List<Object[]> reportes = repo.obtenerReportesAlumnoConId(usernameAlumno); 
         
         if (reportes.isEmpty()) {
             modeloReportes.addRow(new Object[]{-1, "No hay reportes registrados", "", "", ""});
@@ -273,6 +292,8 @@ public class PanelAlumnosPorCarrera extends JPanel {
         }
     }
 
+    
+    
     /* ====== MÉTODO ELIMINAR REPORTE ====== */
     private void eliminarReporteSeleccionado() {
         int filaVista = tablaReportes.getSelectedRow();
@@ -284,13 +305,13 @@ public class PanelAlumnosPorCarrera extends JPanel {
             return;
         }
 
-        // Convertir índice de vista a índice del modelo (por si hay ordenamiento)
+       
         int filaModelo = tablaReportes.convertRowIndexToModel(filaVista);
         
-        // Obtener el ID del reporte (primera columna, oculta)
+        
         Object idObj = modeloReportes.getValueAt(filaModelo, 0);
         
-        // Validar que sea un ID válido (no fila de error o mensaje)
+        
         if (!(idObj instanceof Integer) || (Integer) idObj <= 0) {
             JOptionPane.showMessageDialog(this, 
                 "⚠️ No se puede eliminar esta fila.", 
@@ -311,21 +332,19 @@ public class PanelAlumnosPorCarrera extends JPanel {
         int confirmacion = JOptionPane.showConfirmDialog(
             this,
             mensaje,
-            "🗑️ Confirmar eliminación",
+            "Confirmar eliminación",
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE
         );
         
         if (confirmacion != JOptionPane.YES_OPTION) {
-            return; // Cancelar
+            return; 
         }
 
         try {
-            // ====== ELIMINAR DE LA BASE DE DATOS ======
             boolean exito = repo.eliminarReportePorId(idReporte);
             
             if (exito) {
-                // Eliminar la fila del modelo
                 modeloReportes.removeRow(filaModelo);
                 JOptionPane.showMessageDialog(this, 
                     "✅ Reporte eliminado correctamente.", 
@@ -341,12 +360,14 @@ public class PanelAlumnosPorCarrera extends JPanel {
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-  
+
+    
     /* -------------------- UTILIDADES -------------------- */
     public String getAlumnoSeleccionado() {
         return (String) comboAlumnos.getSelectedItem();
     }
 
+    
     public String getCarreraSeleccionada() {
         Enumeration<AbstractButton> buttons = grupoCarreras.getElements();
         while (buttons.hasMoreElements()) {

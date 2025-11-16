@@ -63,8 +63,7 @@ public class PanelListaEstudiantes extends JPanel {
                 comboMaterias.addItem(materia);
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error de sistema al cargar materias", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar materias","Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -75,8 +74,7 @@ public class PanelListaEstudiantes extends JPanel {
 
         int idCarrera = baseDatos.obtenerCarreraIdPorDocenteMateria(usuarioDocente, materia);
         if (idCarrera == 0) {
-            JOptionPane.showMessageDialog(this, "No se pudo obtener la carrera", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No se pudo obtener la carrera","Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -93,8 +91,7 @@ public class PanelListaEstudiantes extends JPanel {
                 modeloTabla.addRow(estudiante);
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error de sistema al cargar alumnos", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error de sistema al cargar alumnos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

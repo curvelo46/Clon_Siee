@@ -56,7 +56,7 @@ public class PanelMisNotas extends JPanel {
         comboCarreras.addActionListener(e -> cargarNotas());
         panelSuperior.add(comboCarreras);
         
-        String[] columnas = {"Materia", "Corte 1", "Corte 2", "Corte 3", "Promedio Final"};
+        String[] columnas = {"Curso", "Nota1", "Nota2", "Nota3", "ACM"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -80,7 +80,7 @@ public class PanelMisNotas extends JPanel {
         panelSur.setBackground(new Color(240, 244, 248));
         panelSur.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
         
-        lbPromedioGeneral = new JLabel("Promedio General del Estudiante: 0.0");
+        lbPromedioGeneral = new JLabel("Promedio: 0.0");
         lbPromedioGeneral.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lbPromedioGeneral.setForeground(new Color(192, 4, 29));
         panelSur.add(lbPromedioGeneral);
@@ -123,13 +123,13 @@ public class PanelMisNotas extends JPanel {
         modeloTabla.setRowCount(0);
 
         if (!comboCarreras.isEnabled() || comboCarreras.getItemCount() == 0) {
-            lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+            lbPromedioGeneral.setText("Promedio: 0.0");
             return;
         }
 
         String carreraSeleccionada = (String) comboCarreras.getSelectedItem();
         if (carreraSeleccionada == null || carreraSeleccionada.isEmpty()) {
-            lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+            lbPromedioGeneral.setText("Promedio: 0.0");
             return;
         }
 
@@ -137,7 +137,7 @@ public class PanelMisNotas extends JPanel {
         if (carreraId == null) {
             JOptionPane.showMessageDialog(this, "Materias no asignada (aun)", 
                                         "Información", JOptionPane.INFORMATION_MESSAGE);
-            lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+            lbPromedioGeneral.setText("Promedio: 0.0");
             return;
         }
 
@@ -145,7 +145,7 @@ public class PanelMisNotas extends JPanel {
         if (alumnoId == -1) {
             JOptionPane.showMessageDialog(this, "Error de sistema: No se pudo identificar al alumno", 
                                         "Error", JOptionPane.ERROR_MESSAGE);
-            lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+            lbPromedioGeneral.setText("Promedio: 0.0");
             return;
         }
 
@@ -154,7 +154,7 @@ public class PanelMisNotas extends JPanel {
 
             if (notas.isEmpty()) {
                 modeloTabla.addRow(new Object[]{"Materias no registrada (aun)", "-", "-", "-", "-"});
-                lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+                lbPromedioGeneral.setText("Promedio: 0.0");
                 return;
             }
 
@@ -175,12 +175,12 @@ public class PanelMisNotas extends JPanel {
             }
 
             double promedioGeneral = cantidadMaterias > 0 ? sumaPromedios / cantidadMaterias : 0;
-            lbPromedioGeneral.setText(String.format(Locale.US, "Promedio General del Estudiante: %.1f", promedioGeneral));
+            lbPromedioGeneral.setText(String.format(Locale.US, "Promedio: %.1f", promedioGeneral));
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar notas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
-            lbPromedioGeneral.setText("Promedio General del Estudiante: 0.0");
+            lbPromedioGeneral.setText("Promedio: 0.0");
         }
     }
     

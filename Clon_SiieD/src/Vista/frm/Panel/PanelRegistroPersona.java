@@ -328,12 +328,8 @@ public class PanelRegistroPersona extends JPanel {
     }
     
     
-     
-
-   
-    
     private void registrarPersona() {
-        // VALIDACIÓN PRINCIPAL CORREGIDA: Si la validación falla, NO continúa
+        
         if (!validarCampos()) {
             return; // Detener el registro si hay errores de validación
         }

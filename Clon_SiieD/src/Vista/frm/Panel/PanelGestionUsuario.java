@@ -31,7 +31,7 @@ public class PanelGestionUsuario extends JPanel {
         setBackground(new Color(245, 245, 245));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // === PANEL SUPERIOR (Búsqueda) ===
+        // === PANEL SUPERIOR ===
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         panelBusqueda.setBackground(new Color(230, 230, 255));
         panelBusqueda.setBorder(BorderFactory.createTitledBorder("Búsqueda"));
@@ -42,7 +42,7 @@ public class PanelGestionUsuario extends JPanel {
         panelBusqueda.add(txtCedula);
         panelBusqueda.add(btnBuscar);
 
-        // === PANEL CENTRAL (Datos) ===
+        // === PANEL CENTRAL ===
         JPanel panelDatos = new JPanel(new GridBagLayout());
         panelDatos.setBackground(Color.WHITE);
         panelDatos.setBorder(BorderFactory.createTitledBorder("Datos del Usuario"));
@@ -77,7 +77,7 @@ public class PanelGestionUsuario extends JPanel {
         txtDireccion.setFont(fieldFont);
         comboCargo.setFont(fieldFont);
 
-        // === DISEÑO HORIZONTAL (2 columnas) ===
+        // === DISEÑO HORIZONTAL ===
         int fila = 0;
         
         // Fila 0: Nombre y Segundo Nombre

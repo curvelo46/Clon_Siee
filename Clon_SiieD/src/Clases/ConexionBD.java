@@ -14,12 +14,12 @@ public class ConexionBD {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(ConexionBD.URL, ConexionBD.USER, ConexionBD.PASS);
-            System.out.println("✅ Conexión exitosa a la BD");
+            System.out.println(" Conexión exitosa a la BD");
         } catch (ClassNotFoundException e) {
-            System.err.println("❌ No se encontró el Driver JDBC de MySQL");
+            System.err.println(" No se encontró el Driver JDBC de MySQL");
             e.printStackTrace();
         } catch (SQLException e) {
-            System.err.println("❌ Error en la conexión a la BD");
+            System.err.println(" Error en la conexión a la BD");
             e.printStackTrace();
         }
         return conn;

@@ -34,18 +34,15 @@ public class PanelAsignarNotasPorMateria extends JPanel {
     private final JLabel lbPromedio = new JLabel("Promedio del grupo: 0.0");
     private final JTable tabla = new JTable();
     
-    // MODELO CORREGIDO: 6 columnas (eliminadas las de estado)
+
     private final DefaultTableModel modelo = new DefaultTableModel(
             new Object[]{"ID","Estudiante", "Corte 1", "Corte 2", "Corte 3", "Promedio"}, 0) {
                 
         @Override
         public boolean isCellEditable(int row, int column) {
-            // Solo columnas de notas (2,3,4)
             if (column >= 2 && column <= 4) { 
                 int corteColumna = column - 1;
                 
-                
-                // Solo editable si es el corte actual y nota es 0.0
                 if (corteColumna != corteActualDB) return false;
                 
                 Object valorNota = getValueAt(row, column);
@@ -55,10 +52,10 @@ public class PanelAsignarNotasPorMateria extends JPanel {
                     try {
                         return Double.parseDouble((String) valorNota) == 0.0;
                     } catch (NumberFormatException e) {
-                        return true; // Texto inválido, permitir edición
+                        return true; 
                     }
                 }
-                return true; // Nulo/vacío, permitir edición
+                return true; 
             }
             return false;
         }
@@ -75,7 +72,7 @@ public class PanelAsignarNotasPorMateria extends JPanel {
         configurarBotonGuardar();
         configurarEditorDeNotas();
         
-        // ️ OCULTAR COLUMNA ID VISUALMENTE
+        
         ocultarColumnas(0);
         
         AjustesObjetos.ajustarTabla(tabla);
@@ -165,7 +162,7 @@ public class PanelAsignarNotasPorMateria extends JPanel {
         int cnt = 0;
 
         try {
-            // Usamos el procedimiento simplificado que devuelve 5 columnas
+        
             List<Object[]> notas = basedatos.listarNotasDocenteMateria(profesor, materiaSeleccionada, carreraId);
             
             for (Object[] fila : notas) {
@@ -229,7 +226,7 @@ public class PanelAsignarNotasPorMateria extends JPanel {
             }
         }
 
-        // Preparar datos para batch
+        
         List<Object[]> batchData = new ArrayList<>();
         for (Integer row : filasEditadas) {
             int alumnoId = (int) modelo.getValueAt(row, 0);
@@ -249,7 +246,7 @@ public class PanelAsignarNotasPorMateria extends JPanel {
                 JOptionPane.showMessageDialog(this, 
                     "✅ NOTAS GUARDADAS EXITOSAMENTE\nCorte: " + corteActualDB);
                 
-                // Incrementar corte
+        
                 if (corteActualDB < 3) {
                     corteActualDB++;
                     basedatos.actualizarCorteActual(dmId, corteActualDB);

@@ -123,21 +123,21 @@ public class PanelMatriculaAlumno extends JPanel {
     try {
         List<String> alumnos = baseDatos.listarAlumnosSistema();
         
-        // Normaliza el filtro de búsqueda UNA SOLA VEZ
+        
         String filtroNormalizado = normalizarTexto(filtro);
         
         for (String alumno : alumnos) {
-            // Normaliza cada nombre del alumno para comparar
+            
             String alumnoNormalizado = normalizarTexto(alumno);
             
-            // Si no hay filtro, o el nombre normalizado contiene el filtro normalizado
+            
             if (filtro == null || filtro.trim().isEmpty() || 
                 alumnoNormalizado.contains(filtroNormalizado)) {
                 comboAlumnos.addItem(alumno);
             }
         }
         
-        // Actualiza mensaje según resultados
+        
         if (comboAlumnos.getItemCount() == 0) {
             lblInfo.setText(filtro != null && !filtro.trim().isEmpty() 
                 ? "No se encontraron coincidencias para '" + filtro + "'" 
@@ -157,7 +157,7 @@ public class PanelMatriculaAlumno extends JPanel {
     }
 
     private void cargarAlumnos() {
-    cargarAlumnosConFiltro(null); // Sin filtro, carga todos
+    cargarAlumnosConFiltro(null); 
 }
 
 
@@ -350,23 +350,22 @@ private void cargarCarreras() {
     private List<Integer> getMateriasSeleccionadas() {
         List<Integer> ids = new ArrayList<>();
         
-        // Si "Todas" está seleccionada, incluir todas las materias
         if (checkTodas.isSelected()) {
             for (JCheckBox check : checkMaterias) {
                 try {
                     ids.add(Integer.parseInt(check.getActionCommand()));
                 } catch (NumberFormatException e) {
-                    // Ignorar si no es número válido
+                    
                 }
             }
         } else {
-            // Solo materias individuales seleccionadas
             for (JCheckBox check : checkMaterias) {
                 if (check.isSelected()) {
                     try {
                         ids.add(Integer.parseInt(check.getActionCommand()));
                     } catch (NumberFormatException e) {
                         // Ignorar si no es número válido
+                        System.out.println("error del sistema: " );
                     }
                 }
             }

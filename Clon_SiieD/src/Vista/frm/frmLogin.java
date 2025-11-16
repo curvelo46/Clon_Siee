@@ -21,7 +21,6 @@ public class frmLogin extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         AjustesObjetos.ajustarImagen(lbLogo,"src\\imagenes\\495226120_1231826352323647_5717401017301611521_n.jpg");
         
-        // Aplicar efectos clickeables a los labels
         configurarEfectosLabels();
     }
     

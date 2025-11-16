@@ -1,4 +1,3 @@
-    // Clase Base_De_Datos (sin cambios en la lógica de negocio)
     package Clases;
 
     import java.awt.Component;
@@ -22,6 +21,7 @@
             //JOptionPane.showMessageDialog(parent, mensaje, "Error del Sistema", JOptionPane.ERROR_MESSAGE);
         }
 
+        
         public String login(String usuario, String contrasena) {
             String sql = "CALL obtener_cargo_usuario(?,?)";
 
@@ -42,6 +42,7 @@
             return null;
         }    
 
+        
         public List<String> obtenerCargosPermitidos() {
             List<String> cargos = new ArrayList<>();
             String sql = "{CALL Cargos()}";
@@ -61,6 +62,7 @@
             return new ArrayList<>(new LinkedHashSet<>(cargos));
         }    
 
+        
         public String obtenerSexoAlumno(String nombreUsuario) {
             String sql = "CALL obtener_sexo_usuario(?)"; 
 
@@ -75,7 +77,7 @@
                     }
                 }
             } catch (SQLException e) {
-                manejarExcepcion(null, e, "Error al obtener sexo del alumno");
+                manejarExcepcion(null, e, "Error al obtener genero del alumno");
             }
             return null;
         }   
@@ -1480,10 +1482,9 @@
             }
         }
 
-        // 1. Modificar el método que obtiene reportes para incluir ID
     public List<Object[]> obtenerReportesAlumnoConId(String username) {
         List<Object[]> reportes = new ArrayList<>();
-        String sql = "{CALL obtener_reportes_alumno_con_id(?)}"; // Nuevo procedimiento que devuelve ID
+        String sql = "{CALL obtener_reportes_alumno_con_id(?)}"; 
 
         try (Connection conn = ConexionBD.getConnection();
              CallableStatement cs = conn.prepareCall(sql)) {
@@ -1493,7 +1494,7 @@
 
             while (rs.next()) {
                 reportes.add(new Object[]{
-                    rs.getInt("id_reporte"),     // <- ID primero
+                    rs.getInt("id_reporte"),     
                     rs.getTimestamp("fecha") != null ? 
                         new SimpleDateFormat("dd/MM/yyyy").format(rs.getTimestamp("fecha")) : "",
                     rs.getString("docente") != null ? rs.getString("docente") : "N/A",
@@ -1527,11 +1528,6 @@
     }
 
 
-    /**
-     * Resetea TODAS las notas del sistema a 0.0 y reinicia los flags de edición
-     * SOLO para usuarios con rol de administrador
-     * @throws SQLException si ocurre un error en la base de datos
-     */
     public void resetearTodasLasNotas() throws SQLException {
         String sql = "CALL resetear_todas_las_notas()";
 
@@ -1540,7 +1536,7 @@
 
         try {
             conn = ConexionBD.getConnection();
-            conn.setAutoCommit(false); // Transacción segura
+            conn.setAutoCommit(false); 
 
             cs = conn.prepareCall(sql);
             cs.execute();
@@ -1556,7 +1552,7 @@
                 }
             }
             manejarExcepcion(null, e, "Error al resetear todas las notas del sistema");
-            throw e; // Relanzar para que el llamador lo maneje
+            throw e; 
 
         } finally {
             if (cs != null) try { cs.close(); } catch (SQLException e) { 
@@ -1569,11 +1565,7 @@
     }
 
     
-    /**
- * Obtiene el corte actual para una relación docente-materia
- * @param docenteMateriaId ID de la tabla Docente_Materias
- * @return número de corte (1, 2 o 3)
- */
+   
 public int obtenerCorteActual(int docenteMateriaId) throws SQLException {
     String sql = "call corte_actual_porMateria(?);";
     try (Connection conn = ConexionBD.getConnection();
@@ -1584,7 +1576,7 @@ public int obtenerCorteActual(int docenteMateriaId) throws SQLException {
             return rs.getInt("corte_actual");
         }
     }
-    return 1; // Valor por defecto
+    return 1; 
 }
 
 public void actualizarCorteActual(int docenteMateriaId, int corte) throws SQLException {

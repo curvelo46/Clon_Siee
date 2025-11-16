@@ -23,7 +23,6 @@ import javax.swing.JButton;
 public class frmplataforma extends javax.swing.JFrame {
        
     private String Cargos;
-    private Integer click;
     private final Base_De_Datos baseDatos;
     private String usuarioActual; 
     private JButton btnReinicio;
@@ -173,8 +172,11 @@ public class frmplataforma extends javax.swing.JFrame {
                 btnReinicioActionPerformed(evt);
             }
         });
-
         menuAdmin.add(btnReinicio);
+        
+        
+        
+        
 
         // Panel de menú Registro control
         JPanel menuRegistroC = new JPanel();
@@ -231,6 +233,10 @@ public class frmplataforma extends javax.swing.JFrame {
         Ddesempeño.setMaximumSize(new Dimension(190, 60));
         menuDocente.add(Ddesempeño);
 
+        
+        
+        
+        
         // Panel de menú ALUMNOS
         JPanel menuAlumnos = new JPanel();
         menuAlumnos.setLayout(new BoxLayout(menuAlumnos, BoxLayout.Y_AXIS));
@@ -238,7 +244,6 @@ public class frmplataforma extends javax.swing.JFrame {
         menuAlumnos.setPreferredSize(new Dimension(190, 580));
         menuAlumnos.setMaximumSize(new Dimension(190, 580));
         
-        // Crear opciones para alumnos
         JPanel panelMisNotas = new JPanel();
         panelMisNotas.setBackground(new Color(192,4,29));
         panelMisNotas.setMaximumSize(new Dimension(190, 60));
@@ -882,7 +887,7 @@ public class frmplataforma extends javax.swing.JFrame {
     
     
         JScrollPane scroll = new JScrollPane(panel);
-        scroll.setPreferredSize(new Dimension(950, 500)); // Tamaño fijo
+        scroll.setPreferredSize(new Dimension(950, 500)); 
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -910,49 +915,48 @@ public class frmplataforma extends javax.swing.JFrame {
     }                                        
 
     
-    // Modificar el método btnReinicioActionPerformed para incluir confirmación:
-
-private void btnReinicioActionPerformed(java.awt.event.ActionEvent evt) {                                         
-    // Mostrar panel de confirmación
-    int confirmacion = JOptionPane.showConfirmDialog(
-        this,
-        "⚠️ ADVERTENCIA ⚠️\n\nEsta acción reiniciará TODAS las notas de TODOS los alumnos.\n" +
-        "Esta operación no se puede deshacer.\n\n¿Está seguro de que desea continuar?",
-        "Confirmar Reinicio Académico",
-        JOptionPane.YES_NO_OPTION,
-        JOptionPane.WARNING_MESSAGE
-    );
     
-    // Si el usuario confirma (presiona YES)
-    if (confirmacion == JOptionPane.YES_OPTION) {
-        try {
-            baseDatos.resetearTodasLasNotas();
-            JOptionPane.showMessageDialog(
-                this,
-                "✅ Reinicio académico completado exitosamente.\n" +
-                "Todas las notas han sido reiniciadas.",
-                "Operación Exitosa",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(
-                this,
-                "❌ Error al reiniciar las notas:\n" + ex.getMessage(),
-                "Error de Base de Datos",
-                JOptionPane.ERROR_MESSAGE
-            );
-            // Opcionalmente, loggear el error para depuración
-            ex.printStackTrace();
+
+    private void btnReinicioActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        int confirmacion = JOptionPane.showConfirmDialog(
+            this,
+            " ADVERTENCIA \n\nEsta acción reiniciará TODAS las notas de TODOS los alumnos.\n" +
+            "Esta operación no se puede deshacer.\n\n¿Está seguro de que desea continuar?",
+            "Confirmar Reinicio Académico",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
+        );
+
+     
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            try {
+                baseDatos.resetearTodasLasNotas();
+                JOptionPane.showMessageDialog(
+                    this,
+                    " Reinicio académico completado exitosamente.\n" +
+                    "Todas las notas han sido reiniciadas.",
+                    "Operación Exitosa",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    " Error al reiniciar las notas:\n" + ex.getMessage(),
+                    "Error de Base de Datos",
+                    JOptionPane.ERROR_MESSAGE
+                );
+     
+                ex.printStackTrace();
+            }
         }
     }
-}
     
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
-    @SuppressWarnings("unchecked")
+   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 

@@ -1035,6 +1035,7 @@ end//
 create procedure resetear_todas_las_notas()
 begin
 	update alumno_materias set corte1=0.0,corte2=0.0,corte3=0.0,corte1_edit=0,corte2_edit=0,corte3_edit=0;
+    update docente_materias set corte_actual=1;
 end//
 
 

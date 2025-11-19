@@ -882,7 +882,7 @@ end//
 create procedure buscar_usuario(in cedula int)
 begin
 
-SELECT id, nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cargo FROM Usuarios WHERE cc = cedula;
+SELECT id, nombre, segundo_nombre, apellido, segundo_apellido, edad, telefono, correo, direccion, cargo,cc FROM Usuarios WHERE cc = cedula;
 end//
 
 

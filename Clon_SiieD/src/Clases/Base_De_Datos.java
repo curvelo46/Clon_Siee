@@ -669,7 +669,9 @@
                         rs.getInt("edad"),
                         rs.getString("telefono"),
                         rs.getString("correo"),
-                        rs.getString("direccion")
+                        rs.getString("direccion"),
+                        rs.getString("cc")
+                            
                     };
                 }
             } catch (SQLException e) {

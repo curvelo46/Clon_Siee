@@ -91,6 +91,8 @@ public class PanelAsignarNotasPorMateria extends JPanel {
         tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tabla.setSelectionBackground(new Color(184, 207, 229));
         
+        
+        
         JPanel norte = new JPanel(new FlowLayout(FlowLayout.LEFT));
         norte.setBackground(FONDO);
         norte.add(new JLabel("Materia:"));
@@ -101,7 +103,7 @@ public class PanelAsignarNotasPorMateria extends JPanel {
         JPanel sur = new JPanel(new FlowLayout(FlowLayout.LEFT));
         sur.setBackground(FONDO);
         sur.add(lbPromedio);
-
+       
         add(norte, BorderLayout.NORTH);
         add(new JScrollPane(tabla), BorderLayout.CENTER);
         add(sur, BorderLayout.SOUTH);
@@ -176,6 +178,7 @@ public class PanelAsignarNotasPorMateria extends JPanel {
                 modelo.addRow(new Object[]{alumnoId, estudiante, c1, c2, c3, String.format("%.1f", prom)});
                 suma += prom;
                 cnt++;
+                
             }
 
             lbMateria.setText(String.format("Materia: %s | Corte Actual: %d", materiaSeleccionada, corteActualDB));

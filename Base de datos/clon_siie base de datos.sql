@@ -85,6 +85,25 @@
 		FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
 	);
 
+CREATE TABLE IF NOT EXISTS Alumno_Materias_Respaldo (
+    backup_id           INT AUTO_INCREMENT PRIMARY KEY,
+    backup_fecha        DATETIME NOT NULL,
+    alumno_id           INT NOT NULL,
+    docente_materia_id  INT NOT NULL,
+    corte1              DECIMAL(5,2),
+    corte2              DECIMAL(5,2),
+    corte3              DECIMAL(5,2),
+    corte1_edit         TINYINT,
+    corte2_edit         TINYINT,
+    corte3_edit         TINYINT,
+    INDEX idx_backup_fecha (backup_fecha),
+    INDEX idx_alumno (alumno_id),
+    INDEX idx_docente_materia (docente_materia_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+
 CREATE TABLE Reportes (
     id_reporte INT AUTO_INCREMENT PRIMARY KEY,  -- NUEVO: ID único
     id_alumno  INT NOT NULL,

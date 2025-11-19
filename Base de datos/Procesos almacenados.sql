@@ -1032,11 +1032,29 @@ begin
 	SELECT c.id FROM Materias m JOIN Carreras c ON c.id = m.carrera_id WHERE m.nombre = nombre ;
 end//
 
-create procedure resetear_todas_las_notas()
-begin
-	update alumno_materias set corte1=0.0,corte2=0.0,corte3=0.0,corte1_edit=0,corte2_edit=0,corte3_edit=0;
-    update docente_materias set corte_actual=1;
-end//
+
+
+
+
+CREATE PROCEDURE resetear_todas_las_notas()
+BEGIN
+    -- Respaldo histórico de Alumno_Materias
+    INSERT INTO Alumno_Materias_Respaldo (
+        backup_fecha, alumno_id, docente_materia_id, 
+        corte1, corte2, corte3, corte1_edit, corte2_edit, corte3_edit
+    )
+    SELECT NOW(), alumno_id, docente_materia_id, 
+           corte1, corte2, corte3, corte1_edit, corte2_edit, corte3_edit
+    FROM Alumno_Materias;
+    
+    -- Resetear notas
+    UPDATE alumno_materias 
+    SET corte1 = 0.0, corte2 = 0.0, corte3 = 0.0, 
+        corte1_edit = 0, corte2_edit = 0, corte3_edit = 0;
+    
+    -- Resetear corte actual
+    UPDATE docente_materias SET corte_actual = 1;
+END //
 
 
 
@@ -1139,6 +1157,11 @@ create procedure corte_actual_porMateria(in id_docente int)
 begin
 	SELECT corte_actual FROM Docente_Materias WHERE id = id_docente;
 end//
+
+
+
+
+
 
 create procedure actualizar_corte_actual_porMateria(in id_docente int,in corte int)
 begin

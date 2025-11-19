@@ -68,7 +68,7 @@ public class PanelRetirarMateriaADocente extends JPanel {
         panelOpciones.add(rbEliminar);
         
         // Inicializar tabla de materias
-        String[] columnas = {"Materia", "Carrera", "ID Asignación"};
+        String[] columnas = {"Materia", "Carrera"};
         modeloTablaMaterias = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -319,7 +319,7 @@ public class PanelRetirarMateriaADocente extends JPanel {
     }
     
     int idDocente = docenteActualMap.get(docente);
-    System.out.println("DEBUG: Cargando materias para docente: " + docente + " (ID: " + idDocente + ")");
+    System.out.println("DEBUG: Cargando materias para docente: " + docente);
     
     // Limpiar tabla
     modeloTablaMaterias.setRowCount(0);

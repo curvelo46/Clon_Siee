@@ -3,57 +3,89 @@ package Vista.frm.Panel;
 import Clases.*;
 import javax.swing.*;
 import java.awt.*;
-import java.util.Enumeration;
+import java.awt.event.*;
+import java.text.Normalizer;
+import java.util.*;
 import java.util.List;
 
 public class PanelGestionMaterias extends JPanel {
 
     private JComboBox<String> comboDocentes = new JComboBox<>();
     private JComboBox<String> comboMaterias = new JComboBox<>();
+    private JComboBox<String> comboCarreras = new JComboBox<>(); // NUEVO: Combo para carreras
     private JTextField txtNombreMateria = new JTextField(20);
     private JButton btnCrearMateria = new JButton("Crear materia");
     private JButton btnAsignar = new JButton("Asignar materia");
-    private ButtonGroup grupoCarreras = new ButtonGroup();
-    private JPanel panelRadios = new JPanel(new GridLayout(0, 1));
     private Base_De_Datos basedatos = new Base_De_Datos();
+    
+    // Para la funcionalidad de búsqueda inteligente
+    private List<String> todasLasCarreras = new ArrayList<>();
+    private DefaultComboBoxModel<String> carreraModel;
 
     public PanelGestionMaterias() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createTitledBorder("Gestión de materias"));
 
-        add(crearPanelCrear(), BorderLayout.NORTH);
-        add(crearPanelAsignar(), BorderLayout.CENTER);
-        add(crearPanelCarreras(), BorderLayout.SOUTH);
+        // Panel superior unificado con todos los controles
+        JPanel panelSuperior = new JPanel();
+        panelSuperior.setLayout(new BoxLayout(panelSuperior, BoxLayout.Y_AXIS));
+        panelSuperior.add(crearPanelSuperior());
+        
+        add(panelSuperior, BorderLayout.NORTH);
 
         cargarDocentes();
         cargarCarreras();
+        configurarBusquedaComboCarreras();
     }
 
-    private JPanel crearPanelCrear() {
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        p.add(new JLabel("Nombre nueva materia:"));
-        p.add(txtNombreMateria);
-        p.add(btnCrearMateria);
+    /**
+     * Panel superior con todos los campos organizados en dos filas
+     */
+    private JPanel crearPanelSuperior() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Fila 1: Carrera, Nombre Materia y Botón Crear
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("Carrera:"), gbc);
+        
+        gbc.gridx = 1;
+        comboCarreras.setPreferredSize(new Dimension(200, 25));
+        panel.add(comboCarreras, gbc);
+        
+        gbc.gridx = 2;
+        panel.add(new JLabel("Nombre nueva materia:"), gbc);
+        
+        gbc.gridx = 3;
+        txtNombreMateria.setPreferredSize(new Dimension(150, 25));
+        panel.add(txtNombreMateria, gbc);
+        
+        gbc.gridx = 4;
+        panel.add(btnCrearMateria, gbc);
         btnCrearMateria.addActionListener(e -> crearMateria());
-        return p;
-    }
 
-    private JPanel crearPanelAsignar() {
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        p.add(new JLabel("Materia:"));
-        p.add(comboMaterias);
-        p.add(new JLabel("Docente:"));
-        p.add(comboDocentes);
-        p.add(btnAsignar);
+        // Fila 2: Materia, Docente y Botón Asignar
+        gbc.gridx = 0; gbc.gridy = 1;
+        panel.add(new JLabel("Materia:"), gbc);
+        
+        gbc.gridx = 1;
+        comboMaterias.setPreferredSize(new Dimension(200, 25));
+        panel.add(comboMaterias, gbc);
+        
+        gbc.gridx = 2;
+        panel.add(new JLabel("Docente:"), gbc);
+        
+        gbc.gridx = 3;
+        comboDocentes.setPreferredSize(new Dimension(200, 25));
+        panel.add(comboDocentes, gbc);
+        
+        gbc.gridx = 4;
+        panel.add(btnAsignar, gbc);
         btnAsignar.addActionListener(e -> asignarMateria());
-        return p;
-    }
 
-    private JPanel crearPanelCarreras() {
-        JPanel p = new JPanel();
-        p.setBorder(BorderFactory.createTitledBorder("Carreras"));
-        p.add(panelRadios);
-        return p;
+        return panel;
     }
 
     private void cargarDocentes() {
@@ -94,36 +126,103 @@ public class PanelGestionMaterias extends JPanel {
     }
 
     private void cargarCarreras() {
-        panelRadios.removeAll();
-        grupoCarreras = new ButtonGroup();
-        
+        todasLasCarreras.clear();
         try {
             List<String> carreras = basedatos.listarCarreras();
-            for (String carrera : carreras) {
-                JRadioButton rb = new JRadioButton(carrera);
-                grupoCarreras.add(rb);
-                panelRadios.add(rb);
-                rb.addActionListener(e -> cargarMaterias());
-            }
-            
-            if (grupoCarreras.getButtonCount() > 0) {
-                ((JRadioButton) grupoCarreras.getElements().nextElement()).setSelected(true);
-                cargarMaterias();
-            }
-            
-            panelRadios.revalidate();
-            panelRadios.repaint();
-            
+            todasLasCarreras.addAll(carreras);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar carreras: " + ex.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
+        
+        carreraModel = new DefaultComboBoxModel<>(todasLasCarreras.toArray(new String[0]));
+        comboCarreras.setModel(carreraModel);
+        
+        // Seleccionar primera carrera si hay disponible
+        if (todasLasCarreras.size() > 0) {
+            comboCarreras.setSelectedIndex(0);
+            cargarMaterias();
+        }
+    }
+
+    /**
+     * Configura el combo de carreras para que sea editable y tenga 
+     * funcionalidad de búsqueda con normalización de texto
+     */
+    private void configurarBusquedaComboCarreras() {
+        comboCarreras.setEditable(true);
+        JTextField editor = (JTextField) comboCarreras.getEditor().getEditorComponent();
+        
+        editor.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // Evitar filtrar con teclas de navegación
+                if (e.getKeyCode() == KeyEvent.VK_UP || 
+                    e.getKeyCode() == KeyEvent.VK_DOWN || 
+                    e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    return;
+                }
+                
+                SwingUtilities.invokeLater(() -> {
+                    String texto = editor.getText();
+                    filtrarCarreras(texto);
+                });
+            }
+        });
+        
+        // Recargar materias cuando se seleccione una carrera
+        comboCarreras.addActionListener(e -> {
+            if (comboCarreras.getSelectedItem() != null) {
+                cargarMaterias();
+            }
+        });
+    }
+
+    /**
+     * Filtra las carreras según el texto ingresado usando comparación normalizada
+     */
+    private void filtrarCarreras(String textoBusqueda) {
+        String textoNormalizado = normalizeText(textoBusqueda);
+        List<String> filtradas = new ArrayList<>();
+        
+        for (String carrera : todasLasCarreras) {
+            if (normalizeText(carrera).contains(textoNormalizado)) {
+                filtradas.add(carrera);
+            }
+        }
+        
+        // Guardar texto actual para restaurarlo
+        String textoActual = textoBusqueda;
+        
+        // Actualizar modelo del combo
+        carreraModel.removeAllElements();
+        for (String carrera : filtradas) {
+            carreraModel.addElement(carrera);
+        }
+        
+        // Restaurar texto en el editor
+        comboCarreras.getEditor().setItem(textoActual);
+        
+        // Mostrar popup si hay resultados
+        if (!filtradas.isEmpty()) {
+            comboCarreras.setPopupVisible(true);
+        }
+    }
+
+    /**
+     * Normaliza texto eliminando tildes, comillas y convirtiendo a minúsculas
+     */
+    private String normalizeText(String text) {
+        if (text == null) return "";
+        String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+        normalized = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}", "");
+        normalized = normalized.replaceAll("[\"']", "");
+        return normalized.toLowerCase();
     }
 
     private void crearMateria() {
         String nombre = txtNombreMateria.getText().trim();
         String carrera = getCarreraSeleccionada();
 
-        // ⚠️ ÚNICA ALERTA DE VALIDACIÓN
         if (nombre.isEmpty() || carrera == null) {
             JOptionPane.showMessageDialog(this, "Escribe un nombre y selecciona una carrera");
             return;
@@ -135,6 +234,7 @@ public class PanelGestionMaterias extends JPanel {
             cargarMaterias();
         } catch (Exception ex) {
             System.err.println("Error en crearMateria: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al crear materia: " + ex.getMessage());
         }
     }
 
@@ -159,21 +259,17 @@ public class PanelGestionMaterias extends JPanel {
             }
 
             basedatos.asignarMateriaADocente(idDocente, idMateria);
+            JOptionPane.showMessageDialog(this, "Materia asignada exitosamente");
             
         } catch (Exception ex) {
             System.err.println("Error en asignarMateria: " + ex.getMessage());
-            JOptionPane.showMessageDialog(this,ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         }
     }
 
     public String getCarreraSeleccionada() {
-        for (Enumeration<AbstractButton> buttons = grupoCarreras.getElements(); buttons.hasMoreElements();) {
-            AbstractButton btn = buttons.nextElement();
-            if (btn.isSelected()) return btn.getText();
-        }
-        return null;
+        return (String) comboCarreras.getSelectedItem();
     }
-
     
     /**
      * This method is called from within the constructor to initialize the form.

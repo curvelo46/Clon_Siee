@@ -46,6 +46,7 @@ public class PanelListaUsuarios extends JPanel {
         scrollRoles.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollRoles.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 
+        tablaUsuarios.setCellSelectionEnabled(true);
         JPanel panelNorte = new JPanel(new BorderLayout());
         panelNorte.add(scrollRoles, BorderLayout.WEST);
         add(panelNorte, BorderLayout.NORTH);
